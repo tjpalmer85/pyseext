@@ -12,6 +12,7 @@ import time
 from pyseext.Ext import Ext
 from pyseext.ComponentQuery import ComponentQuery
 from Altus.AMS.Authentication import Authentication
+from pyseext.GridHelper import GridHelper
 
 # Initialise web driver
 driver = webdriver.Chrome(ChromeDriverManager().install())
@@ -34,6 +35,11 @@ auth.login(110002, 'altus.support', 'Password01!')
 time.sleep(2)
 
 # Do things
+gridHelper = GridHelper(driver)
+gridHelper.click_column_header('atg-acctrans-summarygridpanel', 'Related Provider')
+time.sleep(2)
+gridHelper.click_column_header('atg-acctrans-summarygridpanel', 'transferReference')
+time.sleep(2)
 
 auth.logout()
 time.sleep(2)
