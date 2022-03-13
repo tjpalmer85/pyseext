@@ -26,7 +26,8 @@ Ext(driver).wait_for_dom_ready()
 cq = ComponentQuery(driver)
 
 # Wait for viewport (first load can take a while)
-cq.wait_for_single_query('viewport', timeout=30)
+cq.wait_for_single_query_visible('viewport', timeout=30)
+
 
 # Login to the application
 Authentication(driver).login(110002, 'altus.support', 'Password01!')

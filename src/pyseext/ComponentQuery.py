@@ -72,6 +72,22 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return results[0]
 
+    def wait_for_single_query_visible(self, cq, rootId=None, timeout=3):
+        """Method that waits for the specified CQ to match a single visible result.
+        If there are multiple matches then an error is thrown.
+
+        Args:
+            cq (str): The query to execute
+            root (str):
+                The id of the container within which to perform the query.
+                If omitted, all components within the document are included in the search.
+            timeout (float): Number of seconds before timing out (default 3)
+        """
+        if not cq.endswith('{isVisible(true)}'):
+            cq = cq + '{isVisible(true)}'
+
+        return self.wait_for_single_query(cq, rootId, timeout)
+
     class ComponentQueryFoundExpectation():
         """ An expectation for checking that an Ext.ComponentQuery is found
         """
