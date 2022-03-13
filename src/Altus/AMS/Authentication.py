@@ -8,6 +8,7 @@ from selenium.common.exceptions import NoSuchElementException
 # Ours
 from pyseext.ComponentQuery import ComponentQuery
 from pyseext.FormHelper import FormHelper
+from pyseext.ButtonHelper import ButtonHelper
 
 class Authentication:
     """Class that provides helper methods for authenticating with AMS
@@ -50,7 +51,6 @@ class Authentication:
                 'password': password
             })
 
-            submit_button = cq.wait_for_single_query(self._SUBMIT_BUTTON_QUERY_TEXT, login_window.id)
-            submit_button.click()
+            ButtonHelper(self._driver).click_button_by_text('Submit', login_window.id)
         else:
             raise NoSuchElementException('Could not find login window')

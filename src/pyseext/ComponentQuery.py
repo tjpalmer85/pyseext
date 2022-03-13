@@ -7,7 +7,7 @@ class ComponentQuery(HasReferencedJavaScript):
     """
 
     _QUERY_TEMPLATE = "return globalThis.PySeExt.ComponentQuery.query('{cq}')"
-    _QUERY_TEMPLATE_WITH_ROOT = "return globalThis.PySeExt.ComponentQuery.query('{cq}', '{rootId}')"
+    _QUERY_TEMPLATE_WITH_ROOT = "return globalThis.PySeExt.ComponentQuery.query('{cq}', '{root_id}')"
 
     _driver = None
 
@@ -22,26 +22,26 @@ class ComponentQuery(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def query(self, cq, rootId=None):
+    def query(self, cq, root_id=None):
         """Executes a ComponentQuery and returns the result
 
         Args:
             cq (str): The query to execute
-            rootId (str):
+            root_id (str):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
 
         Returns:
             selenium.webdriver.remote.webelement[]: An array of DOM elements that match the query or an empty array if not found
         """
-        if rootId == None:
+        if root_id == None:
             script = self._QUERY_TEMPLATE.format(cq=cq)
         else:
-            script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, rootId=rootId)
+            script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, root_id=root_id)
 
         return self._driver.execute_script(script)
 
-    def wait_for_query(self, cq, rootId=None, timeout=3):
+    def wait_for_query(self, cq, root_id=None, timeout=3):
         """Method that waits for the specified CQ to match something
 
         Args:
@@ -52,9 +52,9 @@ class ComponentQuery(HasReferencedJavaScript):
             timeout (float): Number of seconds before timing out (default 3)
         """
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-        return self.query(cq, rootId)
+        return self.query(cq, root_id)
 
-    def wait_for_single_query(self, cq, rootId=None, timeout=3):
+    def wait_for_single_query(self, cq, root_id=None, timeout=3):
         """Method that waits for the specified CQ to match a single result.
         If there are multiple matches then an error is thrown.
 
@@ -66,13 +66,13 @@ class ComponentQuery(HasReferencedJavaScript):
             timeout (float): Number of seconds before timing out (default 3)
         """
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-        results = self.query(cq, rootId)
+        results = self.query(cq, root_id)
         if len(results) > 1:
             raise ComponentQuery.QueryMatchedMultipleElements(cq, len(results))
 
         return results[0]
 
-    def wait_for_single_query_visible(self, cq, rootId=None, timeout=3):
+    def wait_for_single_query_visible(self, cq, root_id=None, timeout=3):
         """Method that waits for the specified CQ to match a single visible result.
         If there are multiple matches then an error is thrown.
 
@@ -86,7 +86,7 @@ class ComponentQuery(HasReferencedJavaScript):
         if not cq.endswith('{isVisible(true)}'):
             cq = cq + '{isVisible(true)}'
 
-        return self.wait_for_single_query(cq, rootId, timeout)
+        return self.wait_for_single_query(cq, root_id, timeout)
 
     class ComponentQueryFoundExpectation():
         """ An expectation for checking that an Ext.ComponentQuery is found
