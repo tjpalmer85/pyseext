@@ -11,12 +11,26 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, time
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath(".."))
+
+from src.pyseext.Ext import Ext
+
+# -- Project information -----------------------------------------------------
+
+project = 'pyseext'
+copyright = time.strftime(
+    '%Y') + u' Martyn West'
+author = u'Martyn West'
+
+# The full version, including alpha/beta/rc tags
+release = '0.1.0'
+
 
 # -- General configuration -----------------------------------------------------
 
@@ -25,13 +39,25 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
+    # 'sphinx_copybutton',
+    'sphinx.ext.napoleon'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ['.rst', '.py']
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
@@ -183,8 +209,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'pyseext.tex', u'PySeExt Documentation',
-   u'Martyn West', 'manual'),
+('index', 'pyseext.tex', u'PySeExt Documentation', u'Martyn West', 'manual')
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
