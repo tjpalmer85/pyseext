@@ -54,18 +54,23 @@ class ComponentQuery(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         return self.query(cq, rootId)
 
-    def find_field(self, formCQ, name):
-        """Attempts to get a field by name from the specified form panel
+    def wait_for_single_query(self, cq, rootId=None, timeout=3):
+        """Method that waits for the specified CQ to match a single result.
+        If there are multiple matches then an error is thrown.
 
         Args:
-            form (selenium.webdriver.remote.webelement): The form panel in which to look for the field
-            name (str): The name of the field
-
-        Returns:
-            selenium.webdriver.remote.webelement: The field DOM element, or None if not found.
+            cq (str): The query to execute
+            root (str):
+                The id of the container within which to perform the query.
+                If omitted, all components within the document are included in the search.
+            timeout (float): Number of seconds before timing out (default 3)
         """
-        script = self._find_field_template.format(formCQ=formCQ, name=name)
-        return self._driver.execute_script(script)
+        WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
+        results = self.query(cq, rootId)
+        if len(results) > 1:
+            raise ComponentQuery.QueryMatchedMultipleElements(cq, len(results))
+
+        return results[0]
 
     class ComponentQueryFoundExpectation():
         """ An expectation for checking that an Ext.ComponentQuery is found
@@ -81,3 +86,29 @@ class ComponentQuery(HasReferencedJavaScript):
             """
             results = ComponentQuery(driver).query(self._cq)
             return results != None and len(results) > 0
+
+    class QueryMatchedMultipleElements(Exception):
+        """Exception class thrown when expecting a single component query match and get multiple
+        """
+
+        _cq = None
+        _count = None
+
+        def __init__(self, cq, count, message="Expected a single match from ComponentQuery '{cq}' but got {count}."):
+            """Initialises an instance of this exception
+
+            Args:
+                cq (str): The component query that has been executed
+                count (int): The number of results that we got
+                message (str, optional): The message for the exception. Must contain a 'cq' and 'count' format inserts. Defaults to "Expected a single match from ComponentQuery '{cq}' but got '{count}'".
+            """
+            self.message = message
+            self._cq = cq
+            self._count = count
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            """Returns a string representation of this exception
+            """
+            return self.message.format(cq=self._cq, count=self._count)

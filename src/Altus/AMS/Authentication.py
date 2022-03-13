@@ -38,11 +38,9 @@ class Authentication:
         """
         # Get login window
         cq = ComponentQuery(self._driver)
-        login_windows = cq.wait_for_query(self._LOGIN_WINDOW_QUERY_TEXT)
+        login_window = cq.wait_for_single_query(self._LOGIN_WINDOW_QUERY_TEXT)
 
-        if (len(login_windows) > 0):
-            login_window_id = login_windows[0].id
-
+        if (login_window != None):
             form = FormHelper(self._driver)
 
             client_id_field = form.find_field_input_element(self._LOGIN_WINDOW_QUERY_TEXT, self._CLIENT_ID_FIELDNAME)
@@ -52,7 +50,7 @@ class Authentication:
             password_field = form.find_field_input_element(self._LOGIN_WINDOW_QUERY_TEXT, self._PASSWORD_FIELDNAME)
             password_field.send_keys(password)
 
-            submit_button = cq.wait_for_query(self._SUBMIT_BUTTON_QUERY_TEXT, login_window_id)
-            submit_button[0].click()
+            submit_button = cq.wait_for_single_query(self._SUBMIT_BUTTON_QUERY_TEXT, login_window.id)
+            submit_button.click()
         else:
             raise NoSuchElementException('Could not find login window')
