@@ -1,5 +1,3 @@
-from selenium.webdriver.support.ui import WebDriverWait
-
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
 class FormHelper(HasReferencedJavaScript):
