@@ -1,6 +1,7 @@
 # Imports
 
 # Third-party
+from http import client
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
@@ -43,12 +44,11 @@ class Authentication:
         if (login_window != None):
             form = FormHelper(self._driver)
 
-            client_id_field = form.find_field_input_element(self._LOGIN_WINDOW_QUERY_TEXT, self._CLIENT_ID_FIELDNAME)
-            client_id_field.send_keys(str(client_id))
-            username_field = form.find_field_input_element(self._LOGIN_WINDOW_QUERY_TEXT, self._USERNAME_FIELDNAME)
-            username_field.send_keys(username)
-            password_field = form.find_field_input_element(self._LOGIN_WINDOW_QUERY_TEXT, self._PASSWORD_FIELDNAME)
-            password_field.send_keys(password)
+            form.set_form_values(self._LOGIN_WINDOW_QUERY_TEXT, {
+                'clientId': client_id,
+                'username': username,
+                'password': password
+            })
 
             submit_button = cq.wait_for_single_query(self._SUBMIT_BUTTON_QUERY_TEXT, login_window.id)
             submit_button.click()
