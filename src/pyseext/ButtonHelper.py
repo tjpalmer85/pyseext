@@ -26,4 +26,7 @@ class ButtonHelper:
                 If omitted, all components within the document are included in the search.
         """
         button = self._cq.wait_for_single_query_visible(self._BUTTON_TEMPLATE.format(text=text), root_id)
+
+        # FIXME: Be nice if we could move the mouse to the button and click.
+        # See here: https://www.lambdatest.com/blog/perform-mouse-actions-in-selenium-webdriver/
         button.click()
