@@ -28,9 +28,14 @@ cq = ComponentQuery(driver)
 # Wait for viewport (first load can take a while)
 cq.wait_for_single_query_visible('viewport', timeout=30)
 
-
 # Login to the application
-Authentication(driver).login(110002, 'altus.support', 'Password01!')
-
+auth = Authentication(driver)
+auth.login(110002, 'altus.support', 'Password01!')
 time.sleep(2)
+
+# Do things
+
+auth.logout()
+time.sleep(2)
+
 driver.quit()

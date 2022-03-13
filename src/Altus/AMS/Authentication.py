@@ -4,6 +4,7 @@
 from http import client
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+import time
 
 # Ours
 from pyseext.ComponentQuery import ComponentQuery
@@ -21,6 +22,7 @@ class Authentication:
     _PASSWORD_FIELDNAME = 'password'
 
     _driver = None
+    _cq = None
 
     def __init__(self, driver):
         """Initialises an instance of this class.
@@ -29,6 +31,7 @@ class Authentication:
             driver (selenium.webdriver): The webdriver to use.
         """
         self._driver = driver
+        self._cq = ComponentQuery(driver)
 
     def login(self, client_id, username, password):
         """Logs into the user interface when password authentication
@@ -39,8 +42,7 @@ class Authentication:
             password (str): The password to use
         """
         # Get login window
-        cq = ComponentQuery(self._driver)
-        login_window = cq.wait_for_single_query(self._LOGIN_WINDOW_QUERY_TEXT)
+        login_window = self._cq.wait_for_single_query(self._LOGIN_WINDOW_QUERY_TEXT)
 
         if (login_window != None):
             form = FormHelper(self._driver)
@@ -54,3 +56,12 @@ class Authentication:
             ButtonHelper(self._driver).click_button_by_text('Submit', login_window.id)
         else:
             raise NoSuchElementException('Could not find login window')
+
+    def logout(self):
+        """Logs the user out of the application by clicking on the logout menu item
+        """
+        userIconButton = self._cq.wait_for_single_query_visible('#btnUserMenu')
+        userIconButton.click()
+
+        logoutMenuItem = self._cq.wait_for_single_query_visible('#mnuitmLogout')
+        logoutMenuItem.click()
