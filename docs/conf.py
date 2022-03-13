@@ -17,15 +17,14 @@ import sys, os, time
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath('..'))
 
 from src.pyseext.Ext import Ext
 
 # -- Project information -----------------------------------------------------
 
 project = 'pyseext'
-copyright = time.strftime(
-    '%Y') + u' Martyn West'
+copyright = time.strftime('%Y') + u' Martyn West'
 author = u'Martyn West'
 
 # The full version, including alpha/beta/rc tags
@@ -39,19 +38,7 @@ release = '0.1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    # 'sphinx_copybutton',
-    'sphinx.ext.napoleon'
-]
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.mathjax', 'sphinx.ext.ifconfig', 'sphinx.ext.viewcode', 'sphinx.ext.githubpages', 'sphinx.ext.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -146,7 +133,7 @@ html_theme = 'default'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = [] #['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -237,10 +224,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'pyseext', u'PySeExt Documentation',
-     [u'Martyn West'], 1)
-]
+man_pages = [('index', 'pyseext', u'PySeExt Documentation',[u'Martyn West'], 1)]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
@@ -251,11 +235,7 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-  ('index', 'pyseext', u'PySeExt Documentation',
-   u'Martyn West', 'pyseext', 'Python Selenium ExtJS - package for helping interact with an ExtJS application from Python using Selenium',
-   'Classes'),
-]
+texinfo_documents = [('index', 'pyseext', u'PySeExt Documentation', u'Martyn West', 'pyseext', 'Python Selenium ExtJS - package for helping interact with an ExtJS application from Python using Selenium', 'Classes')]
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []

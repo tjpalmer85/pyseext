@@ -2,7 +2,7 @@ Welcome to PySeExt's documentation!
 ===================================
 
 Contents:
-.. autoclass:: src.pyseext.Ext
+.. autoclass:: pyseext.Ext
    :members:
    :undoc-members:
    :show-inheritance:
