@@ -1,9 +1,7 @@
-Sample Module Repository
+PySeExt Module Repository
 ========================
 
-This simple project is an example repo for Python projects.
-
-`Learn more <http://www.kennethreitz.org/essays/repository-structure-and-python>`_.
+This project contains a package to aid the testing of ExtJS applications from Python using Selenium.
 
 ---------------
 

@@ -1,2 +1,7 @@
+# Think these are for testing and documentation generation
 nose
 sphinx
+
+# I'm pretty sure these are!
+selenium
+webdriver_manager
