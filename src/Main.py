@@ -16,6 +16,7 @@ from pyseext.GridHelper import GridHelper
 
 # Initialise web driver
 driver = webdriver.Edge(EdgeChromiumDriverManager().install())
+driver.set_window_size(1366, 1000)
 
 # Load site
 driver.get('http://a00173/atgws/build/Production/AltusProductsTransferGateway/')
