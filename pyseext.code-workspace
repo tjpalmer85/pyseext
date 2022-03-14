@@ -4,12 +4,14 @@
 			"path": "."
 		}
 	],
-	"settings": {},
+	"settings": {
+		"esbonio.server.enabled": true
+	},
 	"extensions": {
 		"recommendations": [
 			"ms-python.python",
 			"njpwerner.autodocstring",
-			"lextudio.restructuredtext"
+			"trond-snekvik.simple-rst"
 		]
 	}
 }

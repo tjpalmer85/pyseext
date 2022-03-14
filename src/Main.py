@@ -18,7 +18,7 @@ from pyseext.GridHelper import GridHelper
 driver = webdriver.Chrome(ChromeDriverManager().install())
 
 # Load site
-driver.get('http://localhost/atgws/build/Production/AltusProductsTransferGateway/')
+driver.get('http://a00173/atgws/build/Production/AltusProductsTransferGateway/')
 
 # Wait for DOM
 Ext(driver).wait_for_dom_ready()
