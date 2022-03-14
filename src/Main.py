@@ -4,7 +4,7 @@
 
 # Third-party
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 import time
 
@@ -15,7 +15,7 @@ from Altus.AMS.Authentication import Authentication
 from pyseext.GridHelper import GridHelper
 
 # Initialise web driver
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Edge(EdgeChromiumDriverManager().install())
 
 # Load site
 driver.get('http://a00173/atgws/build/Production/AltusProductsTransferGateway/')
