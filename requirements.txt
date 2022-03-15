@@ -4,4 +4,3 @@ sphinx
 
 # I'm pretty sure these are!
 selenium
-webdriver_manager
