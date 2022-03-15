@@ -20,5 +20,5 @@ setup(
     author_email='657393+westy@users.noreply.github.com',
     url='https://github.com/westy/pyseext',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs', 'exerciser'))
+    packages=find_packages(exclude=('tests', 'docs'))
 )
