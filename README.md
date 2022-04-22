@@ -2,10 +2,12 @@
 
 This project contains a package to aid the testing of ExtJS applications from Python using Selenium.
 
+---
 ## Documentation
 
-You can find the documentation for the library [here](./docs/pyseext/index.html).
+You can find the documentation for the library [here](https://gitcdn.link/cdn/westy/pyseext/master/docs/pyseext/index.html) (linked using [GitCDN](https://gitcdn.link)).
 
+---
 ## Naming Standards
 
 This is the first time I have written any Python, so I have looked around for standards that seem to be common.
