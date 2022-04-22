@@ -1,6 +1,8 @@
-# Think these are for testing and documentation generation
+# Think this is for testing?
 nose
-sphinx
 
-# I'm pretty sure these are!
+# This is for documentation generation
+pdoc3
+
+# The following are needed by the actual library
 selenium
