@@ -1,1 +1,1 @@
-pdoc --html -o . ../pyseext
+pdoc --force --html -o . ../pyseext
