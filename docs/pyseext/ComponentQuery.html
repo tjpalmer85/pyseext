@@ -34,10 +34,9 @@ class ComponentQuery(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with using Ext.ComponentQuery
     &#34;&#34;&#34;
 
+    # Class variables
     _QUERY_TEMPLATE = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
     _QUERY_TEMPLATE_WITH_ROOT = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
-
-    _driver = None
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -45,6 +44,8 @@ class ComponentQuery(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+
+        # Instance variables
         self._driver = driver
 
         # Initialise our base class
@@ -96,7 +97,7 @@ class ComponentQuery(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         results = self.query(cq, root_id)
         if len(results) &gt; 1:
-            raise ComponentQuery.QueryMatchedMultipleElements(cq, len(results))
+            raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
         return results[0]
 
@@ -131,12 +132,9 @@ class ComponentQuery(HasReferencedJavaScript):
             results = ComponentQuery(driver).query(self._cq)
             return results != None and len(results) &gt; 0
 
-    class QueryMatchedMultipleElements(Exception):
+    class QueryMatchedMultipleElementsException(Exception):
         &#34;&#34;&#34;Exception class thrown when expecting a single component query match and get multiple
         &#34;&#34;&#34;
-
-        _cq = None
-        _count = None
 
         def __init__(self, cq, count, message=&#34;Expected a single match from ComponentQuery &#39;{cq}&#39; but got {count}.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -187,10 +185,9 @@ class ComponentQuery(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with using Ext.ComponentQuery
     &#34;&#34;&#34;
 
+    # Class variables
     _QUERY_TEMPLATE = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
     _QUERY_TEMPLATE_WITH_ROOT = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
-
-    _driver = None
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -198,6 +195,8 @@ class ComponentQuery(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+
+        # Instance variables
         self._driver = driver
 
         # Initialise our base class
@@ -249,7 +248,7 @@ class ComponentQuery(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         results = self.query(cq, root_id)
         if len(results) &gt; 1:
-            raise ComponentQuery.QueryMatchedMultipleElements(cq, len(results))
+            raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
         return results[0]
 
@@ -284,12 +283,9 @@ class ComponentQuery(HasReferencedJavaScript):
             results = ComponentQuery(driver).query(self._cq)
             return results != None and len(results) &gt; 0
 
-    class QueryMatchedMultipleElements(Exception):
+    class QueryMatchedMultipleElementsException(Exception):
         &#34;&#34;&#34;Exception class thrown when expecting a single component query match and get multiple
         &#34;&#34;&#34;
-
-        _cq = None
-        _count = None
 
         def __init__(self, cq, count, message=&#34;Expected a single match from ComponentQuery &#39;{cq}&#39; but got {count}.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -320,7 +316,7 @@ class ComponentQuery(HasReferencedJavaScript):
 <dd>
 <div class="desc"><p>An expectation for checking that an Ext.ComponentQuery is found</p></div>
 </dd>
-<dt id="pyseext.ComponentQuery.ComponentQuery.QueryMatchedMultipleElements"><code class="name">var <span class="ident">QueryMatchedMultipleElements</span></code></dt>
+<dt id="pyseext.ComponentQuery.ComponentQuery.QueryMatchedMultipleElementsException"><code class="name">var <span class="ident">QueryMatchedMultipleElementsException</span></code></dt>
 <dd>
 <div class="desc"><p>Exception class thrown when expecting a single component query match and get multiple</p></div>
 </dd>
@@ -436,7 +432,7 @@ If there are multiple matches then an error is thrown.</p>
     WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
     results = self.query(cq, root_id)
     if len(results) &gt; 1:
-        raise ComponentQuery.QueryMatchedMultipleElements(cq, len(results))
+        raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
     return results[0]</code></pre>
 </details>
@@ -508,7 +504,7 @@ If there are multiple matches then an error is thrown.</p>
 <h4><code><a title="pyseext.ComponentQuery.ComponentQuery" href="#pyseext.ComponentQuery.ComponentQuery">ComponentQuery</a></code></h4>
 <ul class="">
 <li><code><a title="pyseext.ComponentQuery.ComponentQuery.ComponentQueryFoundExpectation" href="#pyseext.ComponentQuery.ComponentQuery.ComponentQueryFoundExpectation">ComponentQueryFoundExpectation</a></code></li>
-<li><code><a title="pyseext.ComponentQuery.ComponentQuery.QueryMatchedMultipleElements" href="#pyseext.ComponentQuery.ComponentQuery.QueryMatchedMultipleElements">QueryMatchedMultipleElements</a></code></li>
+<li><code><a title="pyseext.ComponentQuery.ComponentQuery.QueryMatchedMultipleElementsException" href="#pyseext.ComponentQuery.ComponentQuery.QueryMatchedMultipleElementsException">QueryMatchedMultipleElementsException</a></code></li>
 <li><code><a title="pyseext.ComponentQuery.ComponentQuery.query" href="#pyseext.ComponentQuery.ComponentQuery.query">query</a></code></li>
 <li><code><a title="pyseext.ComponentQuery.ComponentQuery.wait_for_query" href="#pyseext.ComponentQuery.ComponentQuery.wait_for_query">wait_for_query</a></code></li>
 <li><code><a title="pyseext.ComponentQuery.ComponentQuery.wait_for_single_query" href="#pyseext.ComponentQuery.ComponentQuery.wait_for_single_query">wait_for_single_query</a></code></li>

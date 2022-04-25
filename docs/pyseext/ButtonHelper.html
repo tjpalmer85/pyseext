@@ -34,10 +34,9 @@ class ButtonHelper:
     &#34;&#34;&#34;A class to help with interacting with Ext buttons
     &#34;&#34;&#34;
 
+    # Class variables
     _ENABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=false]&#39;
     _DISABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
-
-    _cq = None
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -45,6 +44,8 @@ class ButtonHelper:
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+
+        # Instance variables
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
@@ -53,8 +54,7 @@ class ButtonHelper:
 
         Args:
             text (str): The text on the button
-            root_id (str, optional):
-                The id of the container within which to perform the query.
+            root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         &#34;&#34;&#34;
         button = self._cq.wait_for_single_query_visible(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
@@ -69,8 +69,7 @@ class ButtonHelper:
 
         Args:
             text (str): The text on the button
-            root_id (str, optional):
-                The id of the container within which to perform the query.
+            root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         &#34;&#34;&#34;
         self._cq.wait_for_single_query(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
@@ -115,10 +114,9 @@ class ButtonHelper:
     &#34;&#34;&#34;A class to help with interacting with Ext buttons
     &#34;&#34;&#34;
 
+    # Class variables
     _ENABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=false]&#39;
     _DISABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
-
-    _cq = None
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -126,6 +124,8 @@ class ButtonHelper:
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+
+        # Instance variables
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
@@ -134,8 +134,7 @@ class ButtonHelper:
 
         Args:
             text (str): The text on the button
-            root_id (str, optional):
-                The id of the container within which to perform the query.
+            root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         &#34;&#34;&#34;
         button = self._cq.wait_for_single_query_visible(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
@@ -150,8 +149,7 @@ class ButtonHelper:
 
         Args:
             text (str): The text on the button
-            root_id (str, optional):
-                The id of the container within which to perform the query.
+            root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         &#34;&#34;&#34;
         self._cq.wait_for_single_query(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
@@ -205,10 +203,10 @@ If omitted, all components within the document are included in the search.</dd>
 <dl>
 <dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
 <dd>The text on the button</dd>
-</dl>
-<p>root_id (str, optional):
-The id of the container within which to perform the query.
-If omitted, all components within the document are included in the search.</p></div>
+<dt><strong><code>root_id</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The id of the container within which to perform the query.
+If omitted, all components within the document are included in the search.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -218,8 +216,7 @@ If omitted, all components within the document are included in the search.</p></
 
     Args:
         text (str): The text on the button
-        root_id (str, optional):
-            The id of the container within which to perform the query.
+        root_id (str, optional): The id of the container within which to perform the query.
             If omitted, all components within the document are included in the search.
     &#34;&#34;&#34;
     self._cq.wait_for_single_query(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)</code></pre>
@@ -234,10 +231,10 @@ If omitted, all components within the document are included in the search.</p></
 <dl>
 <dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
 <dd>The text on the button</dd>
-</dl>
-<p>root_id (str, optional):
-The id of the container within which to perform the query.
-If omitted, all components within the document are included in the search.</p></div>
+<dt><strong><code>root_id</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The id of the container within which to perform the query.
+If omitted, all components within the document are included in the search.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -247,8 +244,7 @@ If omitted, all components within the document are included in the search.</p></
 
     Args:
         text (str): The text on the button
-        root_id (str, optional):
-            The id of the container within which to perform the query.
+        root_id (str, optional): The id of the container within which to perform the query.
             If omitted, all components within the document are included in the search.
     &#34;&#34;&#34;
     button = self._cq.wait_for_single_query_visible(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)

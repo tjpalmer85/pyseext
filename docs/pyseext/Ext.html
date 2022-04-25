@@ -32,14 +32,14 @@ class Ext:
     &#34;&#34;&#34;A class to help with using Ext
     &#34;&#34;&#34;
 
-    _driver = None
-
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class.
 
         Args:
             driver (selenium.webdriver): The webdriver to use.
         &#34;&#34;&#34;
+
+        # Instance variables
         self._driver = driver
 
     def wait_for_dom_ready(self, timeout=30):
@@ -95,14 +95,14 @@ class Ext:
     &#34;&#34;&#34;A class to help with using Ext
     &#34;&#34;&#34;
 
-    _driver = None
-
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class.
 
         Args:
             driver (selenium.webdriver): The webdriver to use.
         &#34;&#34;&#34;
+
+        # Instance variables
         self._driver = driver
 
     def wait_for_dom_ready(self, timeout=30):

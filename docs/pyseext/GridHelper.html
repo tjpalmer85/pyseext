@@ -34,10 +34,10 @@ from pyseext.ComponentQuery import ComponentQuery
 class GridHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with interacting with Ext grid panels
     &#34;&#34;&#34;
-    _GET_VISIBLE_COLUMN_HEADER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
-    _GET_VISIBLE_COLUMN_HEADER_TRIGGER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
 
-    _driver = None
+    # Class variables
+    _GET_COLUMN_HEADER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
+    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -45,13 +45,15 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+
+        # Instance variables
         self._driver = driver
 
         # Initialise our base class
         super().__init__(driver)
 
-    def get_visible_column_header(self, grid_cq, column_text_or_dataIndex):
-        &#34;&#34;&#34;Gets the element for the specified visible column header
+    def get_column_header(self, grid_cq, column_text_or_dataIndex):
+        &#34;&#34;&#34;Gets the element for the specified column header
 
         Args:
             grid_cq (str): The component query for the owning grid
@@ -61,7 +63,7 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_VISIBLE_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        script = self._GET_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
         column_header = self._driver.execute_script(script)
 
         if column_header:
@@ -70,42 +72,72 @@ class GridHelper(HasReferencedJavaScript):
             raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
 
     def is_column_visible(self, grid_cq, column_text_or_dataIndex):
-        &#34;&#34;&#34;Determines whether the specified column is visible
+        &#34;&#34;&#34;Determines whether the specified column is visible,
+        Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
 
         Returns:
-            True if the column was found and is visible, False otherwise.
+            True if the column is visible, False otherwise.
         &#34;&#34;&#34;
 
-        # Check grid can be found and is visible
-        ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
+        return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-        script = self._GET_VISIBLE_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
-        column_header = self._driver.execute_script(script)
+    def is_column_hidden(self, grid_cq, column_text_or_dataIndex):
+        &#34;&#34;&#34;Determines whether the specified column is hidden.
+        Throws a ColumnNotFoundException if the column does not exist.
 
-        return column_header != None
+        Args:
+            grid_cq (str): The component query for the owning grid
+            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+
+        Returns:
+            True if the column is hidden, False otherwise.
+        &#34;&#34;&#34;
+
+        return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
     def check_columns_are_visible(self, grid_cq, column_texts_or_dataIndexes):
         &#34;&#34;&#34;Checks that the specified columns are all visible on the specified grid.
-        
+        Throws a ColumnNotFoundException if the column does not exist.
+
         Args:
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
 
         Returns:
-            An array of columns that were not found or not visible, if any.
+            An array of columns that are not visible, if any.
         &#34;&#34;&#34;
-        columns_not_found_or_visible = []
+        columns_not_visible = []
 
         for column_text_or_dataIndex in column_texts_or_dataIndexes:
             is_visible = self.is_column_visible(grid_cq, column_text_or_dataIndex)
             if is_visible == False:
-                columns_not_found_or_visible.append(column_text_or_dataIndex)
+                columns_not_visible.append(column_text_or_dataIndex)
 
-        return columns_not_found_or_visible
+        return columns_not_visible
+
+    def check_columns_are_hidden(self, grid_cq, column_texts_or_dataIndexes):
+        &#34;&#34;&#34;Checks that the specified columns are all hidden on the specified grid.
+        Throws a ColumnNotFoundException if the column does not exist.
+
+        Args:
+            grid_cq (str): The component query for the owning grid
+            column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
+
+        Returns:
+            An array of columns that are not hidden, if any.
+        &#34;&#34;&#34;
+        column_not_hidden = []
+
+        for column_text_or_dataIndex in column_texts_or_dataIndexes:
+            is_hidden = self.is_column_hidden(grid_cq, column_text_or_dataIndex)
+            if is_hidden == False:
+                column_not_hidden.append(column_text_or_dataIndex)
+
+        return column_not_hidden
 
     def click_column_header(self, grid_cq, column_text_or_dataIndex):
         &#34;&#34;&#34;Clicks on the specified column header.
@@ -115,11 +147,11 @@ class GridHelper(HasReferencedJavaScript):
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
         &#34;&#34;&#34;
-        column_header = self.get_visible_column_header(grid_cq, column_text_or_dataIndex)
+        column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
         column_header.click()
 
-    def get_visible_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
-        &#34;&#34;&#34;Gets the element for the specified visible column header&#39;s trigger
+    def get_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
+        &#34;&#34;&#34;Gets the element for the specified column header&#39;s trigger
 
         Args:
             grid_cq (str): The component query for the owning grid
@@ -129,7 +161,7 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_VISIBLE_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
         column_header_trigger = self._driver.execute_script(script)
 
         if column_header_trigger:
@@ -145,7 +177,7 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
         &#34;&#34;&#34;
         # We need to move to the header before the trigger becomes interactable
-        column_header = self.get_visible_column_header(grid_cq, column_text_or_dataIndex)
+        column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
         actions = ActionChains(self._driver)
         actions.move_to_element(column_header).perform()
 
@@ -157,10 +189,7 @@ class GridHelper(HasReferencedJavaScript):
     class ColumnNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified column
         &#34;&#34;&#34;
-
-        _grid_cq = None
-        _column_text_or_dataIndex = None
-
+        
         def __init__(self, grid_cq, column_text_or_dataIndex, message=&#34;Failed to find column with text (or dataIndex) &#39;{column_text_or_dataIndex}&#39; on grid with CQ &#39;{grid_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
 
@@ -209,10 +238,10 @@ class GridHelper(HasReferencedJavaScript):
 <pre><code class="python">class GridHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with interacting with Ext grid panels
     &#34;&#34;&#34;
-    _GET_VISIBLE_COLUMN_HEADER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
-    _GET_VISIBLE_COLUMN_HEADER_TRIGGER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
 
-    _driver = None
+    # Class variables
+    _GET_COLUMN_HEADER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
+    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -220,13 +249,15 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+
+        # Instance variables
         self._driver = driver
 
         # Initialise our base class
         super().__init__(driver)
 
-    def get_visible_column_header(self, grid_cq, column_text_or_dataIndex):
-        &#34;&#34;&#34;Gets the element for the specified visible column header
+    def get_column_header(self, grid_cq, column_text_or_dataIndex):
+        &#34;&#34;&#34;Gets the element for the specified column header
 
         Args:
             grid_cq (str): The component query for the owning grid
@@ -236,7 +267,7 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_VISIBLE_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        script = self._GET_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
         column_header = self._driver.execute_script(script)
 
         if column_header:
@@ -245,42 +276,72 @@ class GridHelper(HasReferencedJavaScript):
             raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
 
     def is_column_visible(self, grid_cq, column_text_or_dataIndex):
-        &#34;&#34;&#34;Determines whether the specified column is visible
+        &#34;&#34;&#34;Determines whether the specified column is visible,
+        Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
 
         Returns:
-            True if the column was found and is visible, False otherwise.
+            True if the column is visible, False otherwise.
         &#34;&#34;&#34;
 
-        # Check grid can be found and is visible
-        ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
+        return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-        script = self._GET_VISIBLE_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
-        column_header = self._driver.execute_script(script)
+    def is_column_hidden(self, grid_cq, column_text_or_dataIndex):
+        &#34;&#34;&#34;Determines whether the specified column is hidden.
+        Throws a ColumnNotFoundException if the column does not exist.
 
-        return column_header != None
+        Args:
+            grid_cq (str): The component query for the owning grid
+            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+
+        Returns:
+            True if the column is hidden, False otherwise.
+        &#34;&#34;&#34;
+
+        return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
     def check_columns_are_visible(self, grid_cq, column_texts_or_dataIndexes):
         &#34;&#34;&#34;Checks that the specified columns are all visible on the specified grid.
-        
+        Throws a ColumnNotFoundException if the column does not exist.
+
         Args:
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
 
         Returns:
-            An array of columns that were not found or not visible, if any.
+            An array of columns that are not visible, if any.
         &#34;&#34;&#34;
-        columns_not_found_or_visible = []
+        columns_not_visible = []
 
         for column_text_or_dataIndex in column_texts_or_dataIndexes:
             is_visible = self.is_column_visible(grid_cq, column_text_or_dataIndex)
             if is_visible == False:
-                columns_not_found_or_visible.append(column_text_or_dataIndex)
+                columns_not_visible.append(column_text_or_dataIndex)
 
-        return columns_not_found_or_visible
+        return columns_not_visible
+
+    def check_columns_are_hidden(self, grid_cq, column_texts_or_dataIndexes):
+        &#34;&#34;&#34;Checks that the specified columns are all hidden on the specified grid.
+        Throws a ColumnNotFoundException if the column does not exist.
+
+        Args:
+            grid_cq (str): The component query for the owning grid
+            column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
+
+        Returns:
+            An array of columns that are not hidden, if any.
+        &#34;&#34;&#34;
+        column_not_hidden = []
+
+        for column_text_or_dataIndex in column_texts_or_dataIndexes:
+            is_hidden = self.is_column_hidden(grid_cq, column_text_or_dataIndex)
+            if is_hidden == False:
+                column_not_hidden.append(column_text_or_dataIndex)
+
+        return column_not_hidden
 
     def click_column_header(self, grid_cq, column_text_or_dataIndex):
         &#34;&#34;&#34;Clicks on the specified column header.
@@ -290,11 +351,11 @@ class GridHelper(HasReferencedJavaScript):
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
         &#34;&#34;&#34;
-        column_header = self.get_visible_column_header(grid_cq, column_text_or_dataIndex)
+        column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
         column_header.click()
 
-    def get_visible_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
-        &#34;&#34;&#34;Gets the element for the specified visible column header&#39;s trigger
+    def get_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
+        &#34;&#34;&#34;Gets the element for the specified column header&#39;s trigger
 
         Args:
             grid_cq (str): The component query for the owning grid
@@ -304,7 +365,7 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_VISIBLE_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
         column_header_trigger = self._driver.execute_script(script)
 
         if column_header_trigger:
@@ -320,7 +381,7 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
         &#34;&#34;&#34;
         # We need to move to the header before the trigger becomes interactable
-        column_header = self.get_visible_column_header(grid_cq, column_text_or_dataIndex)
+        column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
         actions = ActionChains(self._driver)
         actions.move_to_element(column_header).perform()
 
@@ -332,10 +393,7 @@ class GridHelper(HasReferencedJavaScript):
     class ColumnNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified column
         &#34;&#34;&#34;
-
-        _grid_cq = None
-        _column_text_or_dataIndex = None
-
+        
         def __init__(self, grid_cq, column_text_or_dataIndex, message=&#34;Failed to find column with text (or dataIndex) &#39;{column_text_or_dataIndex}&#39; on grid with CQ &#39;{grid_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
 
@@ -368,11 +426,12 @@ class GridHelper(HasReferencedJavaScript):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="pyseext.GridHelper.GridHelper.check_columns_are_visible"><code class="name flex">
-<span>def <span class="ident">check_columns_are_visible</span></span>(<span>self, grid_cq, column_texts_or_dataIndexes)</span>
+<dt id="pyseext.GridHelper.GridHelper.check_columns_are_hidden"><code class="name flex">
+<span>def <span class="ident">check_columns_are_hidden</span></span>(<span>self, grid_cq, column_texts_or_dataIndexes)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Checks that the specified columns are all visible on the specified grid.</p>
+<div class="desc"><p>Checks that the specified columns are all hidden on the specified grid.
+Throws a ColumnNotFoundException if the column does not exist.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -381,29 +440,70 @@ class GridHelper(HasReferencedJavaScript):
 <dd>An array containing the header text or dataIndex of the grid columns to check</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>An array of columns that were not found or not visible, if any.</p></div>
+<p>An array of columns that are not hidden, if any.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_columns_are_hidden(self, grid_cq, column_texts_or_dataIndexes):
+    &#34;&#34;&#34;Checks that the specified columns are all hidden on the specified grid.
+    Throws a ColumnNotFoundException if the column does not exist.
+
+    Args:
+        grid_cq (str): The component query for the owning grid
+        column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
+
+    Returns:
+        An array of columns that are not hidden, if any.
+    &#34;&#34;&#34;
+    column_not_hidden = []
+
+    for column_text_or_dataIndex in column_texts_or_dataIndexes:
+        is_hidden = self.is_column_hidden(grid_cq, column_text_or_dataIndex)
+        if is_hidden == False:
+            column_not_hidden.append(column_text_or_dataIndex)
+
+    return column_not_hidden</code></pre>
+</details>
+</dd>
+<dt id="pyseext.GridHelper.GridHelper.check_columns_are_visible"><code class="name flex">
+<span>def <span class="ident">check_columns_are_visible</span></span>(<span>self, grid_cq, column_texts_or_dataIndexes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks that the specified columns are all visible on the specified grid.
+Throws a ColumnNotFoundException if the column does not exist.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query for the owning grid</dd>
+<dt><strong><code>column_text_or_dataIndex</code></strong> :&ensp;<code>array</code></dt>
+<dd>An array containing the header text or dataIndex of the grid columns to check</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>An array of columns that are not visible, if any.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def check_columns_are_visible(self, grid_cq, column_texts_or_dataIndexes):
     &#34;&#34;&#34;Checks that the specified columns are all visible on the specified grid.
-    
+    Throws a ColumnNotFoundException if the column does not exist.
+
     Args:
         grid_cq (str): The component query for the owning grid
         column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
 
     Returns:
-        An array of columns that were not found or not visible, if any.
+        An array of columns that are not visible, if any.
     &#34;&#34;&#34;
-    columns_not_found_or_visible = []
+    columns_not_visible = []
 
     for column_text_or_dataIndex in column_texts_or_dataIndexes:
         is_visible = self.is_column_visible(grid_cq, column_text_or_dataIndex)
         if is_visible == False:
-            columns_not_found_or_visible.append(column_text_or_dataIndex)
+            columns_not_visible.append(column_text_or_dataIndex)
 
-    return columns_not_found_or_visible</code></pre>
+    return columns_not_visible</code></pre>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.click_column_header"><code class="name flex">
@@ -431,7 +531,7 @@ The column must be visible.</p>
         grid_cq (str): The component query for the owning grid
         column_text_or_dataIndex (str): The header text or dataIndex of the grid column
     &#34;&#34;&#34;
-    column_header = self.get_visible_column_header(grid_cq, column_text_or_dataIndex)
+    column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
     column_header.click()</code></pre>
 </details>
 </dd>
@@ -459,7 +559,7 @@ The column must be visible.</p>
         column_text_or_dataIndex (str): The header text or dataIndex of the grid column
     &#34;&#34;&#34;
     # We need to move to the header before the trigger becomes interactable
-    column_header = self.get_visible_column_header(grid_cq, column_text_or_dataIndex)
+    column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
     actions = ActionChains(self._driver)
     actions.move_to_element(column_header).perform()
 
@@ -469,11 +569,11 @@ The column must be visible.</p>
     actions.perform()</code></pre>
 </details>
 </dd>
-<dt id="pyseext.GridHelper.GridHelper.get_visible_column_header"><code class="name flex">
-<span>def <span class="ident">get_visible_column_header</span></span>(<span>self, grid_cq, column_text_or_dataIndex)</span>
+<dt id="pyseext.GridHelper.GridHelper.get_column_header"><code class="name flex">
+<span>def <span class="ident">get_column_header</span></span>(<span>self, grid_cq, column_text_or_dataIndex)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the element for the specified visible column header</p>
+<div class="desc"><p>Gets the element for the specified column header</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -485,8 +585,8 @@ The column must be visible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_visible_column_header(self, grid_cq, column_text_or_dataIndex):
-    &#34;&#34;&#34;Gets the element for the specified visible column header
+<pre><code class="python">def get_column_header(self, grid_cq, column_text_or_dataIndex):
+    &#34;&#34;&#34;Gets the element for the specified column header
 
     Args:
         grid_cq (str): The component query for the owning grid
@@ -496,7 +596,7 @@ The column must be visible.</p>
     # Check grid can be found and is visible
     ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
 
-    script = self._GET_VISIBLE_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+    script = self._GET_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
     column_header = self._driver.execute_script(script)
 
     if column_header:
@@ -505,11 +605,11 @@ The column must be visible.</p>
         raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.GridHelper.GridHelper.get_visible_column_header_trigger"><code class="name flex">
-<span>def <span class="ident">get_visible_column_header_trigger</span></span>(<span>self, grid_cq, column_text_or_dataIndex)</span>
+<dt id="pyseext.GridHelper.GridHelper.get_column_header_trigger"><code class="name flex">
+<span>def <span class="ident">get_column_header_trigger</span></span>(<span>self, grid_cq, column_text_or_dataIndex)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the element for the specified visible column header's trigger</p>
+<div class="desc"><p>Gets the element for the specified column header's trigger</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -521,8 +621,8 @@ The column must be visible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_visible_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
-    &#34;&#34;&#34;Gets the element for the specified visible column header&#39;s trigger
+<pre><code class="python">def get_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
+    &#34;&#34;&#34;Gets the element for the specified column header&#39;s trigger
 
     Args:
         grid_cq (str): The component query for the owning grid
@@ -532,7 +632,7 @@ The column must be visible.</p>
     # Check grid can be found and is visible
     ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
 
-    script = self._GET_VISIBLE_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+    script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
     column_header_trigger = self._driver.execute_script(script)
 
     if column_header_trigger:
@@ -541,11 +641,12 @@ The column must be visible.</p>
         raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.GridHelper.GridHelper.is_column_visible"><code class="name flex">
-<span>def <span class="ident">is_column_visible</span></span>(<span>self, grid_cq, column_text_or_dataIndex)</span>
+<dt id="pyseext.GridHelper.GridHelper.is_column_hidden"><code class="name flex">
+<span>def <span class="ident">is_column_hidden</span></span>(<span>self, grid_cq, column_text_or_dataIndex)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Determines whether the specified column is visible</p>
+<div class="desc"><p>Determines whether the specified column is hidden.
+Throws a ColumnNotFoundException if the column does not exist.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -554,29 +655,58 @@ The column must be visible.</p>
 <dd>The header text or dataIndex of the grid column</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>True if the column was found and is visible, False otherwise.</p></div>
+<p>True if the column is hidden, False otherwise.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_column_visible(self, grid_cq, column_text_or_dataIndex):
-    &#34;&#34;&#34;Determines whether the specified column is visible
+<pre><code class="python">def is_column_hidden(self, grid_cq, column_text_or_dataIndex):
+    &#34;&#34;&#34;Determines whether the specified column is hidden.
+    Throws a ColumnNotFoundException if the column does not exist.
 
     Args:
         grid_cq (str): The component query for the owning grid
         column_text_or_dataIndex (str): The header text or dataIndex of the grid column
 
     Returns:
-        True if the column was found and is visible, False otherwise.
+        True if the column is hidden, False otherwise.
     &#34;&#34;&#34;
 
-    # Check grid can be found and is visible
-    ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
+    return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()</code></pre>
+</details>
+</dd>
+<dt id="pyseext.GridHelper.GridHelper.is_column_visible"><code class="name flex">
+<span>def <span class="ident">is_column_visible</span></span>(<span>self, grid_cq, column_text_or_dataIndex)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determines whether the specified column is visible,
+Throws a ColumnNotFoundException if the column does not exist.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query for the owning grid</dd>
+<dt><strong><code>column_text_or_dataIndex</code></strong> :&ensp;<code>str</code></dt>
+<dd>The header text or dataIndex of the grid column</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the column is visible, False otherwise.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_column_visible(self, grid_cq, column_text_or_dataIndex):
+    &#34;&#34;&#34;Determines whether the specified column is visible,
+    Throws a ColumnNotFoundException if the column does not exist.
 
-    script = self._GET_VISIBLE_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
-    column_header = self._driver.execute_script(script)
+    Args:
+        grid_cq (str): The component query for the owning grid
+        column_text_or_dataIndex (str): The header text or dataIndex of the grid column
 
-    return column_header != None</code></pre>
+    Returns:
+        True if the column is visible, False otherwise.
+    &#34;&#34;&#34;
+
+    return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()</code></pre>
 </details>
 </dd>
 </dl>
@@ -609,11 +739,13 @@ The column must be visible.</p>
 <h4><code><a title="pyseext.GridHelper.GridHelper" href="#pyseext.GridHelper.GridHelper">GridHelper</a></code></h4>
 <ul class="">
 <li><code><a title="pyseext.GridHelper.GridHelper.ColumnNotFoundException" href="#pyseext.GridHelper.GridHelper.ColumnNotFoundException">ColumnNotFoundException</a></code></li>
+<li><code><a title="pyseext.GridHelper.GridHelper.check_columns_are_hidden" href="#pyseext.GridHelper.GridHelper.check_columns_are_hidden">check_columns_are_hidden</a></code></li>
 <li><code><a title="pyseext.GridHelper.GridHelper.check_columns_are_visible" href="#pyseext.GridHelper.GridHelper.check_columns_are_visible">check_columns_are_visible</a></code></li>
 <li><code><a title="pyseext.GridHelper.GridHelper.click_column_header" href="#pyseext.GridHelper.GridHelper.click_column_header">click_column_header</a></code></li>
 <li><code><a title="pyseext.GridHelper.GridHelper.click_column_header_trigger" href="#pyseext.GridHelper.GridHelper.click_column_header_trigger">click_column_header_trigger</a></code></li>
-<li><code><a title="pyseext.GridHelper.GridHelper.get_visible_column_header" href="#pyseext.GridHelper.GridHelper.get_visible_column_header">get_visible_column_header</a></code></li>
-<li><code><a title="pyseext.GridHelper.GridHelper.get_visible_column_header_trigger" href="#pyseext.GridHelper.GridHelper.get_visible_column_header_trigger">get_visible_column_header_trigger</a></code></li>
+<li><code><a title="pyseext.GridHelper.GridHelper.get_column_header" href="#pyseext.GridHelper.GridHelper.get_column_header">get_column_header</a></code></li>
+<li><code><a title="pyseext.GridHelper.GridHelper.get_column_header_trigger" href="#pyseext.GridHelper.GridHelper.get_column_header_trigger">get_column_header_trigger</a></code></li>
+<li><code><a title="pyseext.GridHelper.GridHelper.is_column_hidden" href="#pyseext.GridHelper.GridHelper.is_column_hidden">is_column_hidden</a></code></li>
 <li><code><a title="pyseext.GridHelper.GridHelper.is_column_visible" href="#pyseext.GridHelper.GridHelper.is_column_visible">is_column_visible</a></code></li>
 </ul>
 </li>

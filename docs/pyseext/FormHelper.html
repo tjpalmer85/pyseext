@@ -32,9 +32,8 @@ class FormHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with interacting with Ext form panels and forms
     &#34;&#34;&#34;
 
+    # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-
-    _driver = None
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -79,9 +78,6 @@ class FormHelper(HasReferencedJavaScript):
     class FieldNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
         &#34;&#34;&#34;
-
-        _form_cq = None
-        _field_name = None
 
         def __init__(self, form_cq, field_name, message=&#34;Failed to find field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -132,9 +128,8 @@ class FormHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with interacting with Ext form panels and forms
     &#34;&#34;&#34;
 
+    # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-
-    _driver = None
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -179,9 +174,6 @@ class FormHelper(HasReferencedJavaScript):
     class FieldNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
         &#34;&#34;&#34;
-
-        _form_cq = None
-        _field_name = None
 
         def __init__(self, form_cq, field_name, message=&#34;Failed to find field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
