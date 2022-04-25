@@ -6,10 +6,10 @@ from pyseext.ComponentQuery import ComponentQuery
 class GridHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext grid panels
     """
+
+    # Class variables
     _GET_COLUMN_HEADER_TEMPLATE = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_dataIndex}')"
     _GET_COLUMN_HEADER_TRIGGER_TEMPLATE = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_dataIndex}')"
-
-    _driver = None
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -17,6 +17,8 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+
+        # Instance variables
         self._driver = driver
 
         # Initialise our base class
@@ -159,10 +161,7 @@ class GridHelper(HasReferencedJavaScript):
     class ColumnNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified column
         """
-
-        _grid_cq = None
-        _column_text_or_dataIndex = None
-
+        
         def __init__(self, grid_cq, column_text_or_dataIndex, message="Failed to find column with text (or dataIndex) '{column_text_or_dataIndex}' on grid with CQ '{grid_cq}'."):
             """Initialises an instance of this exception
 

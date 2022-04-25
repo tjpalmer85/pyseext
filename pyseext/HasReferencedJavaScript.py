@@ -5,6 +5,7 @@ class HasReferencedJavaScript:
     """Base class to be used by our test classes that have JavaScript that they need to load
     """
 
+    # Class variables
     _SCRIPT_LOADED_TEST_TEMPLATE = "return Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
     _SCRIPT_LOAD_TIMEOUT = 2
 

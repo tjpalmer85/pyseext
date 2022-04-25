@@ -6,10 +6,9 @@ class ButtonHelper:
     """A class to help with interacting with Ext buttons
     """
 
+    # Class variables
     _ENABLED_BUTTON_TEMPLATE = 'button[text="{text}"][disabled=false]'
     _DISABLED_BUTTON_TEMPLATE = 'button[text="{text}"][disabled=true]'
-
-    _cq = None
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -17,6 +16,8 @@ class ButtonHelper:
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+
+        # Instance variables
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 

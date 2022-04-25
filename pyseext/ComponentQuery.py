@@ -6,10 +6,9 @@ class ComponentQuery(HasReferencedJavaScript):
     """A class to help with using Ext.ComponentQuery
     """
 
+    # Class variables
     _QUERY_TEMPLATE = "return globalThis.PySeExt.ComponentQuery.query('{cq}')"
     _QUERY_TEMPLATE_WITH_ROOT = "return globalThis.PySeExt.ComponentQuery.query('{cq}', '{root_id}')"
-
-    _driver = None
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -17,6 +16,8 @@ class ComponentQuery(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+
+        # Instance variables
         self._driver = driver
 
         # Initialise our base class
@@ -106,9 +107,6 @@ class ComponentQuery(HasReferencedJavaScript):
     class QueryMatchedMultipleElements(Exception):
         """Exception class thrown when expecting a single component query match and get multiple
         """
-
-        _cq = None
-        _count = None
 
         def __init__(self, cq, count, message="Expected a single match from ComponentQuery '{cq}' but got {count}."):
             """Initialises an instance of this exception

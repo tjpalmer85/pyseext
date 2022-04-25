@@ -4,14 +4,14 @@ class Ext:
     """A class to help with using Ext
     """
 
-    _driver = None
-
     def __init__(self, driver):
         """Initialises an instance of this class.
 
         Args:
             driver (selenium.webdriver): The webdriver to use.
         """
+
+        # Instance variables
         self._driver = driver
 
     def wait_for_dom_ready(self, timeout=30):

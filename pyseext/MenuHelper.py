@@ -6,9 +6,8 @@ class MenuHelper:
     """A class to help with interacting with Ext menus and menu items
     """
 
+    # Class variables
     _MENU_ITEM_TEMPLATE = 'menuitem[text="{text}"][disabled=false]'
-
-    _cq = None
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -16,6 +15,8 @@ class MenuHelper:
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+
+        # Instance variables
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
