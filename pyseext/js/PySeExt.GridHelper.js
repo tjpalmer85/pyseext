@@ -9,7 +9,7 @@ globalThis.PySeExt.GridHelper = {
      */
     getColumnHeader: function(gridSelector, columnTextOrDataIndex) {
         var me = this,
-            columnHeader = me.__findVisibleColumnHeader(gridSelector, columnTextOrDataIndex);
+            columnHeader = me.__findColumnHeader(gridSelector, columnTextOrDataIndex);
 
         return columnHeader && columnHeader.getEl().dom;
     },
@@ -22,7 +22,7 @@ globalThis.PySeExt.GridHelper = {
      */
      getColumnHeaderTrigger: function(gridSelector, columnTextOrDataIndex) {
         var me = this,
-            columnHeader = me.__findVisibleColumnHeader(gridSelector, columnTextOrDataIndex),
+            columnHeader = me.__findColumnHeader(gridSelector, columnTextOrDataIndex),
             columnHeaderTrigger;
 
         if (columnHeader) {
@@ -33,38 +33,39 @@ globalThis.PySeExt.GridHelper = {
     },
 
     /**
-     * Finds on a visible column header on a grid.
+     * Finds on a column header on a grid.
      * @private
      * @param  {String} gridSelector          The selector for the grid.
      * @param  {String} columnTextOrDataIndex The text or dataIndex of the column to find.
      * @return {Ext.Component}                The column header component
      */
-    __findVisibleColumnHeader: function(gridSelector, columnTextOrDataIndex) {
+     __findColumnHeader: function(gridSelector, columnTextOrDataIndex) {
         var me = this,
             grid,
-            visibleColumns,
+            dataColumns,
             i,
-            visibleColumn,
+            dataColumn,
             columnHeader;
 
         components = Ext.ComponentQuery.query(gridSelector);
         if (components && components.length) {
             grid = components[0];
-            visibleColumns = grid.headerCt.gridVisibleColumns
+
+            dataColumns = grid.headerCt.gridDataColumns
 
             // Find column header
-            for (i = 0; i < visibleColumns.length; i += 1) {
-                visibleColumn = visibleColumns[i];
+            for (i = 0; i < dataColumns.length; i += 1) {
+                dataColumn = dataColumns[i];
 
-                if ((visibleColumn.dataIndex === columnTextOrDataIndex) ||
-                    (visibleColumn.text === columnTextOrDataIndex)) {
+                if ((dataColumn.dataIndex === columnTextOrDataIndex) ||
+                    (dataColumn.text === columnTextOrDataIndex)) {
 
-                    columnHeader = visibleColumn;
+                    columnHeader = dataColumn;
                     break;
                 }
             }
         }
 
         return columnHeader;
-    }
+    }    
 };
