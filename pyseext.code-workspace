@@ -10,8 +10,7 @@
 	"extensions": {
 		"recommendations": [
 			"ms-python.python",
-			"njpwerner.autodocstring",
-			"trond-snekvik.simple-rst"
+			"njpwerner.autodocstring"
 		]
 	}
 }
