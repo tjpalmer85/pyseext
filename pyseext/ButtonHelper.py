@@ -21,6 +21,21 @@ class ButtonHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
+    def click_button(self, cq, root_id=None):
+        """Finds a button using the supplied component query and clicks it.
+
+        Args:
+            cq (str): The component query to find the button.
+            root_id (str, optional): The id of the container within which to perform the query.
+                If omitted, all components within the document are included in the search.
+        """
+        button = self._cq.wait_for_single_query_visible(cq, root_id)
+
+        # Rather than call click, move mouse to button and click...
+        self._action_chains.move_to_element(button)
+        self._action_chains.click()
+        self._action_chains.perform()
+
     def click_button_by_text(self, text, root_id=None):
         """Finds a visible, enabled button with the specified text and clicks it.
 
@@ -29,12 +44,7 @@ class ButtonHelper:
             root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         """
-        button = self._cq.wait_for_single_query_visible(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
-
-        # Rather than call click, move mouse to button and click...
-        self._action_chains.move_to_element(button)
-        self._action_chains.click()
-        self._action_chains.perform()
+        self.click_button(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
     def check_button_enabled(self, text, root_id=None):
         """Checks that we can find an enabled button with the specified text.
