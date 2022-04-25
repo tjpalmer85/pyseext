@@ -69,7 +69,7 @@ class ComponentQuery(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         results = self.query(cq, root_id)
         if len(results) > 1:
-            raise ComponentQuery.QueryMatchedMultipleElements(cq, len(results))
+            raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
         return results[0]
 
@@ -104,7 +104,7 @@ class ComponentQuery(HasReferencedJavaScript):
             results = ComponentQuery(driver).query(self._cq)
             return results != None and len(results) > 0
 
-    class QueryMatchedMultipleElements(Exception):
+    class QueryMatchedMultipleElementsException(Exception):
         """Exception class thrown when expecting a single component query match and get multiple
         """
 
