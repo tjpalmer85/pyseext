@@ -62,8 +62,8 @@ class FormHelper(HasReferencedJavaScript):
             field_values (dict): Dictionary containing the 'name' and 'value' of the fields.
                                  The values can be strings, numbers or an object containing
                                  the value and additionally:
-                                  - delay (int): Number of seconds to delay after setting a value
-                                  - tab_off (bool): Indicates whether to tab off the field after typing.
+                                  - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
+                                  - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
         """
         if not type(field_values) is dict:
             raise TypeError("Parameter 'field_values' is not of type 'dict'")
