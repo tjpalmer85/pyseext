@@ -38,11 +38,11 @@ class HasReferencedJavaScript:
     def get_async_script_content(self, script, callback_parameter_name='callback'):
         """Builds some async script content, to call some JavaScript that takes a callback function.
 
-        Note, we cannot get a value back from the JavaScript, but we can get notified of completion.
+        Note, we cannot get a value back from the JavaScript (that I know of), but we can get notified of completion.
 
         Args:
-            script (str): The script identifying the asynchronous JavaScript being called.
-            callback_parameter_name (str, optional): The name of the callback parmeter to usef or the script.
+            script (str): The script containing the asynchronous JavaScript being called.
+            callback_parameter_name (str, optional): The name of the callback parmeter to use for the script.
                                                      Defaults to 'callback'.
 
         Returns:
