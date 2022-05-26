@@ -40,6 +40,7 @@ class FormHelper(HasReferencedJavaScript):
             selenium.webdriver.remote.webelement: The field's input element DOM element, or None if not found.
         """
         script = self._FIND_FIELD_INPUT_ELEMENT_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
     def get_field_xtype(self, form_cq, name):
@@ -53,6 +54,7 @@ class FormHelper(HasReferencedJavaScript):
             str: The xtype of the field, or None if not found.
         """
         script = self._GET_FIELD_XTYPE_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
     def set_form_values(self, form_cq, field_values):
@@ -133,6 +135,7 @@ class FormHelper(HasReferencedJavaScript):
             checked (bool, optional): The checked value for the checkbox. Defaults to True.
         """
         script = self._SET_CHECKBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, checked=str(checked).lower())
+        self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
     def set_field_numeric_value(self, form_cq, field_name, value):
@@ -144,6 +147,7 @@ class FormHelper(HasReferencedJavaScript):
             value (int): The value for the field.
         """
         script = self._SET_FIELD_NUMERIC_VALUE.format(form_cq=form_cq, name=field_name, value=value)
+        self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
     def type_into_element(self, element, text, delay=None, tab_off=False):

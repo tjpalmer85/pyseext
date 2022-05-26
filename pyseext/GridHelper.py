@@ -7,9 +7,14 @@ class GridHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext grid panels
     """
 
-    # Class variables
+    # Public class properties
+    GRID_CQ = "gridpanel"
+
+    # Private class variables
     _GET_COLUMN_HEADER_TEMPLATE = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_dataIndex}')"
     _GET_COLUMN_HEADER_TRIGGER_TEMPLATE = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_dataIndex}')"
+    _CLEAR_SELECTION_TEMPLATE = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
+    _GET_ROW_TEMPLATE = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -20,6 +25,8 @@ class GridHelper(HasReferencedJavaScript):
 
         # Instance variables
         self._driver = driver
+        self._cq = ComponentQuery(driver)
+        self._action_chains = ActionChains(driver)
 
         # Initialise our base class
         super().__init__(driver)
@@ -33,9 +40,10 @@ class GridHelper(HasReferencedJavaScript):
         """
 
         # Check grid can be found and is visible
-        ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
+        self._cq.wait_for_single_query_visible(grid_cq)
 
         script = self._GET_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        self.ensure_javascript_loaded()
         column_header = self._driver.execute_script(script)
 
         if column_header:
@@ -54,7 +62,6 @@ class GridHelper(HasReferencedJavaScript):
         Returns:
             True if the column is visible, False otherwise.
         """
-
         return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
     def is_column_hidden(self, grid_cq, column_text_or_dataIndex):
@@ -68,7 +75,6 @@ class GridHelper(HasReferencedJavaScript):
         Returns:
             True if the column is hidden, False otherwise.
         """
-
         return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
     def check_columns_are_visible(self, grid_cq, column_texts_or_dataIndexes):
@@ -128,12 +134,16 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+
+        Returns:
+            selenium.webdriver.remote.webelement: The DOM element for the column header trigger.
         """
 
         # Check grid can be found and is visible
-        ComponentQuery(self._driver).wait_for_single_query_visible(grid_cq)
+        self._cq.wait_for_single_query_visible(grid_cq)
 
         script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        self.ensure_javascript_loaded()
         column_header_trigger = self._driver.execute_script(script)
 
         if column_header_trigger:
@@ -150,18 +160,73 @@ class GridHelper(HasReferencedJavaScript):
         """
         # We need to move to the header before the trigger becomes interactable
         column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
-        actions = ActionChains(self._driver)
-        actions.move_to_element(column_header).perform()
+        self._action_chains.move_to_element(column_header).perform()
 
         column_header_trigger = self.get_visible_column_header_trigger(grid_cq, column_text_or_dataIndex)
-        actions.move_to_element(column_header_trigger)
-        actions.click()
-        actions.perform()
+        self._action_chains.move_to_element(column_header_trigger)
+        self._action_chains.click()
+        self._action_chains.perform()
+
+    def clear_selection(self, grid_cq):
+        """ Clears the current selection.
+
+        Useful if want to quickly refresh a grid without having to process all the events.
+        This will only work if the grid supports deselection.
+
+        Args:
+            grid_cq (str): The component query for the grid
+        """
+        # Check grid can be found and is visible
+        self._cq.wait_for_single_query_visible(grid_cq)
+
+        script = self._CLEAR_SELECTION_TEMPLATE.format(grid_cq=grid_cq)
+        self.ensure_javascript_loaded()
+        self._driver.execute_script(script)
+
+    def get_row(self, grid_cq, row_data):
+        """ Gets the element for the row with the specified data or index in the grid.
+
+        The grid must be visible.
+
+        Args:
+            grid_cq (str): The component query for the grid
+            row_data (int | dict): The row data or index for the record to be found.
+
+        Returns:
+            selenium.webdriver.remote.webelement: The DOM element for the row.
+        """
+        # Check grid can be found and is visible
+        self._cq.wait_for_single_query_visible(grid_cq)
+
+        script = self._GET_ROW_TEMPLATE.format(grid_cq=grid_cq, row_data=row_data)
+        self.ensure_javascript_loaded()
+        row = self._driver.execute_script(script)
+
+        if row:
+            return row
+        else:
+            raise GridHelper.RowNotFoundException(grid_cq, row_data)
+
+    def click_row(self, grid_cq, row_data):
+        """ Clicks the row with the specified data or index in the grid.
+
+        The grid must be visible.
+
+        Args:
+            grid_cq (str): The component query for the grid
+            row_data (int | dict): The row data or index for the record to be found and clicked.
+        """
+        # Check grid can be found and is visible
+        row = self.get_row(grid_cq, row_data)
+
+        self._action_chains.move_to_element(row)
+        self._action_chains.click()
+        self._action_chains.perform()
 
     class ColumnNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified column
         """
-        
+
         def __init__(self, grid_cq, column_text_or_dataIndex, message="Failed to find column with text (or dataIndex) '{column_text_or_dataIndex}' on grid with CQ '{grid_cq}'."):
             """Initialises an instance of this exception
 
@@ -180,3 +245,26 @@ class GridHelper(HasReferencedJavaScript):
             """Returns a string representation of this exception
             """
             return self.message.format(column_text_or_dataIndex=self._column_text_or_dataIndex, grid_cq=self._grid_cq)
+
+    class RowNotFoundException(Exception):
+        """Exception class thrown when we failed to find the specified row
+        """
+
+        def __init__(self, grid_cq, row_data, message="Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'."):
+            """Initialises an instance of this exception
+
+            Args:
+                grid_cq (str): The CQ used to find the grid
+                row_data (int | dict): The row data or index for the record
+                message (str, optional): The exception message. Defaults to "Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'.".
+            """
+            self.message = message
+            self._grid_cq = grid_cq
+            self._row_data = row_data
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            """Returns a string representation of this exception
+            """
+            return self.message.format(row_data=self._row_data, grid_cq=self._grid_cq)

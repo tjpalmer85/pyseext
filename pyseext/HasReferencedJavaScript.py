@@ -17,10 +17,18 @@ class HasReferencedJavaScript:
             driver (selenium.webdriver): The webdriver to use
         """
 
+        self._driver = driver
+        self.ensure_javascript_loaded()
+
+    def ensure_javascript_loaded(self):
+        """Ensures that our JavaScript has been loaded into the DOM.
+
+        If it hasn't then it is loaded.
+        """
         class_name = type(self).__name__
 
         # If our JavaScript has not been loaded then load it now
-        if not driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
+        if not self._driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
             js_path = './js/PySeExt.{class_name}.js'.format(class_name=class_name)
             print('Loading script: ', js_path)
 
@@ -30,10 +38,10 @@ class HasReferencedJavaScript:
             js_path = source_dir.joinpath(js_path)
             print('Full path: ', js_path)
 
-            driver.execute_script(open(js_path).read())
+            self._driver.execute_script(open(js_path).read())
 
             # Wait for it to the loaded
-            WebDriverWait(driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
+            WebDriverWait(self._driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
 
     def get_async_script_content(self, script, callback_parameter_name='callback'):
         """Builds some async script content, to call some JavaScript that takes a callback function.

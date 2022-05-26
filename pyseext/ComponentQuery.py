@@ -40,6 +40,7 @@ class ComponentQuery(HasReferencedJavaScript):
         else:
             script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, root_id=root_id)
 
+        self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
     def wait_for_query(self, cq, root_id=None, timeout=3):

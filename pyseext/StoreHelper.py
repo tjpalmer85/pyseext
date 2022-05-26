@@ -38,6 +38,7 @@ class StoreHelper(HasReferencedJavaScript):
         print("Resetting loadCount on store owned by '{store_holder_cq}'".format(store_holder_cq=store_holder_cq))
 
         script = self._RESET_STORE_LOAD_COUNT_TEMPLATE.format(store_holder_cq=store_holder_cq)
+        self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
     def wait_for_store_loaded(self, store_holder_cq):
@@ -52,6 +53,7 @@ class StoreHelper(HasReferencedJavaScript):
         print("Waiting for store owned by '{store_holder_cq}' to load".format(store_holder_cq=store_holder_cq))
 
         async_script = self.get_async_script_content(self._WAIT_FOR_STORE_LOADED_TEMPLATE).format(store_holder_cq=store_holder_cq)
+        self.ensure_javascript_loaded()
         self._driver.execute_async_script(async_script)
 
         print("Store owned by '{store_holder_cq}' loaded".format(store_holder_cq=store_holder_cq))

@@ -9,6 +9,7 @@ class ButtonHelper:
     # Class variables
     _ENABLED_BUTTON_TEMPLATE = 'button[text="{text}"][disabled=false]'
     _DISABLED_BUTTON_TEMPLATE = 'button[text="{text}"][disabled=true]'
+    _MESSAGEBOX_BUTTON_TEMPLATE = 'messagebox{{isVisible(true)}} button[text="{text}"]'
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -64,4 +65,14 @@ class ButtonHelper:
             root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         """
-        self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)        
+        self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)
+
+    def click_button_on_messagebox(self, text='OK'):
+        """Clicks a button on a messagebox.
+
+        The messagebox must be visible.
+
+        Args:
+            text (str, optional): The text of the button to click. Defaults to 'OK'.
+        """
+        self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))
