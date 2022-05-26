@@ -8,6 +8,7 @@ class HasReferencedJavaScript:
     # Class variables
     _SCRIPT_LOADED_TEST_TEMPLATE = "return Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
     _SCRIPT_LOAD_TIMEOUT = 2
+    _ASYNC_SCRIPT_TEMPLATE = "var {callback_parameter_name} = arguments[arguments.length - 1]; {script}"
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -33,6 +34,21 @@ class HasReferencedJavaScript:
 
             # Wait for it to the loaded
             WebDriverWait(driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
+
+    def get_async_script_content(self, script, callback_parameter_name='callback'):
+        """Builds some async script content, to call some JavaScript that takes a callback function.
+
+        Note, we cannot get a value back from the JavaScript, but we can get notified of completion.
+
+        Args:
+            script (str): The script identifying the asynchronous JavaScript being called.
+            callback_parameter_name (str, optional): The name of the callback parmeter to usef or the script.
+                                                     Defaults to 'callback'.
+
+        Returns:
+            str: The script, prefixed with some code that captures the callback passes from the web driver.
+        """
+        return self._ASYNC_SCRIPT_TEMPLATE.format(callback_parameter_name=callback_parameter_name, script=script)
 
     class JavaScriptLoadedExpectation():
         """ An expectation for checking that our JavaScript has loaded
