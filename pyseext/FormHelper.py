@@ -60,21 +60,25 @@ class FormHelper(HasReferencedJavaScript):
 
         Args:
             field_values (dict): Dictionary containing the 'name' and 'value' of the fields.
-                                 The values can be strings, numbers or an object containing
-                                 the value and additionally:
+                                 The values can be strings, numbers or an object containing:
+                                  - value (Any): The value for the field
                                   - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
                                   - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
         """
         if not type(field_values) is dict:
             raise TypeError("Parameter 'field_values' is not of type 'dict'")
 
-        def get_field_value(value):
-            if isinstance(value, dict):
-                return value.get('value')
-            else:
-                return value
+        def get_field_config_member(value, member, default=None):
+            """Gets the member from a field config.
 
-        def get_field_member(value, member, default=None):
+            Args:
+                value (Any): The value or value config for the field.
+                member (str): The member we're after.
+                default (Any, optional): The default to return if not found. Defaults to None.
+
+            Returns:
+                Any: The value of the config, or the default if not found.
+            """
             if isinstance(value, dict):
                 return value.get(member, default)
             else:
@@ -85,9 +89,11 @@ class FormHelper(HasReferencedJavaScript):
 
             if field_xtype:
                 # Field found!
-                field_value = get_field_value(field_values[field_name])
-                delay = get_field_member(field_values[field_name], 'delay')
-                tab_off = get_field_member(field_values[field_name], 'tab_off', False)
+                value_or_config = field_values[field_name]
+
+                field_value = get_field_config_member(value_or_config, 'value', value_or_config)
+                delay = get_field_config_member(value_or_config, 'delay')
+                tab_off = get_field_config_member(value_or_config, 'tab_off', False)
 
                 # Now need to set it's value
                 if (field_xtype.endswith('textfield') or

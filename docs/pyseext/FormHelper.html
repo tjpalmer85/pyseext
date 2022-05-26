@@ -26,7 +26,13 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+<pre><code class="python">import random
+import time
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+
+from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.ButtonHelper import ButtonHelper
 
 class FormHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with interacting with Ext form panels and forms
@@ -34,6 +40,9 @@ class FormHelper(HasReferencedJavaScript):
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
+    _GET_FIELD_XTYPE_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.getFieldXType(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
+    _SET_CHECKBOX_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.setCheckboxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {checked})&#34;
+    _SET_FIELD_NUMERIC_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.setFieldNumericValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -42,6 +51,8 @@ class FormHelper(HasReferencedJavaScript):
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
         self._driver = driver
+        self._button_helper = ButtonHelper(driver)
+        self._action_chains = ActionChains(driver)
 
         # Initialise our base class
         super().__init__(driver)
@@ -59,21 +70,139 @@ class FormHelper(HasReferencedJavaScript):
         script = self._FIND_FIELD_INPUT_ELEMENT_TEMPLATE.format(form_cq=form_cq, name=name)
         return self._driver.execute_script(script)
 
+    def get_field_xtype(self, form_cq, name):
+        &#34;&#34;&#34;Attempts to get the xtype of a field by name from the specified form panel
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            str: The xtype of the field, or None if not found.
+        &#34;&#34;&#34;
+        script = self._GET_FIELD_XTYPE_TEMPLATE.format(form_cq=form_cq, name=name)
+        return self._driver.execute_script(script)
+
     def set_form_values(self, form_cq, field_values):
         &#34;&#34;&#34;Sets the values on the specified form panel
 
         Args:
             field_values (dict): Dictionary containing the &#39;name&#39; and &#39;value&#39; of the fields.
+                                 The values can be strings, numbers or an object containing:
+                                  - value (str|int): The value for the field
+                                  - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
+                                  - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
         &#34;&#34;&#34;
         if not type(field_values) is dict:
             raise TypeError(&#34;Parameter &#39;field_values&#39; is not of type &#39;dict&#39;&#34;)
 
+        def get_field_config_member(value, member, default=None):
+            &#34;&#34;&#34;Gets the member from a field config.
+
+            Args:
+                value (str|int|dict): The value or value config for the field.
+                member (str): The member we&#39;re after.
+                default (str|int, optional): The default to return if not found. Defaults to None.
+
+            Returns:
+                str|int: The value of the config, or the default if not found.
+            &#34;&#34;&#34;
+            if isinstance(value, dict):
+                return value.get(member, default)
+            else:
+                return default
+
         for field_name in field_values.keys():
-            field = self.find_field_input_element(form_cq, field_name)
-            if field:
-                field.send_keys(field_values[field_name])
+            field_xtype = self.get_field_xtype(form_cq, field_name)
+
+            if field_xtype:
+                # Field found!
+                value_or_config = field_values[field_name]
+
+                field_value = get_field_config_member(value_or_config, &#39;value&#39;, value_or_config)
+                delay = get_field_config_member(value_or_config, &#39;delay&#39;)
+                tab_off = get_field_config_member(value_or_config, &#39;tab_off&#39;, False)
+
+                # Now need to set it&#39;s value
+                if (field_xtype.endswith(&#39;textfield&#39;) or
+                    field_xtype.endswith(&#39;number&#39;) or
+                    field_xtype.endswith(&#39;datefield&#39;) or
+                    ((field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)) and
+                      isinstance(field_value, str))):
+                    # Field can be typed into
+                    field = self.find_field_input_element(form_cq, field_name)
+                    self.type_into_element(field, field_value, delay, tab_off)
+                elif field_xtype.endswith(&#39;checkbox&#39;):
+                    self.set_checkbox_value(form_cq, field_name, field_value)
+                elif (field_xtype.endswith(&#39;combo&#39;) or
+                    field_xtype.endswith(&#39;combobox&#39;)):
+                    # We want to directly set the value on the combo rather than type it in
+                    self.set_field_numeric_value(form_cq, field_name, field_value)
+                else:
+                    raise FormHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
             else:
                 raise FormHelper.FieldNotFoundException(form_cq, field_name)
+
+    def submit_by_button(self, form_cq, text = &#39;Ok&#39;):
+        &#34;&#34;&#34;Submits a form by clicking on it&#39;s submit button.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel to submit.
+            text (str, optional): The text on the submit button. Defaults to &#39;Ok&#39;.
+        &#34;&#34;&#34;
+        self._button_helper.click_button_by_text(text, form_cq)
+
+    def set_checkbox_value(self, form_cq, field_name, checked=True):
+        &#34;&#34;&#34;Sets the checked value for a checkbox.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+            checked (bool, optional): The checked value for the checkbox. Defaults to True.
+        &#34;&#34;&#34;
+        script = self._SET_CHECKBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, checked=str(checked).lower())
+        return self._driver.execute_script(script)
+
+    def set_field_numeric_value(self, form_cq, field_name, value):
+        &#34;&#34;&#34;Sets the value for a field to a numeric value.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+            value (int): The value for the field.
+        &#34;&#34;&#34;
+        script = self._SET_FIELD_NUMERIC_VALUE.format(form_cq=form_cq, name=field_name, value=value)
+        return self._driver.execute_script(script)
+
+    def type_into_element(self, element, text, delay=None, tab_off=False):
+        &#34;&#34;&#34;Types into an input element in a more realistic manner.
+
+        Args:
+            element (selenium.webdriver.remote.webelement): The element to type into.
+            text (str): The text to type.
+            delay (int): The number of seconds to delay after typing.
+            tab_off (bool): Indicates whether to tab off the field after typing, and delay.
+        &#34;&#34;&#34;
+        # Ensure text really is a string
+        text = str(text)
+
+        # First move to and click on element to give it focus
+        self._action_chains.move_to_element(element)
+        self._action_chains.click()
+        self._action_chains.perform()
+
+        # Now type each character
+        for character in text:
+            self._action_chains.send_keys(character)
+            self._action_chains.perform()
+            time.sleep(random.uniform(0.0001, 0.002))
+
+        if delay:
+            time.sleep(delay)
+
+        if tab_off:
+            self._action_chains.send_keys(Keys.TAB)
+            self._action_chains.perform()
 
     class FieldNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
@@ -96,7 +225,33 @@ class FormHelper(HasReferencedJavaScript):
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception
             &#34;&#34;&#34;
-            return self.message.format(field_name=self._field_name, form_cq=self._form_cq)</code></pre>
+            return self.message.format(field_name=self._field_name, form_cq=self._form_cq)
+
+    class UnsupportedFieldXTypeException(Exception):
+        &#34;&#34;&#34;Exception class thrown when we have been asked to perform an action that is not
+        supported for the given field xtype.
+        &#34;&#34;&#34;
+
+        def __init__(self, form_cq, field_name, xtype, message=&#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                form_cq (str): The CQ used to find the form
+                field_name (str): The name of the field
+                xtype (str): The xtype of the field.
+                message (str, optional): The exception message. Defaults to &#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;
+            &#34;&#34;&#34;
+            self.message = message
+            self._form_cq = form_cq
+            self._field_name = field_name
+            self._xtype = xtype
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception
+            &#34;&#34;&#34;
+            return self.message.format(field_name=self._field_name, form_cq=self._form_cq, xtype=self._xtype)</code></pre>
 </details>
 </section>
 <section>
@@ -130,6 +285,9 @@ class FormHelper(HasReferencedJavaScript):
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
+    _GET_FIELD_XTYPE_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.getFieldXType(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
+    _SET_CHECKBOX_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.setCheckboxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {checked})&#34;
+    _SET_FIELD_NUMERIC_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.FormHelper.setFieldNumericValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -138,6 +296,8 @@ class FormHelper(HasReferencedJavaScript):
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
         self._driver = driver
+        self._button_helper = ButtonHelper(driver)
+        self._action_chains = ActionChains(driver)
 
         # Initialise our base class
         super().__init__(driver)
@@ -155,21 +315,139 @@ class FormHelper(HasReferencedJavaScript):
         script = self._FIND_FIELD_INPUT_ELEMENT_TEMPLATE.format(form_cq=form_cq, name=name)
         return self._driver.execute_script(script)
 
+    def get_field_xtype(self, form_cq, name):
+        &#34;&#34;&#34;Attempts to get the xtype of a field by name from the specified form panel
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            str: The xtype of the field, or None if not found.
+        &#34;&#34;&#34;
+        script = self._GET_FIELD_XTYPE_TEMPLATE.format(form_cq=form_cq, name=name)
+        return self._driver.execute_script(script)
+
     def set_form_values(self, form_cq, field_values):
         &#34;&#34;&#34;Sets the values on the specified form panel
 
         Args:
             field_values (dict): Dictionary containing the &#39;name&#39; and &#39;value&#39; of the fields.
+                                 The values can be strings, numbers or an object containing:
+                                  - value (str|int): The value for the field
+                                  - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
+                                  - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
         &#34;&#34;&#34;
         if not type(field_values) is dict:
             raise TypeError(&#34;Parameter &#39;field_values&#39; is not of type &#39;dict&#39;&#34;)
 
+        def get_field_config_member(value, member, default=None):
+            &#34;&#34;&#34;Gets the member from a field config.
+
+            Args:
+                value (str|int|dict): The value or value config for the field.
+                member (str): The member we&#39;re after.
+                default (str|int, optional): The default to return if not found. Defaults to None.
+
+            Returns:
+                str|int: The value of the config, or the default if not found.
+            &#34;&#34;&#34;
+            if isinstance(value, dict):
+                return value.get(member, default)
+            else:
+                return default
+
         for field_name in field_values.keys():
-            field = self.find_field_input_element(form_cq, field_name)
-            if field:
-                field.send_keys(field_values[field_name])
+            field_xtype = self.get_field_xtype(form_cq, field_name)
+
+            if field_xtype:
+                # Field found!
+                value_or_config = field_values[field_name]
+
+                field_value = get_field_config_member(value_or_config, &#39;value&#39;, value_or_config)
+                delay = get_field_config_member(value_or_config, &#39;delay&#39;)
+                tab_off = get_field_config_member(value_or_config, &#39;tab_off&#39;, False)
+
+                # Now need to set it&#39;s value
+                if (field_xtype.endswith(&#39;textfield&#39;) or
+                    field_xtype.endswith(&#39;number&#39;) or
+                    field_xtype.endswith(&#39;datefield&#39;) or
+                    ((field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)) and
+                      isinstance(field_value, str))):
+                    # Field can be typed into
+                    field = self.find_field_input_element(form_cq, field_name)
+                    self.type_into_element(field, field_value, delay, tab_off)
+                elif field_xtype.endswith(&#39;checkbox&#39;):
+                    self.set_checkbox_value(form_cq, field_name, field_value)
+                elif (field_xtype.endswith(&#39;combo&#39;) or
+                    field_xtype.endswith(&#39;combobox&#39;)):
+                    # We want to directly set the value on the combo rather than type it in
+                    self.set_field_numeric_value(form_cq, field_name, field_value)
+                else:
+                    raise FormHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
             else:
                 raise FormHelper.FieldNotFoundException(form_cq, field_name)
+
+    def submit_by_button(self, form_cq, text = &#39;Ok&#39;):
+        &#34;&#34;&#34;Submits a form by clicking on it&#39;s submit button.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel to submit.
+            text (str, optional): The text on the submit button. Defaults to &#39;Ok&#39;.
+        &#34;&#34;&#34;
+        self._button_helper.click_button_by_text(text, form_cq)
+
+    def set_checkbox_value(self, form_cq, field_name, checked=True):
+        &#34;&#34;&#34;Sets the checked value for a checkbox.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+            checked (bool, optional): The checked value for the checkbox. Defaults to True.
+        &#34;&#34;&#34;
+        script = self._SET_CHECKBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, checked=str(checked).lower())
+        return self._driver.execute_script(script)
+
+    def set_field_numeric_value(self, form_cq, field_name, value):
+        &#34;&#34;&#34;Sets the value for a field to a numeric value.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+            value (int): The value for the field.
+        &#34;&#34;&#34;
+        script = self._SET_FIELD_NUMERIC_VALUE.format(form_cq=form_cq, name=field_name, value=value)
+        return self._driver.execute_script(script)
+
+    def type_into_element(self, element, text, delay=None, tab_off=False):
+        &#34;&#34;&#34;Types into an input element in a more realistic manner.
+
+        Args:
+            element (selenium.webdriver.remote.webelement): The element to type into.
+            text (str): The text to type.
+            delay (int): The number of seconds to delay after typing.
+            tab_off (bool): Indicates whether to tab off the field after typing, and delay.
+        &#34;&#34;&#34;
+        # Ensure text really is a string
+        text = str(text)
+
+        # First move to and click on element to give it focus
+        self._action_chains.move_to_element(element)
+        self._action_chains.click()
+        self._action_chains.perform()
+
+        # Now type each character
+        for character in text:
+            self._action_chains.send_keys(character)
+            self._action_chains.perform()
+            time.sleep(random.uniform(0.0001, 0.002))
+
+        if delay:
+            time.sleep(delay)
+
+        if tab_off:
+            self._action_chains.send_keys(Keys.TAB)
+            self._action_chains.perform()
 
     class FieldNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
@@ -192,7 +470,33 @@ class FormHelper(HasReferencedJavaScript):
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception
             &#34;&#34;&#34;
-            return self.message.format(field_name=self._field_name, form_cq=self._form_cq)</code></pre>
+            return self.message.format(field_name=self._field_name, form_cq=self._form_cq)
+
+    class UnsupportedFieldXTypeException(Exception):
+        &#34;&#34;&#34;Exception class thrown when we have been asked to perform an action that is not
+        supported for the given field xtype.
+        &#34;&#34;&#34;
+
+        def __init__(self, form_cq, field_name, xtype, message=&#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                form_cq (str): The CQ used to find the form
+                field_name (str): The name of the field
+                xtype (str): The xtype of the field.
+                message (str, optional): The exception message. Defaults to &#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;
+            &#34;&#34;&#34;
+            self.message = message
+            self._form_cq = form_cq
+            self._field_name = field_name
+            self._xtype = xtype
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception
+            &#34;&#34;&#34;
+            return self.message.format(field_name=self._field_name, form_cq=self._form_cq, xtype=self._xtype)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -203,6 +507,11 @@ class FormHelper(HasReferencedJavaScript):
 <dt id="pyseext.FormHelper.FormHelper.FieldNotFoundException"><code class="name">var <span class="ident">FieldNotFoundException</span></code></dt>
 <dd>
 <div class="desc"><p>Exception class thrown when we failed to find the specified field</p></div>
+</dd>
+<dt id="pyseext.FormHelper.FormHelper.UnsupportedFieldXTypeException"><code class="name">var <span class="ident">UnsupportedFieldXTypeException</span></code></dt>
+<dd>
+<div class="desc"><p>Exception class thrown when we have been asked to perform an action that is not
+supported for the given field xtype.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -242,6 +551,101 @@ class FormHelper(HasReferencedJavaScript):
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
+<dt id="pyseext.FormHelper.FormHelper.get_field_xtype"><code class="name flex">
+<span>def <span class="ident">get_field_xtype</span></span>(<span>self, form_cq, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attempts to get the xtype of a field by name from the specified form panel</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The xtype of the field, or None if not found.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_field_xtype(self, form_cq, name):
+    &#34;&#34;&#34;Attempts to get the xtype of a field by name from the specified form panel
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        str: The xtype of the field, or None if not found.
+    &#34;&#34;&#34;
+    script = self._GET_FIELD_XTYPE_TEMPLATE.format(form_cq=form_cq, name=name)
+    return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
+<dt id="pyseext.FormHelper.FormHelper.set_checkbox_value"><code class="name flex">
+<span>def <span class="ident">set_checkbox_value</span></span>(<span>self, form_cq, field_name, checked=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the checked value for a checkbox.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+<dt><strong><code>checked</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>The checked value for the checkbox. Defaults to True.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_checkbox_value(self, form_cq, field_name, checked=True):
+    &#34;&#34;&#34;Sets the checked value for a checkbox.
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+        checked (bool, optional): The checked value for the checkbox. Defaults to True.
+    &#34;&#34;&#34;
+    script = self._SET_CHECKBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, checked=str(checked).lower())
+    return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
+<dt id="pyseext.FormHelper.FormHelper.set_field_numeric_value"><code class="name flex">
+<span>def <span class="ident">set_field_numeric_value</span></span>(<span>self, form_cq, field_name, value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the value for a field to a numeric value.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>int</code></dt>
+<dd>The value for the field.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_field_numeric_value(self, form_cq, field_name, value):
+    &#34;&#34;&#34;Sets the value for a field to a numeric value.
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+        value (int): The value for the field.
+    &#34;&#34;&#34;
+    script = self._SET_FIELD_NUMERIC_VALUE.format(form_cq=form_cq, name=field_name, value=value)
+    return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
 <dt id="pyseext.FormHelper.FormHelper.set_form_values"><code class="name flex">
 <span>def <span class="ident">set_form_values</span></span>(<span>self, form_cq, field_values)</span>
 </code></dt>
@@ -250,7 +654,11 @@ class FormHelper(HasReferencedJavaScript):
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>field_values</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Dictionary containing the 'name' and 'value' of the fields.</dd>
+<dd>Dictionary containing the 'name' and 'value' of the fields.
+The values can be strings, numbers or an object containing:
+- value (str|int): The value for the field
+- delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
+- tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -261,16 +669,137 @@ class FormHelper(HasReferencedJavaScript):
 
     Args:
         field_values (dict): Dictionary containing the &#39;name&#39; and &#39;value&#39; of the fields.
+                             The values can be strings, numbers or an object containing:
+                              - value (str|int): The value for the field
+                              - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
+                              - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
     &#34;&#34;&#34;
     if not type(field_values) is dict:
         raise TypeError(&#34;Parameter &#39;field_values&#39; is not of type &#39;dict&#39;&#34;)
 
+    def get_field_config_member(value, member, default=None):
+        &#34;&#34;&#34;Gets the member from a field config.
+
+        Args:
+            value (str|int|dict): The value or value config for the field.
+            member (str): The member we&#39;re after.
+            default (str|int, optional): The default to return if not found. Defaults to None.
+
+        Returns:
+            str|int: The value of the config, or the default if not found.
+        &#34;&#34;&#34;
+        if isinstance(value, dict):
+            return value.get(member, default)
+        else:
+            return default
+
     for field_name in field_values.keys():
-        field = self.find_field_input_element(form_cq, field_name)
-        if field:
-            field.send_keys(field_values[field_name])
+        field_xtype = self.get_field_xtype(form_cq, field_name)
+
+        if field_xtype:
+            # Field found!
+            value_or_config = field_values[field_name]
+
+            field_value = get_field_config_member(value_or_config, &#39;value&#39;, value_or_config)
+            delay = get_field_config_member(value_or_config, &#39;delay&#39;)
+            tab_off = get_field_config_member(value_or_config, &#39;tab_off&#39;, False)
+
+            # Now need to set it&#39;s value
+            if (field_xtype.endswith(&#39;textfield&#39;) or
+                field_xtype.endswith(&#39;number&#39;) or
+                field_xtype.endswith(&#39;datefield&#39;) or
+                ((field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)) and
+                  isinstance(field_value, str))):
+                # Field can be typed into
+                field = self.find_field_input_element(form_cq, field_name)
+                self.type_into_element(field, field_value, delay, tab_off)
+            elif field_xtype.endswith(&#39;checkbox&#39;):
+                self.set_checkbox_value(form_cq, field_name, field_value)
+            elif (field_xtype.endswith(&#39;combo&#39;) or
+                field_xtype.endswith(&#39;combobox&#39;)):
+                # We want to directly set the value on the combo rather than type it in
+                self.set_field_numeric_value(form_cq, field_name, field_value)
+            else:
+                raise FormHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
         else:
             raise FormHelper.FieldNotFoundException(form_cq, field_name)</code></pre>
+</details>
+</dd>
+<dt id="pyseext.FormHelper.FormHelper.submit_by_button"><code class="name flex">
+<span>def <span class="ident">submit_by_button</span></span>(<span>self, form_cq, text='Ok')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Submits a form by clicking on it's submit button.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel to submit.</dd>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The text on the submit button. Defaults to 'Ok'.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def submit_by_button(self, form_cq, text = &#39;Ok&#39;):
+    &#34;&#34;&#34;Submits a form by clicking on it&#39;s submit button.
+
+    Args:
+        form_cq (str): The component query that identifies the form panel to submit.
+        text (str, optional): The text on the submit button. Defaults to &#39;Ok&#39;.
+    &#34;&#34;&#34;
+    self._button_helper.click_button_by_text(text, form_cq)</code></pre>
+</details>
+</dd>
+<dt id="pyseext.FormHelper.FormHelper.type_into_element"><code class="name flex">
+<span>def <span class="ident">type_into_element</span></span>(<span>self, element, text, delay=None, tab_off=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Types into an input element in a more realistic manner.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>element</code></strong> :&ensp;<code>selenium.webdriver.remote.webelement</code></dt>
+<dd>The element to type into.</dd>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The text to type.</dd>
+<dt><strong><code>delay</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of seconds to delay after typing.</dd>
+<dt><strong><code>tab_off</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates whether to tab off the field after typing, and delay.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def type_into_element(self, element, text, delay=None, tab_off=False):
+    &#34;&#34;&#34;Types into an input element in a more realistic manner.
+
+    Args:
+        element (selenium.webdriver.remote.webelement): The element to type into.
+        text (str): The text to type.
+        delay (int): The number of seconds to delay after typing.
+        tab_off (bool): Indicates whether to tab off the field after typing, and delay.
+    &#34;&#34;&#34;
+    # Ensure text really is a string
+    text = str(text)
+
+    # First move to and click on element to give it focus
+    self._action_chains.move_to_element(element)
+    self._action_chains.click()
+    self._action_chains.perform()
+
+    # Now type each character
+    for character in text:
+        self._action_chains.send_keys(character)
+        self._action_chains.perform()
+        time.sleep(random.uniform(0.0001, 0.002))
+
+    if delay:
+        time.sleep(delay)
+
+    if tab_off:
+        self._action_chains.send_keys(Keys.TAB)
+        self._action_chains.perform()</code></pre>
 </details>
 </dd>
 </dl>
@@ -303,8 +832,14 @@ class FormHelper(HasReferencedJavaScript):
 <h4><code><a title="pyseext.FormHelper.FormHelper" href="#pyseext.FormHelper.FormHelper">FormHelper</a></code></h4>
 <ul class="">
 <li><code><a title="pyseext.FormHelper.FormHelper.FieldNotFoundException" href="#pyseext.FormHelper.FormHelper.FieldNotFoundException">FieldNotFoundException</a></code></li>
+<li><code><a title="pyseext.FormHelper.FormHelper.UnsupportedFieldXTypeException" href="#pyseext.FormHelper.FormHelper.UnsupportedFieldXTypeException">UnsupportedFieldXTypeException</a></code></li>
 <li><code><a title="pyseext.FormHelper.FormHelper.find_field_input_element" href="#pyseext.FormHelper.FormHelper.find_field_input_element">find_field_input_element</a></code></li>
+<li><code><a title="pyseext.FormHelper.FormHelper.get_field_xtype" href="#pyseext.FormHelper.FormHelper.get_field_xtype">get_field_xtype</a></code></li>
+<li><code><a title="pyseext.FormHelper.FormHelper.set_checkbox_value" href="#pyseext.FormHelper.FormHelper.set_checkbox_value">set_checkbox_value</a></code></li>
+<li><code><a title="pyseext.FormHelper.FormHelper.set_field_numeric_value" href="#pyseext.FormHelper.FormHelper.set_field_numeric_value">set_field_numeric_value</a></code></li>
 <li><code><a title="pyseext.FormHelper.FormHelper.set_form_values" href="#pyseext.FormHelper.FormHelper.set_form_values">set_form_values</a></code></li>
+<li><code><a title="pyseext.FormHelper.FormHelper.submit_by_button" href="#pyseext.FormHelper.FormHelper.submit_by_button">submit_by_button</a></code></li>
+<li><code><a title="pyseext.FormHelper.FormHelper.type_into_element" href="#pyseext.FormHelper.FormHelper.type_into_element">type_into_element</a></code></li>
 </ul>
 </li>
 </ul>
