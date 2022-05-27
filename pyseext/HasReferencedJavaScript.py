@@ -6,7 +6,7 @@ class HasReferencedJavaScript:
     """
 
     # Class variables
-    _SCRIPT_LOADED_TEST_TEMPLATE = "return Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
+    _SCRIPT_LOADED_TEST_TEMPLATE = "return globalThis.Ext && globalThis.Ext.isDefined && globalThis.Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
     _SCRIPT_LOAD_TIMEOUT = 2
     _ASYNC_SCRIPT_TEMPLATE = "var {callback_parameter_name} = arguments[arguments.length - 1]; {script}"
 
