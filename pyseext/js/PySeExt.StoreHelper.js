@@ -13,7 +13,6 @@ globalThis.PySeExt.StoreHelper = {
      * This is far more reliable than waiting for the load event, since it may have already been fired by the time the
      * test gets that far.
      *
-     * @private
      * @param  {String} storeHolderCQ The component query to use to find the store holder.
      */
     resetStoreLoadCount: function(storeHolderCQ) {
@@ -30,7 +29,6 @@ globalThis.PySeExt.StoreHelper = {
      * Should generally be used after calling #resetStoreLoadCount and performing an
      * action that triggers a store load.
      *
-     * @private
      * @param  {String}   storeHolderCQ The component query to use to find the store holder.
      * @param  {Function} callback      The function to call when done.
      */
@@ -46,7 +44,6 @@ globalThis.PySeExt.StoreHelper = {
      * Should generally be used after calling #resetStoreLoadCount and performing an
      * action that triggers a store load.
      *
-     * @private
      * @param  {Ext.data.AbstractStore} store    The store to wait to be showing as loaded.
      * @param  {Function}               callback The function to call when done.
      */
@@ -57,6 +54,15 @@ globalThis.PySeExt.StoreHelper = {
             // Call ourselves
             globalThis.Ext.Function.defer(arguments.callee, 10, this, arguments);
         }
+    },
+
+    /**
+     * Triggers a reload on the specified store.
+     *
+     * @param  {String} storeHolderCQ The component query to use to find the store holder.
+     */
+    reload: function(storeHolderCQ) {
+        globalThis.PySeExt.StoreHelper.__getStoreFromStoreHolder(storeHolderCQ).reload();
     },
 
     // FIXME: loadAndWait or something like that?

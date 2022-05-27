@@ -1,7 +1,9 @@
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 from pyseext.ComponentQuery import ComponentQuery
+from pyseext.StoreHelper import StoreHelper
 
 class GridHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext grid panels
@@ -183,7 +185,7 @@ class GridHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def get_row(self, grid_cq, row_data):
+    def get_row(self, grid_cq, row_data, should_throw_exception=True):
         """ Gets the element for the row with the specified data or index in the grid.
 
         The grid must be visible.
@@ -191,9 +193,11 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             grid_cq (str): The component query for the grid
             row_data (int | dict): The row data or index for the record to be found.
+            should_throw_exception (bool): Indicates whether this method should throw an exception
+                                           if the row is not found. Defaults to True.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the row.
+            selenium.webdriver.remote.webelement: The DOM element for the row or None if not found (and not thrown)
         """
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
@@ -202,7 +206,7 @@ class GridHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         row = self._driver.execute_script(script)
 
-        if row:
+        if row or should_throw_exception != True:
             return row
         else:
             raise GridHelper.RowNotFoundException(grid_cq, row_data)
@@ -222,6 +226,37 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.move_to_element(row)
         self._action_chains.click()
         self._action_chains.perform()
+
+    def wait_for_row(self, grid_cq, row_data, timeout=30):
+        """Waits for the specified row to appear in the grid, reloading the store until
+        it is found, or until the timeout is hit.
+
+        Args:
+            grid_cq (str): The component query for the grid.
+            row_data (int | dict): The row data or index of the record we are waiting for.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+
+        Returns:
+            selenium.webdriver.remote.webelement: The DOM element for the row
+        """
+        WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
+        return self.get_row(grid_cq, row_data)
+
+    def wait_to_click_row(self, grid_cq, row_data, timeout=30):
+        """Waits for the specified row to appear in the grid, reloading the store until
+        it is found, or until the timeout is hit.
+        Once we have found the row it is clicked.
+
+        Args:
+            grid_cq (str): The component query for the grid.
+            row_data (int | dict): The row data or index of the record we are waiting for.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+
+        Returns:
+            selenium.webdriver.remote.webelement: The DOM element for the row
+        """
+        WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
+        return self.click_row(grid_cq, row_data)
 
     class ColumnNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified column
@@ -268,3 +303,31 @@ class GridHelper(HasReferencedJavaScript):
             """Returns a string representation of this exception
             """
             return self.message.format(row_data=self._row_data, grid_cq=self._grid_cq)
+
+    class RowFoundExpectation():
+        """ An expectation for checking that a row has been found
+        """
+
+        def __init__(self, grid_cq, row_data):
+            """Initialises an instance of this class.
+            """
+            self._grid_cq = grid_cq
+            self._row_data = row_data
+
+        def __call__(self, driver):
+            """Method that determines whether a row was found.
+
+            If the row is not found the grid is refreshed and the load waited for.
+            """
+            grid_helper = GridHelper(driver)
+
+            row = grid_helper.get_row(self._grid_cq, self._row_data, False)
+            if row:
+                return True
+            else:
+                # Trigger a reload, and wait for it to complete
+                store_helper = StoreHelper(driver)
+                store_helper.reset_store_load_count(self._grid_cq)
+                store_helper.trigger_reload(self._grid_cq)
+                store_helper.wait_for_store_loaded(self._grid_cq)
+                return False

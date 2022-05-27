@@ -7,6 +7,7 @@ class StoreHelper(HasReferencedJavaScript):
     # Class variables
     _RESET_STORE_LOAD_COUNT_TEMPLATE = "return globalThis.PySeExt.StoreHelper.resetStoreLoadCount('{store_holder_cq}')"
     _WAIT_FOR_STORE_LOADED_TEMPLATE = "return globalThis.PySeExt.StoreHelper.waitForStoreLoaded('{store_holder_cq}', callback)"
+    _RELOAD_STORE_TEMPLATE = "return globalThis.PySeExt.StoreHelper.reload('{store_holder_cq}')"
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -57,3 +58,26 @@ class StoreHelper(HasReferencedJavaScript):
         self._driver.execute_async_script(async_script)
 
         print("Store owned by '{store_holder_cq}' loaded".format(store_holder_cq=store_holder_cq))
+
+    def trigger_reload(self, store_holder_cq):
+        """Triggers a reload on the specified store.
+
+        Args:
+            store_holder_cq (str): The component query to use to find the store holder.
+        """
+        script = self._RELOAD_STORE_TEMPLATE.format(store_holder_cq=store_holder_cq)
+        self.ensure_javascript_loaded()
+        self._driver.execute_script(script)
+
+    def trigger_reload_and_wait(self, store_holder_cq):
+        """Triggers a load on the specified store and waits for it to complete.
+
+        Basically resets the store load count, triggers a reload and then waits for the store to
+        show as loaded.
+
+        Args:
+            store_holder_cq (str): The component query to use to find the store holder.
+        """
+        self.reset_store_load_count(store_holder_cq)
+        self.trigger_reload(store_holder_cq)
+        self.wait_for_store_loaded(store_holder_cq)
