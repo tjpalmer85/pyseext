@@ -68,7 +68,7 @@ class FormHelper(HasReferencedJavaScript):
                                   - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
         """
         if not type(field_values) is dict:
-            raise TypeError("Parameter 'field_values' is not of type 'dict'")
+            raise TypeError("Parameter 'field_values' is not of type 'dict', but type '{type}'.".format(type=type(field_values)))
 
         def get_field_config_member(value, member, default=None):
             """Gets the member from a field config.

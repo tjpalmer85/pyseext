@@ -52,6 +52,9 @@ class ComponentQuery(HasReferencedJavaScript):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 3)
+
+        Returns:
+            selenium.webdriver.remote.webelement[]: An array of DOM elements that match the query or an empty array if not found
         """
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         return self.query(cq, root_id)
@@ -66,6 +69,9 @@ class ComponentQuery(HasReferencedJavaScript):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 3)
+
+        Returns:
+            selenium.webdriver.remote.webelement: The DOM element that matches the query
         """
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         results = self.query(cq, root_id)
@@ -84,6 +90,9 @@ class ComponentQuery(HasReferencedJavaScript):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 3)
+
+        Returns:
+            selenium.webdriver.remote.webelement: The DOM element that matches the query
         """
         if not cq.endswith('{isVisible(true)}'):
             cq = cq + '{isVisible(true)}'
