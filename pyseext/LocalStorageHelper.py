@@ -20,7 +20,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def store_value(self, key, value):
+    def store_value(self, key: str, value):
         """Stores a value in our persistent storage (implemented as local storage).
         If a value exists for the key it is overwritten.
 
@@ -29,28 +29,28 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Supports strings, numbers, booleans, dates, objects and arrays.
 
         Args:
-            key (string): The key to use when storing the value.
-            value (object): The value to store.
+            key (str): The key to use when storing the value.
+            value (Any): The value to store.
         """
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def clear_value(self, key):
+    def clear_value(self, key: str):
         """Clears a value in our persistent storage (implemented as local storage).
 
         Args:
-            key (string): The key to clear.
+            key (str): The key to clear.
         """
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_stored_value(self, key):
+    def get_stored_value(self, key: str):
         """Retrieves a value that has been saved in #storedData using #storeValue.
 
         Args:
-            key (string): The key to use to retrieve the data.
+            key (str): The key to use to retrieve the data.
 
         Returns:
             The retrieved value or None if key does not exist.

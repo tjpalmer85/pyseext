@@ -29,7 +29,7 @@ class FormHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def find_field_input_element(self, form_cq, name):
+    def find_field_input_element(self, form_cq: str, name: str):
         """Attempts to get a field by name from the specified form panel
 
         Args:
@@ -43,7 +43,7 @@ class FormHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_field_xtype(self, form_cq, name):
+    def get_field_xtype(self, form_cq: str, name: str):
         """Attempts to get the xtype of a field by name from the specified form panel
 
         Args:
@@ -57,7 +57,7 @@ class FormHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_form_values(self, form_cq, field_values):
+    def set_form_values(self, form_cq: str, field_values: dict):
         """Sets the values on the specified form panel
 
         Args:
@@ -70,7 +70,7 @@ class FormHelper(HasReferencedJavaScript):
         if not type(field_values) is dict:
             raise TypeError("Parameter 'field_values' is not of type 'dict', but type '{type}'.".format(type=type(field_values)))
 
-        def get_field_config_member(value, member, default=None):
+        def get_field_config_member(value, member: str, default = None):
             """Gets the member from a field config.
 
             Args:
@@ -117,7 +117,7 @@ class FormHelper(HasReferencedJavaScript):
             else:
                 raise FormHelper.FieldNotFoundException(form_cq, field_name)
 
-    def submit_by_button(self, form_cq, text = 'Ok'):
+    def submit_by_button(self, form_cq: str, text: str = 'Ok'):
         """Submits a form by clicking on it's submit button.
 
         Args:
@@ -126,7 +126,7 @@ class FormHelper(HasReferencedJavaScript):
         """
         self._button_helper.click_button_by_text(text, form_cq)
 
-    def set_checkbox_value(self, form_cq, field_name, checked=True):
+    def set_checkbox_value(self, form_cq: str, field_name: str, checked: bool = True):
         """Sets the checked value for a checkbox.
 
         Args:
@@ -138,7 +138,7 @@ class FormHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_field_numeric_value(self, form_cq, field_name, value):
+    def set_field_numeric_value(self, form_cq: str, field_name: str, value: int):
         """Sets the value for a field to a numeric value.
 
         Args:
@@ -150,7 +150,7 @@ class FormHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def type_into_element(self, element, text, delay=None, tab_off=False):
+    def type_into_element(self, element, text: str, delay: int = None, tab_off: bool = False):
         """Types into an input element in a more realistic manner.
 
         Args:
@@ -184,7 +184,7 @@ class FormHelper(HasReferencedJavaScript):
         """Exception class thrown when we failed to find the specified field
         """
 
-        def __init__(self, form_cq, field_name, message="Failed to find field named '{field_name}' on form with CQ '{form_cq}'."):
+        def __init__(self, form_cq: str, field_name: str, message: str = "Failed to find field named '{field_name}' on form with CQ '{form_cq}'."):
             """Initialises an instance of this exception
 
             Args:
@@ -208,7 +208,7 @@ class FormHelper(HasReferencedJavaScript):
         supported for the given field xtype.
         """
 
-        def __init__(self, form_cq, field_name, xtype, message="The field named '{field_name}' on form with CQ '{form_cq}' is of an xtype '{xtype}' which is not supported for the requested operation."):
+        def __init__(self, form_cq: str, field_name: str, xtype: str, message: str = "The field named '{field_name}' on form with CQ '{form_cq}' is of an xtype '{xtype}' which is not supported for the requested operation."):
             """Initialises an instance of this exception
 
             Args:

@@ -1,3 +1,4 @@
+from typing import Union
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -29,7 +30,7 @@ class TreeHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def is_tree_loading(self, tree_cq):
+    def is_tree_loading(self, tree_cq: str):
         """Determine whether the tree (any part of it) is currently loading.
 
         You should call this before calling any tree interaction methods,
@@ -45,7 +46,7 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def wait_until_tree_not_loading(self, tree_cq, timeout=10):
+    def wait_until_tree_not_loading(self, tree_cq: str, timeout: float = 10):
         """Waits until the tree identified by the component query is not loading,
         or the timeout is hit
 
@@ -55,12 +56,12 @@ class TreeHelper(HasReferencedJavaScript):
         """
         WebDriverWait(self._driver, timeout).until(TreeHelper.TreeNotLoadingExpectation(tree_cq))
 
-    def get_node_icon_element(self, tree_cq, node_text_or_data):
+    def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]):
         """Finds a node by text or data, then the child HTML element that holds it's icon.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
-            node_text_or_data (str | dict): The node text or data to find.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element for the node icon.
@@ -75,12 +76,12 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_node_text_element(self, tree_cq, node_text_or_data):
+    def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]):
         """Finds a node by text or data, then the child HTML element that holds it's text.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
-            node_text_or_data (str | dict): The node text or data to find.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element for the node text.
@@ -95,12 +96,12 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_node_expander_element(self, tree_cq, node_text_or_data):
+    def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]):
         """Finds a node by text or data, then the child HTML element that holds it's expander UI element.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
-            node_text_or_data (str | dict): The node text or data to find.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element for the node's expander.
@@ -115,7 +116,7 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_node_element(self, tree_cq, node_data, css_query):
+    def get_node_element(self, tree_cq: str, node_data: dict, css_query: str):
         """Finds a node by data, then a child element by CSS query.
 
         Args:
@@ -138,12 +139,12 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def open_node_context_menu(self, tree_cq, node_text_or_data):
+    def open_node_context_menu(self, tree_cq: str, node_text_or_data: Union[str, dict]):
         """Finds a node's text element by text or data, then right clicks on it.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
-            node_text_or_data (str | dict): The node text or data to find.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
         """
         node = self.get_node_icon_element(tree_cq, node_text_or_data)
 
@@ -158,12 +159,12 @@ class TreeHelper(HasReferencedJavaScript):
         """Exception class thrown when we failed to find the specified node
         """
 
-        def __init__(self, tree_cq, node_text_or_data, message="Failed to find node with data (or text) '{node_text_or_data}' on tree with CQ '{tree_cq}'."):
+        def __init__(self, tree_cq: str, node_text_or_data: Union[str, dict], message: str = "Failed to find node with data (or text) '{node_text_or_data}' on tree with CQ '{tree_cq}'."):
             """Initialises an instance of this exception
 
             Args:
                 tree_cq (str): The CQ used to find the tree
-                node_text_or_data (str | dict): The node text or data that we were looking for
+                node_text_or_data (Union[str, dict]): The node text or data that we were looking for
                 message (str, optional): The exception message. Defaults to "Failed to find node with data (or text) '{node_text_or_data}' on tree with CQ '{tree_cq}'.".
             """
             self.message = message
@@ -181,7 +182,7 @@ class TreeHelper(HasReferencedJavaScript):
         """ An expectation for checking that a tree is not loading.
         """
 
-        def __init__(self, tree_cq):
+        def __init__(self, tree_cq: str):
             """Initialises an instance of this class.
             """
             self._tree_cq = tree_cq

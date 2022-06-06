@@ -20,7 +20,7 @@ class StoreHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def reset_store_load_count(self, store_holder_cq):
+    def reset_store_load_count(self, store_holder_cq: str):
         """Resets the load count on the specified store, provided the store is not configured with autoLoad set to true.
 
         If set to auto load then this method does nothing.
@@ -42,7 +42,7 @@ class StoreHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def wait_for_store_loaded(self, store_holder_cq):
+    def wait_for_store_loaded(self, store_holder_cq: str):
         """ Waits for the specified store to return true from its isLoaded method.
 
         Should generally be used after calling #resetStoreLoadCount and performing an
@@ -59,7 +59,7 @@ class StoreHelper(HasReferencedJavaScript):
 
         print("Store owned by '{store_holder_cq}' loaded".format(store_holder_cq=store_holder_cq))
 
-    def trigger_reload(self, store_holder_cq):
+    def trigger_reload(self, store_holder_cq: str):
         """Triggers a reload on the specified store.
 
         Args:
@@ -69,7 +69,7 @@ class StoreHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def trigger_reload_and_wait(self, store_holder_cq):
+    def trigger_reload_and_wait(self, store_holder_cq: str):
         """Triggers a load on the specified store and waits for it to complete.
 
         Basically resets the store load count, triggers a reload and then waits for the store to

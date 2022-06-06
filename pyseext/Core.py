@@ -18,7 +18,7 @@ class Core(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def wait_for_dom_ready(self, timeout=30):
+    def wait_for_dom_ready(self, timeout: float = 30):
         """Method that waits until Ext indicates that the DOM is ready.
         Calls Ext.isDomReady.
         Will throw a TimeOutException if the value is not true within the specified timeout period.

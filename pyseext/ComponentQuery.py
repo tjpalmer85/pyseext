@@ -23,7 +23,7 @@ class ComponentQuery(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def query(self, cq, root_id=None):
+    def query(self, cq: str, root_id: str = None):
         """Executes a ComponentQuery and returns the result
 
         Args:
@@ -43,7 +43,7 @@ class ComponentQuery(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def wait_for_query(self, cq, root_id=None, timeout=3):
+    def wait_for_query(self, cq: str, root_id: str = None, timeout: float = 3):
         """Method that waits for the specified CQ to match something
 
         Args:
@@ -59,7 +59,7 @@ class ComponentQuery(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         return self.query(cq, root_id)
 
-    def wait_for_single_query(self, cq, root_id=None, timeout=3):
+    def wait_for_single_query(self, cq: str, root_id: str = None, timeout: float = 3):
         """Method that waits for the specified CQ to match a single result.
         If there are multiple matches then an error is thrown.
 
@@ -80,7 +80,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return results[0]
 
-    def wait_for_single_query_visible(self, cq, root_id=None, timeout=3):
+    def wait_for_single_query_visible(self, cq: str, root_id: str = None, timeout: float = 3):
         """Method that waits for the specified CQ to match a single visible result.
         If there are multiple matches then an error is thrown.
 
@@ -103,7 +103,7 @@ class ComponentQuery(HasReferencedJavaScript):
         """ An expectation for checking that an Ext.ComponentQuery is found
         """
 
-        def __init__(self, cq):
+        def __init__(self, cq: str):
             """Initialises an instance of this class.
             """
             self._cq = cq
@@ -118,7 +118,7 @@ class ComponentQuery(HasReferencedJavaScript):
         """Exception class thrown when expecting a single component query match and get multiple
         """
 
-        def __init__(self, cq, count, message="Expected a single match from ComponentQuery '{cq}' but got {count}."):
+        def __init__(self, cq: str, count: int, message: str = "Expected a single match from ComponentQuery '{cq}' but got {count}."):
             """Initialises an instance of this exception
 
             Args:

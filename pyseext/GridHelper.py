@@ -1,3 +1,4 @@
+from typing import Union
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -33,7 +34,7 @@ class GridHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def get_column_header(self, grid_cq, column_text_or_dataIndex):
+    def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str):
         """Gets the element for the specified column header
 
         Args:
@@ -53,7 +54,7 @@ class GridHelper(HasReferencedJavaScript):
         else:
             raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
 
-    def is_column_visible(self, grid_cq, column_text_or_dataIndex):
+    def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str):
         """Determines whether the specified column is visible,
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -66,7 +67,7 @@ class GridHelper(HasReferencedJavaScript):
         """
         return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-    def is_column_hidden(self, grid_cq, column_text_or_dataIndex):
+    def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str):
         """Determines whether the specified column is hidden.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -79,7 +80,7 @@ class GridHelper(HasReferencedJavaScript):
         """
         return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-    def check_columns_are_visible(self, grid_cq, column_texts_or_dataIndexes):
+    def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str):
         """Checks that the specified columns are all visible on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -99,7 +100,7 @@ class GridHelper(HasReferencedJavaScript):
 
         return columns_not_visible
 
-    def check_columns_are_hidden(self, grid_cq, column_texts_or_dataIndexes):
+    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes):
         """Checks that the specified columns are all hidden on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -119,7 +120,7 @@ class GridHelper(HasReferencedJavaScript):
 
         return column_not_hidden
 
-    def click_column_header(self, grid_cq, column_text_or_dataIndex):
+    def click_column_header(self, grid_cq: str, column_text_or_dataIndex: str):
         """Clicks on the specified column header.
         The column must be visible.
 
@@ -130,7 +131,7 @@ class GridHelper(HasReferencedJavaScript):
         column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
         column_header.click()
 
-    def get_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
+    def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str):
         """Gets the element for the specified column header's trigger
 
         Args:
@@ -153,7 +154,7 @@ class GridHelper(HasReferencedJavaScript):
         else:
             raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
 
-    def click_column_header_trigger(self, grid_cq, column_text_or_dataIndex):
+    def click_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str):
         """Clicks on the specified column header's trigger
 
         Args:
@@ -169,7 +170,7 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.click()
         self._action_chains.perform()
 
-    def clear_selection(self, grid_cq):
+    def clear_selection(self, grid_cq: str):
         """ Clears the current selection.
 
         Useful if want to quickly refresh a grid without having to process all the events.
@@ -185,14 +186,14 @@ class GridHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def get_row(self, grid_cq, row_data, should_throw_exception=True):
+    def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True):
         """ Gets the element for the row with the specified data or index in the grid.
 
         The grid must be visible.
 
         Args:
             grid_cq (str): The component query for the grid
-            row_data (int | dict): The row data or index for the record to be found.
+            row_data (Union[int, dict]): The row data or index for the record to be found.
             should_throw_exception (bool): Indicates whether this method should throw an exception
                                            if the row is not found. Defaults to True.
 
@@ -211,14 +212,14 @@ class GridHelper(HasReferencedJavaScript):
         else:
             raise GridHelper.RowNotFoundException(grid_cq, row_data)
 
-    def click_row(self, grid_cq, row_data):
+    def click_row(self, grid_cq: str, row_data: Union[int, dict]):
         """ Clicks the row with the specified data or index in the grid.
 
         The grid must be visible.
 
         Args:
             grid_cq (str): The component query for the grid
-            row_data (int | dict): The row data or index for the record to be found and clicked.
+            row_data (Union[int, dict]): The row data or index for the record to be found and clicked.
         """
         # Check grid can be found and is visible
         row = self.get_row(grid_cq, row_data)
@@ -227,13 +228,13 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.click()
         self._action_chains.perform()
 
-    def wait_for_row(self, grid_cq, row_data, timeout=30):
+    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
 
         Args:
             grid_cq (str): The component query for the grid.
-            row_data (int | dict): The row data or index of the record we are waiting for.
+            row_data (Union[int, dict]): The row data or index of the record we are waiting for.
             timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
 
         Returns:
@@ -242,14 +243,14 @@ class GridHelper(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         return self.get_row(grid_cq, row_data)
 
-    def wait_to_click_row(self, grid_cq, row_data, timeout=30):
+    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
         Once we have found the row it is clicked.
 
         Args:
             grid_cq (str): The component query for the grid.
-            row_data (int | dict): The row data or index of the record we are waiting for.
+            row_data (Union[int, dict]): The row data or index of the record we are waiting for.
             timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
 
         Returns:
@@ -262,7 +263,7 @@ class GridHelper(HasReferencedJavaScript):
         """Exception class thrown when we failed to find the specified column
         """
 
-        def __init__(self, grid_cq, column_text_or_dataIndex, message="Failed to find column with text (or dataIndex) '{column_text_or_dataIndex}' on grid with CQ '{grid_cq}'."):
+        def __init__(self, grid_cq: str, column_text_or_dataIndex: str, message: str = "Failed to find column with text (or dataIndex) '{column_text_or_dataIndex}' on grid with CQ '{grid_cq}'."):
             """Initialises an instance of this exception
 
             Args:
@@ -285,12 +286,12 @@ class GridHelper(HasReferencedJavaScript):
         """Exception class thrown when we failed to find the specified row
         """
 
-        def __init__(self, grid_cq, row_data, message="Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'."):
+        def __init__(self, grid_cq: str, row_data: Union[int, dict], message: str = "Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'."):
             """Initialises an instance of this exception
 
             Args:
                 grid_cq (str): The CQ used to find the grid
-                row_data (int | dict): The row data or index for the record
+                row_data (Union[int, dict]): The row data or index for the record
                 message (str, optional): The exception message. Defaults to "Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'.".
             """
             self.message = message
@@ -308,8 +309,12 @@ class GridHelper(HasReferencedJavaScript):
         """ An expectation for checking that a row has been found
         """
 
-        def __init__(self, grid_cq, row_data):
+        def __init__(self, grid_cq: str, row_data: Union[int, dict]):
             """Initialises an instance of this class.
+
+            Args:
+                grid_cq (str): The component query for the grid.
+                row_data (Union[int, dict]): The row data or index of the record we are waiting for.
             """
             self._grid_cq = grid_cq
             self._row_data = row_data

@@ -48,41 +48,44 @@ class LocalStorageHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def store_value(self, key, value):
+    def store_value(self, key: str, value):
         &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
         If a value exists for the key it is overwritten.
-        
+
         Values can be retrieved using #getStoredValue.
-        
+
         Supports strings, numbers, booleans, dates, objects and arrays.
 
         Args:
-            key (string): The key to use when storing the value.
-            value (object): The value to store.
+            key (str): The key to use when storing the value.
+            value (Any): The value to store.
         &#34;&#34;&#34;
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
-        return self._driver.execute_script(script)        
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
-    def clear_value(self, key):
+    def clear_value(self, key: str):
         &#34;&#34;&#34;Clears a value in our persistent storage (implemented as local storage).
 
         Args:
-            key (string): The key to clear.
+            key (str): The key to clear.
         &#34;&#34;&#34;
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
-        return self._driver.execute_script(script)    
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
-    def get_stored_value(self, key):
+    def get_stored_value(self, key: str):
         &#34;&#34;&#34;Retrieves a value that has been saved in #storedData using #storeValue.
 
         Args:
-            key (string): The key to use to retrieve the data.
+            key (str): The key to use to retrieve the data.
 
         Returns:
             The retrieved value or None if key does not exist.
         &#34;&#34;&#34;
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
-        return self._driver.execute_script(script)        </code></pre>
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)</code></pre>
 </details>
 </section>
 <section>
@@ -130,41 +133,44 @@ class LocalStorageHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver)
 
-    def store_value(self, key, value):
+    def store_value(self, key: str, value):
         &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
         If a value exists for the key it is overwritten.
-        
+
         Values can be retrieved using #getStoredValue.
-        
+
         Supports strings, numbers, booleans, dates, objects and arrays.
 
         Args:
-            key (string): The key to use when storing the value.
-            value (object): The value to store.
+            key (str): The key to use when storing the value.
+            value (Any): The value to store.
         &#34;&#34;&#34;
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
-        return self._driver.execute_script(script)        
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
-    def clear_value(self, key):
+    def clear_value(self, key: str):
         &#34;&#34;&#34;Clears a value in our persistent storage (implemented as local storage).
 
         Args:
-            key (string): The key to clear.
+            key (str): The key to clear.
         &#34;&#34;&#34;
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
-        return self._driver.execute_script(script)    
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
-    def get_stored_value(self, key):
+    def get_stored_value(self, key: str):
         &#34;&#34;&#34;Retrieves a value that has been saved in #storedData using #storeValue.
 
         Args:
-            key (string): The key to use to retrieve the data.
+            key (str): The key to use to retrieve the data.
 
         Returns:
             The retrieved value or None if key does not exist.
         &#34;&#34;&#34;
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
-        return self._driver.execute_script(script)        </code></pre>
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -173,37 +179,38 @@ class LocalStorageHelper(HasReferencedJavaScript):
 <h3>Methods</h3>
 <dl>
 <dt id="pyseext.LocalStorageHelper.LocalStorageHelper.clear_value"><code class="name flex">
-<span>def <span class="ident">clear_value</span></span>(<span>self, key)</span>
+<span>def <span class="ident">clear_value</span></span>(<span>self, key: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Clears a value in our persistent storage (implemented as local storage).</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>key</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
 <dd>The key to clear.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def clear_value(self, key):
+<pre><code class="python">def clear_value(self, key: str):
     &#34;&#34;&#34;Clears a value in our persistent storage (implemented as local storage).
 
     Args:
-        key (string): The key to clear.
+        key (str): The key to clear.
     &#34;&#34;&#34;
     script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
-    return self._driver.execute_script(script)    </code></pre>
+    self.ensure_javascript_loaded()
+    return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.LocalStorageHelper.LocalStorageHelper.get_stored_value"><code class="name flex">
-<span>def <span class="ident">get_stored_value</span></span>(<span>self, key)</span>
+<span>def <span class="ident">get_stored_value</span></span>(<span>self, key: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieves a value that has been saved in #storedData using #storeValue.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>key</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
 <dd>The key to use to retrieve the data.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -212,21 +219,22 @@ class LocalStorageHelper(HasReferencedJavaScript):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_stored_value(self, key):
+<pre><code class="python">def get_stored_value(self, key: str):
     &#34;&#34;&#34;Retrieves a value that has been saved in #storedData using #storeValue.
 
     Args:
-        key (string): The key to use to retrieve the data.
+        key (str): The key to use to retrieve the data.
 
     Returns:
         The retrieved value or None if key does not exist.
     &#34;&#34;&#34;
     script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
-    return self._driver.execute_script(script)        </code></pre>
+    self.ensure_javascript_loaded()
+    return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.LocalStorageHelper.LocalStorageHelper.store_value"><code class="name flex">
-<span>def <span class="ident">store_value</span></span>(<span>self, key, value)</span>
+<span>def <span class="ident">store_value</span></span>(<span>self, key: str, value)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Stores a value in our persistent storage (implemented as local storage).
@@ -235,29 +243,30 @@ If a value exists for the key it is overwritten.</p>
 <p>Supports strings, numbers, booleans, dates, objects and arrays.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>key</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
 <dd>The key to use when storing the value.</dd>
-<dt><strong><code>value</code></strong> :&ensp;<code>object</code></dt>
+<dt><strong><code>value</code></strong> :&ensp;<code>Any</code></dt>
 <dd>The value to store.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def store_value(self, key, value):
+<pre><code class="python">def store_value(self, key: str, value):
     &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
     If a value exists for the key it is overwritten.
-    
+
     Values can be retrieved using #getStoredValue.
-    
+
     Supports strings, numbers, booleans, dates, objects and arrays.
 
     Args:
-        key (string): The key to use when storing the value.
-        value (object): The value to store.
+        key (str): The key to use when storing the value.
+        value (Any): The value to store.
     &#34;&#34;&#34;
     script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
-    return self._driver.execute_script(script)        </code></pre>
+    self.ensure_javascript_loaded()
+    return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
 </dl>
@@ -266,6 +275,8 @@ If a value exists for the key it is overwritten.</p>
 <li><code><b><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript">HasReferencedJavaScript</a></b></code>:
 <ul class="hlist">
 <li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.JavaScriptLoadedExpectation" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.JavaScriptLoadedExpectation">JavaScriptLoadedExpectation</a></code></li>
+<li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.ensure_javascript_loaded" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.ensure_javascript_loaded">ensure_javascript_loaded</a></code></li>
+<li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.get_async_script_content" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.get_async_script_content">get_async_script_content</a></code></li>
 </ul>
 </li>
 </ul>

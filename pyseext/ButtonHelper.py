@@ -22,7 +22,7 @@ class ButtonHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_button(self, cq, root_id=None):
+    def click_button(self, cq: str, root_id: str = None):
         """Finds a button using the supplied component query and clicks it.
 
         Args:
@@ -37,7 +37,7 @@ class ButtonHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def click_button_by_text(self, text, root_id=None):
+    def click_button_by_text(self, text: str, root_id: str = None):
         """Finds a visible, enabled button with the specified text and clicks it.
 
         Args:
@@ -47,7 +47,7 @@ class ButtonHelper:
         """
         self.click_button(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_enabled(self, text, root_id=None):
+    def check_button_enabled(self, text: str, root_id: str = None):
         """Checks that we can find an enabled button with the specified text.
 
         Args:
@@ -57,7 +57,7 @@ class ButtonHelper:
         """
         self._cq.wait_for_single_query(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_disabled(self, text, root_id=None):
+    def check_button_disabled(self, text: str, root_id: str = None):
         """Checks that we can find a disabled button with the specified text.
 
         Args:
@@ -67,7 +67,7 @@ class ButtonHelper:
         """
         self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def click_button_on_messagebox(self, text='OK'):
+    def click_button_on_messagebox(self, text: str = 'OK'):
         """Clicks a button on a messagebox.
 
         The messagebox must be visible.

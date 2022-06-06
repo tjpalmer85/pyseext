@@ -21,7 +21,7 @@ class MenuHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_menu_item_by_text(self, text, root_id=None):
+    def click_menu_item_by_text(self, text: str, root_id: str = None):
         """Finds a visible, enabled menu item with the specified text and clicks it.
 
         Args:
@@ -36,7 +36,7 @@ class MenuHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def check_menu_item_enabled(self, text, root_id=None):
+    def check_menu_item_enabled(self, text: str, root_id: str = None):
         """Checks that we can find an enabled menu item with the specified text.
 
         Args:
@@ -46,7 +46,7 @@ class MenuHelper:
         """
         self._cq.wait_for_single_query(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
-    def check_menu_item_disabled(self, text, root_id=None):
+    def check_menu_item_disabled(self, text: str, root_id:str = None):
         """Checks that we can find a disabled menu item with the specified text.
 
         Args:

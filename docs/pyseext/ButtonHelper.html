@@ -37,6 +37,7 @@ class ButtonHelper:
     # Class variables
     _ENABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=false]&#39;
     _DISABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
+    _MESSAGEBOX_BUTTON_TEMPLATE = &#39;messagebox{{isVisible(true)}} button[text=&#34;{text}&#34;]&#39;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -49,7 +50,7 @@ class ButtonHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_button(self, cq, root_id=None):
+    def click_button(self, cq: str, root_id: str = None):
         &#34;&#34;&#34;Finds a button using the supplied component query and clicks it.
 
         Args:
@@ -64,7 +65,7 @@ class ButtonHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def click_button_by_text(self, text, root_id=None):
+    def click_button_by_text(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Finds a visible, enabled button with the specified text and clicks it.
 
         Args:
@@ -74,7 +75,7 @@ class ButtonHelper:
         &#34;&#34;&#34;
         self.click_button(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_enabled(self, text, root_id=None):
+    def check_button_enabled(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Checks that we can find an enabled button with the specified text.
 
         Args:
@@ -84,7 +85,7 @@ class ButtonHelper:
         &#34;&#34;&#34;
         self._cq.wait_for_single_query(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_disabled(self, text, root_id=None):
+    def check_button_disabled(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Checks that we can find a disabled button with the specified text.
 
         Args:
@@ -92,7 +93,17 @@ class ButtonHelper:
             root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         &#34;&#34;&#34;
-        self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)        </code></pre>
+        self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)
+
+    def click_button_on_messagebox(self, text: str = &#39;OK&#39;):
+        &#34;&#34;&#34;Clicks a button on a messagebox.
+
+        The messagebox must be visible.
+
+        Args:
+            text (str, optional): The text of the button to click. Defaults to &#39;OK&#39;.
+        &#34;&#34;&#34;
+        self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))</code></pre>
 </details>
 </section>
 <section>
@@ -127,6 +138,7 @@ class ButtonHelper:
     # Class variables
     _ENABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=false]&#39;
     _DISABLED_BUTTON_TEMPLATE = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
+    _MESSAGEBOX_BUTTON_TEMPLATE = &#39;messagebox{{isVisible(true)}} button[text=&#34;{text}&#34;]&#39;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -139,7 +151,7 @@ class ButtonHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_button(self, cq, root_id=None):
+    def click_button(self, cq: str, root_id: str = None):
         &#34;&#34;&#34;Finds a button using the supplied component query and clicks it.
 
         Args:
@@ -154,7 +166,7 @@ class ButtonHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def click_button_by_text(self, text, root_id=None):
+    def click_button_by_text(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Finds a visible, enabled button with the specified text and clicks it.
 
         Args:
@@ -164,7 +176,7 @@ class ButtonHelper:
         &#34;&#34;&#34;
         self.click_button(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_enabled(self, text, root_id=None):
+    def check_button_enabled(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Checks that we can find an enabled button with the specified text.
 
         Args:
@@ -174,7 +186,7 @@ class ButtonHelper:
         &#34;&#34;&#34;
         self._cq.wait_for_single_query(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_disabled(self, text, root_id=None):
+    def check_button_disabled(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Checks that we can find a disabled button with the specified text.
 
         Args:
@@ -182,12 +194,22 @@ class ButtonHelper:
             root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
         &#34;&#34;&#34;
-        self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)        </code></pre>
+        self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)
+
+    def click_button_on_messagebox(self, text: str = &#39;OK&#39;):
+        &#34;&#34;&#34;Clicks a button on a messagebox.
+
+        The messagebox must be visible.
+
+        Args:
+            text (str, optional): The text of the button to click. Defaults to &#39;OK&#39;.
+        &#34;&#34;&#34;
+        self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="pyseext.ButtonHelper.ButtonHelper.check_button_disabled"><code class="name flex">
-<span>def <span class="ident">check_button_disabled</span></span>(<span>self, text, root_id=None)</span>
+<span>def <span class="ident">check_button_disabled</span></span>(<span>self, text: str, root_id: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks that we can find a disabled button with the specified text.</p>
@@ -203,7 +225,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_button_disabled(self, text, root_id=None):
+<pre><code class="python">def check_button_disabled(self, text: str, root_id: str = None):
     &#34;&#34;&#34;Checks that we can find a disabled button with the specified text.
 
     Args:
@@ -211,11 +233,11 @@ If omitted, all components within the document are included in the search.</dd>
         root_id (str, optional): The id of the container within which to perform the query.
             If omitted, all components within the document are included in the search.
     &#34;&#34;&#34;
-    self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)        </code></pre>
+    self._cq.wait_for_single_query(self._DISABLED_BUTTON_TEMPLATE.format(text=text), root_id)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.ButtonHelper.ButtonHelper.check_button_enabled"><code class="name flex">
-<span>def <span class="ident">check_button_enabled</span></span>(<span>self, text, root_id=None)</span>
+<span>def <span class="ident">check_button_enabled</span></span>(<span>self, text: str, root_id: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks that we can find an enabled button with the specified text.</p>
@@ -231,7 +253,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_button_enabled(self, text, root_id=None):
+<pre><code class="python">def check_button_enabled(self, text: str, root_id: str = None):
     &#34;&#34;&#34;Checks that we can find an enabled button with the specified text.
 
     Args:
@@ -243,7 +265,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.ButtonHelper.ButtonHelper.click_button"><code class="name flex">
-<span>def <span class="ident">click_button</span></span>(<span>self, cq, root_id=None)</span>
+<span>def <span class="ident">click_button</span></span>(<span>self, cq: str, root_id: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a button using the supplied component query and clicks it.</p>
@@ -259,7 +281,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def click_button(self, cq, root_id=None):
+<pre><code class="python">def click_button(self, cq: str, root_id: str = None):
     &#34;&#34;&#34;Finds a button using the supplied component query and clicks it.
 
     Args:
@@ -276,7 +298,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.ButtonHelper.ButtonHelper.click_button_by_text"><code class="name flex">
-<span>def <span class="ident">click_button_by_text</span></span>(<span>self, text, root_id=None)</span>
+<span>def <span class="ident">click_button_by_text</span></span>(<span>self, text: str, root_id: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a visible, enabled button with the specified text and clicks it.</p>
@@ -292,7 +314,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def click_button_by_text(self, text, root_id=None):
+<pre><code class="python">def click_button_by_text(self, text: str, root_id: str = None):
     &#34;&#34;&#34;Finds a visible, enabled button with the specified text and clicks it.
 
     Args:
@@ -301,6 +323,32 @@ If omitted, all components within the document are included in the search.</dd>
             If omitted, all components within the document are included in the search.
     &#34;&#34;&#34;
     self.click_button(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)</code></pre>
+</details>
+</dd>
+<dt id="pyseext.ButtonHelper.ButtonHelper.click_button_on_messagebox"><code class="name flex">
+<span>def <span class="ident">click_button_on_messagebox</span></span>(<span>self, text: str = 'OK')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Clicks a button on a messagebox.</p>
+<p>The messagebox must be visible.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The text of the button to click. Defaults to 'OK'.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def click_button_on_messagebox(self, text: str = &#39;OK&#39;):
+    &#34;&#34;&#34;Clicks a button on a messagebox.
+
+    The messagebox must be visible.
+
+    Args:
+        text (str, optional): The text of the button to click. Defaults to &#39;OK&#39;.
+    &#34;&#34;&#34;
+    self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))</code></pre>
 </details>
 </dd>
 </dl>
@@ -328,6 +376,7 @@ If omitted, all components within the document are included in the search.</dd>
 <li><code><a title="pyseext.ButtonHelper.ButtonHelper.check_button_enabled" href="#pyseext.ButtonHelper.ButtonHelper.check_button_enabled">check_button_enabled</a></code></li>
 <li><code><a title="pyseext.ButtonHelper.ButtonHelper.click_button" href="#pyseext.ButtonHelper.ButtonHelper.click_button">click_button</a></code></li>
 <li><code><a title="pyseext.ButtonHelper.ButtonHelper.click_button_by_text" href="#pyseext.ButtonHelper.ButtonHelper.click_button_by_text">click_button_by_text</a></code></li>
+<li><code><a title="pyseext.ButtonHelper.ButtonHelper.click_button_on_messagebox" href="#pyseext.ButtonHelper.ButtonHelper.click_button_on_messagebox">click_button_on_messagebox</a></code></li>
 </ul>
 </li>
 </ul>

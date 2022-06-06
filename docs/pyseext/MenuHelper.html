@@ -49,7 +49,7 @@ class MenuHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_menu_item_by_text(self, text, root_id=None):
+    def click_menu_item_by_text(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Finds a visible, enabled menu item with the specified text and clicks it.
 
         Args:
@@ -64,7 +64,7 @@ class MenuHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def check_menu_item_enabled(self, text, root_id=None):
+    def check_menu_item_enabled(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Checks that we can find an enabled menu item with the specified text.
 
         Args:
@@ -74,7 +74,7 @@ class MenuHelper:
         &#34;&#34;&#34;
         self._cq.wait_for_single_query(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
-    def check_menu_item_disabled(self, text, root_id=None):
+    def check_menu_item_disabled(self, text: str, root_id:str = None):
         &#34;&#34;&#34;Checks that we can find a disabled menu item with the specified text.
 
         Args:
@@ -129,7 +129,7 @@ class MenuHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_menu_item_by_text(self, text, root_id=None):
+    def click_menu_item_by_text(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Finds a visible, enabled menu item with the specified text and clicks it.
 
         Args:
@@ -144,7 +144,7 @@ class MenuHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def check_menu_item_enabled(self, text, root_id=None):
+    def check_menu_item_enabled(self, text: str, root_id: str = None):
         &#34;&#34;&#34;Checks that we can find an enabled menu item with the specified text.
 
         Args:
@@ -154,7 +154,7 @@ class MenuHelper:
         &#34;&#34;&#34;
         self._cq.wait_for_single_query(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
-    def check_menu_item_disabled(self, text, root_id=None):
+    def check_menu_item_disabled(self, text: str, root_id:str = None):
         &#34;&#34;&#34;Checks that we can find a disabled menu item with the specified text.
 
         Args:
@@ -167,7 +167,7 @@ class MenuHelper:
 <h3>Methods</h3>
 <dl>
 <dt id="pyseext.MenuHelper.MenuHelper.check_menu_item_disabled"><code class="name flex">
-<span>def <span class="ident">check_menu_item_disabled</span></span>(<span>self, text, root_id=None)</span>
+<span>def <span class="ident">check_menu_item_disabled</span></span>(<span>self, text: str, root_id: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks that we can find a disabled menu item with the specified text.</p>
@@ -183,7 +183,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_menu_item_disabled(self, text, root_id=None):
+<pre><code class="python">def check_menu_item_disabled(self, text: str, root_id:str = None):
     &#34;&#34;&#34;Checks that we can find a disabled menu item with the specified text.
 
     Args:
@@ -195,7 +195,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.MenuHelper.MenuHelper.check_menu_item_enabled"><code class="name flex">
-<span>def <span class="ident">check_menu_item_enabled</span></span>(<span>self, text, root_id=None)</span>
+<span>def <span class="ident">check_menu_item_enabled</span></span>(<span>self, text: str, root_id: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks that we can find an enabled menu item with the specified text.</p>
@@ -211,7 +211,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_menu_item_enabled(self, text, root_id=None):
+<pre><code class="python">def check_menu_item_enabled(self, text: str, root_id: str = None):
     &#34;&#34;&#34;Checks that we can find an enabled menu item with the specified text.
 
     Args:
@@ -223,7 +223,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.MenuHelper.MenuHelper.click_menu_item_by_text"><code class="name flex">
-<span>def <span class="ident">click_menu_item_by_text</span></span>(<span>self, text, root_id=None)</span>
+<span>def <span class="ident">click_menu_item_by_text</span></span>(<span>self, text: str, root_id: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a visible, enabled menu item with the specified text and clicks it.</p>
@@ -239,7 +239,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def click_menu_item_by_text(self, text, root_id=None):
+<pre><code class="python">def click_menu_item_by_text(self, text: str, root_id: str = None):
     &#34;&#34;&#34;Finds a visible, enabled menu item with the specified text and clicks it.
 
     Args:

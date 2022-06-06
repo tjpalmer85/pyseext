@@ -34,8 +34,9 @@ class HasReferencedJavaScript:
     &#34;&#34;&#34;
 
     # Class variables
-    _SCRIPT_LOADED_TEST_TEMPLATE = &#34;return Ext.isDefined(globalThis.PySeExt &amp;&amp; globalThis.PySeExt.{class_name})&#34;
+    _SCRIPT_LOADED_TEST_TEMPLATE = &#34;return globalThis.Ext &amp;&amp; globalThis.Ext.isDefined &amp;&amp; globalThis.Ext.isDefined(globalThis.PySeExt &amp;&amp; globalThis.PySeExt.{class_name})&#34;
     _SCRIPT_LOAD_TIMEOUT = 2
+    _ASYNC_SCRIPT_TEMPLATE = &#34;var {callback_parameter_name} = arguments[arguments.length - 1]; {script}&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -44,10 +45,18 @@ class HasReferencedJavaScript:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
 
+        self._driver = driver
+        self.ensure_javascript_loaded()
+
+    def ensure_javascript_loaded(self):
+        &#34;&#34;&#34;Ensures that our JavaScript has been loaded into the DOM.
+
+        If it hasn&#39;t then it is loaded.
+        &#34;&#34;&#34;
         class_name = type(self).__name__
 
         # If our JavaScript has not been loaded then load it now
-        if not driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
+        if not self._driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
             js_path = &#39;./js/PySeExt.{class_name}.js&#39;.format(class_name=class_name)
             print(&#39;Loading script: &#39;, js_path)
 
@@ -57,16 +66,31 @@ class HasReferencedJavaScript:
             js_path = source_dir.joinpath(js_path)
             print(&#39;Full path: &#39;, js_path)
 
-            driver.execute_script(open(js_path).read())
+            self._driver.execute_script(open(js_path).read())
 
             # Wait for it to the loaded
-            WebDriverWait(driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
+            WebDriverWait(self._driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
+
+    def get_async_script_content(self, script: str, callback_parameter_name: str = &#39;callback&#39;):
+        &#34;&#34;&#34;Builds some async script content, to call some JavaScript that takes a callback function.
+
+        Note, we cannot get a value back from the JavaScript (that I know of), but we can get notified of completion.
+
+        Args:
+            script (str): The script containing the asynchronous JavaScript being called.
+            callback_parameter_name (str, optional): The name of the callback parmeter to use for the script.
+                                                     Defaults to &#39;callback&#39;.
+
+        Returns:
+            str: The script, prefixed with some code that captures the callback passes from the web driver.
+        &#34;&#34;&#34;
+        return self._ASYNC_SCRIPT_TEMPLATE.format(callback_parameter_name=callback_parameter_name, script=script)
 
     class JavaScriptLoadedExpectation():
         &#34;&#34;&#34; An expectation for checking that our JavaScript has loaded
         &#34;&#34;&#34;
 
-        def __init__(self, class_name, test_template):
+        def __init__(self, class_name: str, test_template: str):
             &#34;&#34;&#34;Initialises an instance of this class
 
             Args:
@@ -112,8 +136,9 @@ class HasReferencedJavaScript:
     &#34;&#34;&#34;
 
     # Class variables
-    _SCRIPT_LOADED_TEST_TEMPLATE = &#34;return Ext.isDefined(globalThis.PySeExt &amp;&amp; globalThis.PySeExt.{class_name})&#34;
+    _SCRIPT_LOADED_TEST_TEMPLATE = &#34;return globalThis.Ext &amp;&amp; globalThis.Ext.isDefined &amp;&amp; globalThis.Ext.isDefined(globalThis.PySeExt &amp;&amp; globalThis.PySeExt.{class_name})&#34;
     _SCRIPT_LOAD_TIMEOUT = 2
+    _ASYNC_SCRIPT_TEMPLATE = &#34;var {callback_parameter_name} = arguments[arguments.length - 1]; {script}&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -122,10 +147,18 @@ class HasReferencedJavaScript:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
 
+        self._driver = driver
+        self.ensure_javascript_loaded()
+
+    def ensure_javascript_loaded(self):
+        &#34;&#34;&#34;Ensures that our JavaScript has been loaded into the DOM.
+
+        If it hasn&#39;t then it is loaded.
+        &#34;&#34;&#34;
         class_name = type(self).__name__
 
         # If our JavaScript has not been loaded then load it now
-        if not driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
+        if not self._driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
             js_path = &#39;./js/PySeExt.{class_name}.js&#39;.format(class_name=class_name)
             print(&#39;Loading script: &#39;, js_path)
 
@@ -135,16 +168,31 @@ class HasReferencedJavaScript:
             js_path = source_dir.joinpath(js_path)
             print(&#39;Full path: &#39;, js_path)
 
-            driver.execute_script(open(js_path).read())
+            self._driver.execute_script(open(js_path).read())
 
             # Wait for it to the loaded
-            WebDriverWait(driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
+            WebDriverWait(self._driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
+
+    def get_async_script_content(self, script: str, callback_parameter_name: str = &#39;callback&#39;):
+        &#34;&#34;&#34;Builds some async script content, to call some JavaScript that takes a callback function.
+
+        Note, we cannot get a value back from the JavaScript (that I know of), but we can get notified of completion.
+
+        Args:
+            script (str): The script containing the asynchronous JavaScript being called.
+            callback_parameter_name (str, optional): The name of the callback parmeter to use for the script.
+                                                     Defaults to &#39;callback&#39;.
+
+        Returns:
+            str: The script, prefixed with some code that captures the callback passes from the web driver.
+        &#34;&#34;&#34;
+        return self._ASYNC_SCRIPT_TEMPLATE.format(callback_parameter_name=callback_parameter_name, script=script)
 
     class JavaScriptLoadedExpectation():
         &#34;&#34;&#34; An expectation for checking that our JavaScript has loaded
         &#34;&#34;&#34;
 
-        def __init__(self, class_name, test_template):
+        def __init__(self, class_name: str, test_template: str):
             &#34;&#34;&#34;Initialises an instance of this class
 
             Args:
@@ -162,15 +210,94 @@ class HasReferencedJavaScript:
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="pyseext.ComponentQuery.ComponentQuery" href="ComponentQuery.html#pyseext.ComponentQuery.ComponentQuery">ComponentQuery</a></li>
+<li><a title="pyseext.Core.Core" href="Core.html#pyseext.Core.Core">Core</a></li>
 <li><a title="pyseext.FormHelper.FormHelper" href="FormHelper.html#pyseext.FormHelper.FormHelper">FormHelper</a></li>
 <li><a title="pyseext.GridHelper.GridHelper" href="GridHelper.html#pyseext.GridHelper.GridHelper">GridHelper</a></li>
 <li><a title="pyseext.LocalStorageHelper.LocalStorageHelper" href="LocalStorageHelper.html#pyseext.LocalStorageHelper.LocalStorageHelper">LocalStorageHelper</a></li>
+<li><a title="pyseext.StoreHelper.StoreHelper" href="StoreHelper.html#pyseext.StoreHelper.StoreHelper">StoreHelper</a></li>
+<li><a title="pyseext.TreeHelper.TreeHelper" href="TreeHelper.html#pyseext.TreeHelper.TreeHelper">TreeHelper</a></li>
 </ul>
 <h3>Class variables</h3>
 <dl>
 <dt id="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.JavaScriptLoadedExpectation"><code class="name">var <span class="ident">JavaScriptLoadedExpectation</span></code></dt>
 <dd>
 <div class="desc"><p>An expectation for checking that our JavaScript has loaded</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.ensure_javascript_loaded"><code class="name flex">
+<span>def <span class="ident">ensure_javascript_loaded</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ensures that our JavaScript has been loaded into the DOM.</p>
+<p>If it hasn't then it is loaded.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_javascript_loaded(self):
+    &#34;&#34;&#34;Ensures that our JavaScript has been loaded into the DOM.
+
+    If it hasn&#39;t then it is loaded.
+    &#34;&#34;&#34;
+    class_name = type(self).__name__
+
+    # If our JavaScript has not been loaded then load it now
+    if not self._driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
+        js_path = &#39;./js/PySeExt.{class_name}.js&#39;.format(class_name=class_name)
+        print(&#39;Loading script: &#39;, js_path)
+
+        source_path = Path(__file__).resolve()
+        source_dir = source_path.parent
+
+        js_path = source_dir.joinpath(js_path)
+        print(&#39;Full path: &#39;, js_path)
+
+        self._driver.execute_script(open(js_path).read())
+
+        # Wait for it to the loaded
+        WebDriverWait(self._driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))</code></pre>
+</details>
+</dd>
+<dt id="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.get_async_script_content"><code class="name flex">
+<span>def <span class="ident">get_async_script_content</span></span>(<span>self, script: str, callback_parameter_name: str = 'callback')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Builds some async script content, to call some JavaScript that takes a callback function.</p>
+<p>Note, we cannot get a value back from the JavaScript (that I know of), but we can get notified of completion.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>script</code></strong> :&ensp;<code>str</code></dt>
+<dd>The script containing the asynchronous JavaScript being called.</dd>
+<dt><strong><code>callback_parameter_name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The name of the callback parmeter to use for the script.
+Defaults to 'callback'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The script, prefixed with some code that captures the callback passes from the web driver.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_async_script_content(self, script: str, callback_parameter_name: str = &#39;callback&#39;):
+    &#34;&#34;&#34;Builds some async script content, to call some JavaScript that takes a callback function.
+
+    Note, we cannot get a value back from the JavaScript (that I know of), but we can get notified of completion.
+
+    Args:
+        script (str): The script containing the asynchronous JavaScript being called.
+        callback_parameter_name (str, optional): The name of the callback parmeter to use for the script.
+                                                 Defaults to &#39;callback&#39;.
+
+    Returns:
+        str: The script, prefixed with some code that captures the callback passes from the web driver.
+    &#34;&#34;&#34;
+    return self._ASYNC_SCRIPT_TEMPLATE.format(callback_parameter_name=callback_parameter_name, script=script)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -194,6 +321,8 @@ class HasReferencedJavaScript:
 <h4><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript" href="#pyseext.HasReferencedJavaScript.HasReferencedJavaScript">HasReferencedJavaScript</a></code></h4>
 <ul class="">
 <li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.JavaScriptLoadedExpectation" href="#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.JavaScriptLoadedExpectation">JavaScriptLoadedExpectation</a></code></li>
+<li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.ensure_javascript_loaded" href="#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.ensure_javascript_loaded">ensure_javascript_loaded</a></code></li>
+<li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.get_async_script_content" href="#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.get_async_script_content">get_async_script_content</a></code></li>
 </ul>
 </li>
 </ul>
