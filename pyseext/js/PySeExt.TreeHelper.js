@@ -118,6 +118,34 @@ globalThis.PySeExt.TreeHelper = {
     },
 
     /**
+     * Finds a node by text, a causes it and its children to reload.
+     *
+     * @param {String} treeSelector The selector to use to find the tree.
+     * @param {String} nodeText The node text to find.
+     */
+     reloadNodeByText: function(treeSelector, nodeText) {
+        var me = this;
+
+        return me.reloadNodeByData(treeSelector, me.__getDataForText(nodeText));
+     },
+
+    /**
+     * Finds a node by data, a causes it and its children to reload.
+     *
+     * @param {String} treeSelector The selector to use to find the tree.
+     * @param {String} nodeData The node data to find.
+     */
+     reloadNodeByData: function(treeSelector, nodeData) {
+        var me = this,
+            node;
+
+        node = me.__getNodeByData(treeSelector, nodeData);
+        if (node) {
+            node.getTreeStore().load({ node: node });
+        }
+    },
+
+    /**
      * Determines if the specified node or any of its children are currently loading.
      * @private
      * @param  {Ext.data.NodeInterface} node The node to check.
@@ -153,13 +181,43 @@ globalThis.PySeExt.TreeHelper = {
      * @param  {Object} nodeData     The node data to find.
      * @return {Element} The element for the tree node, or undefined if not found.
      */
-    __getNodeRowElementByData: function(treeSelector, nodeData) {
+     __getNodeRowElementByData: function(treeSelector, nodeData) {
+        var me = this,
+            foundNode,
+            treePanel,
+            treeView,
+            nodeRowElement;
+
+        foundNode = me.__getNodeByData(treeSelector, nodeData);
+
+        if (foundNode) {
+            // We need to get the row element for the node
+            treePanel = me.__getTree(treeSelector)
+            treeView = treePanel.getView();
+            nodeRowElement = treeView.getNode(foundNode);
+
+            // This row element has children that we may be interested in, with CSS classes:
+            //   - x-tree-expander
+            //   - x-tree-icon
+            //   - x-tree-node-text
+            // Get them using: Ext.get(nodeRowElement).query('.x-tree-node-text')[0];
+        }
+
+        return nodeRowElement;
+    },
+
+    /**
+     * Attempts to retrieve a node in a single visible tree by data.
+     * @private
+     * @param  {String} treeSelector    The selector to use to find the tree.
+     * @param  {Object} nodeData        The node data to find.
+     * @return {Ext.data.NodeInterface} The tree node, or undefined if not found.
+     */
+    __getNodeByData: function(treeSelector, nodeData) {
         var me = this,
             treePanel = me.__getTree(treeSelector),
             rootNode = treePanel.getRootNode(),
-            treeView,
-            nodeRowElement,
-            nodeElement;
+            foundNode;
 
         if (me.__isBranchLoading(rootNode)) {
             globalThis.Ext.raise("The tree is still loading. You must wait for loading to have finished before interacting with the tree.");
@@ -185,19 +243,7 @@ globalThis.PySeExt.TreeHelper = {
             return isMatch;
         }, undefined, true);
 
-        if (foundNode) {
-            // We need to get the row element for the node
-            treeView = treePanel.getView();
-            nodeRowElement = treeView.getNode(foundNode);
-
-            // This row element has children that we may be interested in, with CSS classes:
-            //   - x-tree-expander
-            //   - x-tree-icon
-            //   - x-tree-node-text
-            // Get them using: Ext.get(nodeRowElement).query('.x-tree-node-text')[0];
-        }
-
-        return nodeRowElement;
+        return foundNode;
     },
 
     /**

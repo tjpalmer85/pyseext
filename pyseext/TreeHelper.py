@@ -17,6 +17,8 @@ class TreeHelper(HasReferencedJavaScript):
     _GET_NODE_ICON_BY_DATA_TEMPLATE = "return globalThis.PySeExt.TreeHelper.getNodeIconByData('{tree_cq}', {node_data})"
     _GET_NODE_TEXT_BY_DATA_TEMPLATE = "return globalThis.PySeExt.TreeHelper.getNodeTextByData('{tree_cq}', {node_data})"
     _GET_NODE_ELEMENT_BY_DATA_TEMPLATE = "return globalThis.PySeExt.TreeHelper.getNodeElementByData('{tree_cq}', {node_data}, '{css_query}')"
+    _RELOAD_NODE_BY_TEXT_TEMPLATE = "return globalThis.PySeExt.TreeHelper.reloadNodeByText('{tree_cq}', '{node_text}')"
+    _RELOAD_NODE_BY_DATA_TEMPLATE = "return globalThis.PySeExt.TreeHelper.reloadNodeByData('{tree_cq}', {node_data})"
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -155,6 +157,44 @@ class TreeHelper(HasReferencedJavaScript):
         else:
             raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data)
 
+    def wait_for_tree_node(self,
+                           tree_cq: str,
+                           node_text_or_data: Union[str, dict],
+                           parent_node_text_or_data: Union[str, dict],
+                           timeout: float = 30):
+        """Method that waits until a tree node is available, refreshing the parent until it's
+        found or the timeout is hit.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+            parent_node_text_or_data (Union[str, dict]): The node text or data to use to find the nodes parent,
+                                                         for refreshing purposes.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+
+        Returns:
+            selenium.webdriver.remote.webelement: The DOM element for the node icon.
+        """
+        WebDriverWait(self._driver, timeout).until(TreeHelper.NodeFoundExpectation(tree_cq, node_text_or_data, parent_node_text_or_data))
+        return self.get_node_icon_element(tree_cq, node_text_or_data)
+
+    def reload_node(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+        """Finds a node by text or data, and triggers a reload on it, and its children.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+        """
+        self.wait_until_tree_not_loading(tree_cq)
+
+        if isinstance(node_text_or_data, str):
+            script = self._RELOAD_NODE_BY_TEXT_TEMPLATE.format(tree_cq=tree_cq, node_text=node_text_or_data)
+        else:
+            script = self._RELOAD_NODE_BY_DATA_TEMPLATE.format(tree_cq=tree_cq, node_data=node_text_or_data)
+
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
     class NodeNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified node
         """
@@ -176,7 +216,7 @@ class TreeHelper(HasReferencedJavaScript):
         def __str__(self):
             """Returns a string representation of this exception
             """
-            return self.message.format(node_text_or_data=self._node_text_or_data, _tree_cq=self.__tree_cq)
+            return self.message.format(node_text_or_data=self._node_text_or_data, _tree_cq=self._tree_cq)
 
     class TreeNotLoadingExpectation():
         """ An expectation for checking that a tree is not loading.
@@ -193,3 +233,38 @@ class TreeHelper(HasReferencedJavaScript):
             tree_helper = TreeHelper(driver)
 
             return tree_helper.is_tree_loading(self._tree_cq) == False
+
+    class NodeFoundExpectation():
+        """ An expectation for checking that a node has been found
+        """
+
+        def __init__(self,
+                     tree_cq: str,
+                     node_text_or_data: Union[str, dict],
+                     parent_node_text_or_data: Union[str, dict]):
+            """Initialises an instance of this class.
+
+            Args:
+                tree_cq (str): The component query to use to find the tree.
+                node_text_or_data (Union[str, dict]): The node text or data to find.
+                parent_node_text_or_data (Union[str, dict]): The node text or data to use to find the nodes parent,
+                                                            for refreshing purposes.
+            """
+            self._tree_cq = tree_cq
+            self._node_text_or_data = node_text_or_data
+            self._parent_node_text_or_data = parent_node_text_or_data
+
+        def __call__(self, driver):
+            """Method that determines whether a node was found.
+
+            If the node is not found the parent tree node is refreshed and the load waited for.
+            """
+            tree_helper = TreeHelper(driver)
+
+            node = tree_helper.get_node_icon_element(self._tree_cq, self._node_text_or_data)
+            if node:
+                return True
+            else:
+                # Trigger a reload of the parent
+                tree_helper.reload_node(self._tree_cq, self._parent_node_text_or_data)
+                return False
