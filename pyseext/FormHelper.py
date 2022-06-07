@@ -1,5 +1,7 @@
 import random
 import time
+from typing import Union
+
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -13,8 +15,9 @@ class FormHelper(HasReferencedJavaScript):
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE = "return globalThis.PySeExt.FormHelper.findFieldInputElement('{form_cq}', '{name}')"
     _GET_FIELD_XTYPE_TEMPLATE = "return globalThis.PySeExt.FormHelper.getFieldXType('{form_cq}', '{name}')"
+    _GET_FIELD_VALUE_TEMPLATE = "return globalThis.PySeExt.FormHelper.getFieldValue('{form_cq}', '{name}')"
     _SET_CHECKBOX_VALUE_TEMPLATE = "return globalThis.PySeExt.FormHelper.setCheckboxValue('{form_cq}', '{name}', {checked})"
-    _SET_FIELD_NUMERIC_VALUE_TEMPLATE = "return globalThis.PySeExt.FormHelper.setFieldNumericValue('{form_cq}', '{name}', {value})"
+    _SET_FIELD_VALUE_TEMPLATE = "return globalThis.PySeExt.FormHelper.setFieldValue('{form_cq}', '{name}', {value})"
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -57,6 +60,20 @@ class FormHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
+    def get_field_value(self, form_cq: str, name: str):
+        """Attempts to get the value of a field by name from the specified form panel
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            Any: The value of the field, or None if not found.
+        """
+        script = self._GET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
     def set_form_values(self, form_cq: str, field_values: dict):
         """Sets the values on the specified form panel
 
@@ -66,6 +83,7 @@ class FormHelper(HasReferencedJavaScript):
                                   - value (Any): The value for the field
                                   - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
                                   - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
+                                                    and only works with fields that are being typed into.
         """
         if not type(field_values) is dict:
             raise TypeError("Parameter 'field_values' is not of type 'dict', but type '{type}'.".format(type=type(field_values)))
@@ -89,6 +107,9 @@ class FormHelper(HasReferencedJavaScript):
         for field_name in field_values.keys():
             field_xtype = self.get_field_xtype(form_cq, field_name)
 
+            # FIXME: This is a mess!
+            # .....: Need a field helper class, and for much of this complexity factored out!
+            # .....: Also need much better support for comboboxes...
             if field_xtype:
                 # Field found!
                 value_or_config = field_values[field_name]
@@ -109,9 +130,15 @@ class FormHelper(HasReferencedJavaScript):
                 elif field_xtype.endswith('checkbox'):
                     self.set_checkbox_value(form_cq, field_name, field_value)
                 elif (field_xtype.endswith('combo') or
-                    field_xtype.endswith('combobox')):
-                    # We want to directly set the value on the combo rather than type it in
-                    self.set_field_numeric_value(form_cq, field_name, field_value)
+                    field_xtype.endswith('combobox') or
+                    field_xtype.endswith('radiogroup') or   # FIXME: For a radio group, can get child controls using getBoxes(query), so could click on children if wanted!
+                    field_xtype.endswith('radio')):
+
+                    # We want to directly set the value on the field rather than type it in
+                    self.set_field_value(form_cq, field_name, field_value)
+
+                    if delay:
+                        time.sleep(delay)
                 else:
                     raise FormHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
             else:
@@ -134,19 +161,27 @@ class FormHelper(HasReferencedJavaScript):
             name (str): The name of the field
             checked (bool, optional): The checked value for the checkbox. Defaults to True.
         """
+
+        # FIXME: Perhaps change this to get the value, and if checked state is not correct to
+        # .....: click on the element?
+
         script = self._SET_CHECKBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, checked=str(checked).lower())
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_field_numeric_value(self, form_cq: str, field_name: str, value: int):
+    def set_field_value(self, form_cq: str, field_name: str, value: Union[int, str]):
         """Sets the value for a field to a numeric value.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
             name (str): The name of the field
-            value (int): The value for the field.
+            value (Union[int, str]): The value for the field.
         """
-        script = self._SET_FIELD_NUMERIC_VALUE.format(form_cq=form_cq, name=field_name, value=value)
+        # If value is a string then we want to quote it in our script
+        if isinstance(value, str):
+            value = "'{value}'".format(value=value)
+
+        script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, value=value)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
@@ -168,17 +203,30 @@ class FormHelper(HasReferencedJavaScript):
         self._action_chains.perform()
 
         # Now type each character
-        for character in text:
-            self._action_chains.send_keys(character)
-            self._action_chains.perform()
-            time.sleep(random.uniform(0.0001, 0.002))
+        self.type(text)
 
         if delay:
             time.sleep(delay)
 
         if tab_off:
-            self._action_chains.send_keys(Keys.TAB)
+            self.type_tab()
+
+    def type(self, text: str):
+        """Types into the currently focused element in a realistic manner.
+
+        Args:
+            text (str): The text to type.
+        """
+        for character in text:
+            self._action_chains.send_keys(character)
             self._action_chains.perform()
+            time.sleep(random.uniform(0.0001, 0.002))
+
+    def type_tab(self):
+        """Type a tab character into the currently focused element
+        """
+        self._action_chains.send_keys(Keys.TAB)
+        self._action_chains.perform()
 
     class FieldNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified field

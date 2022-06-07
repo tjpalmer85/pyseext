@@ -24,7 +24,7 @@ globalThis.PySeExt.FormHelper = {
      * @param {String} formCQ The CQ to get to the form panel.
      * @param {String} name The name of the field.
      * @returns {String} The xtype of the field, if found.
-     */    
+     */
     getFieldXType: function(formCQ, name) {
         var formPanel = Ext.ComponentQuery.query(formCQ),
             field;
@@ -35,6 +35,24 @@ globalThis.PySeExt.FormHelper = {
         }
 
         return field && field.xtype;
+    },
+
+    /**
+     * Finds the specified field on the specified form and returns it's value.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     * @returns {Mixed} The value of the field, if found.
+     */
+     getFieldValue: function(formCQ, name) {
+        var formPanel = Ext.ComponentQuery.query(formCQ),
+            field;
+
+        if (formPanel && formPanel.length) {
+            formPanel = formPanel[0];
+            field = formPanel.getForm().findField(name);
+        }
+
+        return field && field.getValue();
     },
 
     /**
@@ -65,7 +83,7 @@ globalThis.PySeExt.FormHelper = {
      * @param {String} name The name of the field.
      * @param {Number} value The value of the field.
      */
-     setFieldNumericValue: function(formCQ, name, value) {
+     setFieldValue: function(formCQ, name, value) {
         var formPanel = Ext.ComponentQuery.query(formCQ),
             field;
 
@@ -79,5 +97,5 @@ globalThis.PySeExt.FormHelper = {
                 Ext.Error.raise("Field could not be found!");
             }
         }
-    }    
+    }
 };
