@@ -1,5 +1,7 @@
 import logging
+import array
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
@@ -24,7 +26,7 @@ class ComponentQuery(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def query(self, cq: str, root_id: str = None):
+    def query(self, cq: str, root_id: str = None) -> list[WebElement]:
         """Executes a ComponentQuery and returns the result
 
         Args:
@@ -34,7 +36,7 @@ class ComponentQuery(HasReferencedJavaScript):
                 If omitted, all components within the document are included in the search.
 
         Returns:
-            selenium.webdriver.remote.webelement[]: An array of DOM elements that match the query or an empty array if not found
+            list[WebElement]: An array of DOM elements that match the query or an empty array if not found
         """
         if root_id == None:
             self._logger.debug(f"Executing CQ '{cq}'")
@@ -50,7 +52,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: str = None, timeout: float = 10):
+    def wait_for_query(self, cq: str, root_id: str = None, timeout: float = 10) -> list[WebElement]:
         """Method that waits for the specified CQ to match something
 
         Args:
@@ -61,12 +63,12 @@ class ComponentQuery(HasReferencedJavaScript):
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
-            selenium.webdriver.remote.webelement[]: An array of DOM elements that match the query or an empty array if not found
+            list[WebElement]: An array of DOM elements that match the query or an empty array if not found
         """
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         return self.query(cq, root_id)
 
-    def wait_for_single_query(self, cq: str, root_id: str = None, timeout: float = 10):
+    def wait_for_single_query(self, cq: str, root_id: str = None, timeout: float = 10) -> WebElement:
         """Method that waits for the specified CQ to match a single result.
         If there are multiple matches then an error is thrown.
 
@@ -78,7 +80,7 @@ class ComponentQuery(HasReferencedJavaScript):
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element that matches the query
+            WebElement: The DOM element that matches the query
         """
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         results = self.query(cq, root_id)
@@ -87,7 +89,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return results[0]
 
-    def wait_for_single_query_visible(self, cq: str, root_id: str = None, timeout: float = 10):
+    def wait_for_single_query_visible(self, cq: str, root_id: str = None, timeout: float = 10) -> WebElement:
         """Method that waits for the specified CQ to match a single visible result.
         If there are multiple matches then an error is thrown.
 
@@ -99,7 +101,7 @@ class ComponentQuery(HasReferencedJavaScript):
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element that matches the query
+            WebElement: The DOM element that matches the query
         """
         if not cq.endswith('{isVisible(true)}'):
             cq = cq + '{isVisible(true)}'

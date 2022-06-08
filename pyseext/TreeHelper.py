@@ -2,6 +2,7 @@ import logging
 from typing import Union
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
@@ -60,7 +61,7 @@ class TreeHelper(HasReferencedJavaScript):
         """
         WebDriverWait(self._driver, timeout).until(TreeHelper.TreeNotLoadingExpectation(tree_cq))
 
-    def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+    def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -> WebElement:
         """Finds a node by text or data, then the child HTML element that holds it's icon.
 
         Args:
@@ -68,7 +69,7 @@ class TreeHelper(HasReferencedJavaScript):
             node_text_or_data (Union[str, dict]): The node text or data to find.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the node icon.
+            WebElement: The DOM element for the node icon.
         """
         self.wait_until_tree_not_loading(tree_cq)
 
@@ -80,7 +81,7 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+    def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -> WebElement:
         """Finds a node by text or data, then the child HTML element that holds it's text.
 
         Args:
@@ -88,7 +89,7 @@ class TreeHelper(HasReferencedJavaScript):
             node_text_or_data (Union[str, dict]): The node text or data to find.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the node text.
+            WebElement: The DOM element for the node text.
         """
         self.wait_until_tree_not_loading(tree_cq)
 
@@ -100,7 +101,7 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+    def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -> WebElement:
         """Finds a node by text or data, then the child HTML element that holds it's expander UI element.
 
         Args:
@@ -108,7 +109,7 @@ class TreeHelper(HasReferencedJavaScript):
             node_text_or_data (Union[str, dict]): The node text or data to find.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the node's expander.
+            WebElement: The DOM element for the node's expander.
         """
         self.wait_until_tree_not_loading(tree_cq)
 
@@ -120,7 +121,7 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_node_element(self, tree_cq: str, node_data: dict, css_query: str):
+    def get_node_element(self, tree_cq: str, node_data: dict, css_query: str) -> WebElement:
         """Finds a node by data, then a child element by CSS query.
 
         Args:
@@ -135,7 +136,7 @@ class TreeHelper(HasReferencedJavaScript):
                              This is in case need to click on another part of the node's row.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the node's expander.
+            WebElement: The DOM element for the node's expander.
         """
         self.wait_until_tree_not_loading(tree_cq)
 
@@ -165,7 +166,7 @@ class TreeHelper(HasReferencedJavaScript):
                            tree_cq: str,
                            node_text_or_data: Union[str, dict],
                            parent_node_text_or_data: Union[str, dict],
-                           timeout: float = 60):
+                           timeout: float = 60) -> WebElement:
         """Method that waits until a tree node is available, refreshing the parent until it's
         found or the timeout is hit.
 
@@ -177,7 +178,7 @@ class TreeHelper(HasReferencedJavaScript):
             timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the node icon.
+            WebElement: The DOM element for the node icon.
         """
         WebDriverWait(self._driver, timeout).until(TreeHelper.NodeFoundExpectation(tree_cq, node_text_or_data, parent_node_text_or_data))
         return self.get_node_icon_element(tree_cq, node_text_or_data)
@@ -199,7 +200,7 @@ class TreeHelper(HasReferencedJavaScript):
         self._logger.info(f"Reloading node '{node_text_or_data}' on tree with CQ '{tree_cq}'")
 
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
     class NodeNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified node

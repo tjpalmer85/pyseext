@@ -44,7 +44,7 @@ class HasReferencedJavaScript:
             # Wait for it to the loaded
             WebDriverWait(self._driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
 
-    def get_async_script_content(self, script: str, callback_parameter_name: str = 'callback'):
+    def get_async_script_content(self, script: str, callback_parameter_name: str = 'callback') -> str:
         """Builds some async script content, to call some JavaScript that takes a callback function.
 
         Note, we cannot get a value back from the JavaScript (that I know of), but we can get notified of completion.

@@ -26,7 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from selenium.webdriver.common.action_chains import ActionChains
+<pre><code class="python">import logging
+from selenium.webdriver.common.action_chains import ActionChains
 
 from pyseext.ComponentQuery import ComponentQuery
 
@@ -45,8 +46,8 @@ class ButtonHelper:
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
-
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
@@ -61,6 +62,8 @@ class ButtonHelper:
         button = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
+        self._logger.info(f&#34;Clicking button with CQ &#39;{cq}&#39;&#34;)
+
         self._action_chains.move_to_element(button)
         self._action_chains.click()
         self._action_chains.perform()
@@ -146,8 +149,8 @@ class ButtonHelper:
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
-
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
@@ -162,6 +165,8 @@ class ButtonHelper:
         button = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
+        self._logger.info(f&#34;Clicking button with CQ &#39;{cq}&#39;&#34;)
+
         self._action_chains.move_to_element(button)
         self._action_chains.click()
         self._action_chains.perform()
@@ -292,6 +297,8 @@ If omitted, all components within the document are included in the search.</dd>
     button = self._cq.wait_for_single_query_visible(cq, root_id)
 
     # Rather than call click, move mouse to button and click...
+    self._logger.info(f&#34;Clicking button with CQ &#39;{cq}&#39;&#34;)
+
     self._action_chains.move_to_element(button)
     self._action_chains.click()
     self._action_chains.perform()</code></pre>

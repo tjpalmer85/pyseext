@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
 class LocalStorageHelper(HasReferencedJavaScript):
@@ -38,7 +39,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
 
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
     def clear_value(self, key: str):
         """Clears a value in our persistent storage (implemented as local storage).
@@ -50,16 +51,16 @@ class LocalStorageHelper(HasReferencedJavaScript):
 
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
-    def get_stored_value(self, key: str):
+    def get_stored_value(self, key: str) -> Any:
         """Retrieves a value that has been saved in #storedData using #storeValue.
 
         Args:
             key (str): The key to use to retrieve the data.
 
         Returns:
-            The retrieved value or None if key does not exist.
+            Any: The retrieved value or None if key does not exist.
         """
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()

@@ -26,9 +26,12 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Union
+<pre><code class="python">import logging
+from typing import Union
+import array
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 from pyseext.ComponentQuery import ComponentQuery
@@ -55,19 +58,23 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
 
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
-    def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str):
+    def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; WebElement:
         &#34;&#34;&#34;Gets the element for the specified column header
 
         Args:
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+
+        Returns:
+            WebElement: The DOM element for the column header
         &#34;&#34;&#34;
 
         # Check grid can be found and is visible
@@ -82,7 +89,7 @@ class GridHelper(HasReferencedJavaScript):
         else:
             raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
 
-    def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str):
+    def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; bool:
         &#34;&#34;&#34;Determines whether the specified column is visible,
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -95,7 +102,7 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-    def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str):
+    def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; bool:
         &#34;&#34;&#34;Determines whether the specified column is hidden.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -108,7 +115,7 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-    def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str):
+    def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str) -&gt; list[WebElement]:
         &#34;&#34;&#34;Checks that the specified columns are all visible on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -128,7 +135,7 @@ class GridHelper(HasReferencedJavaScript):
 
         return columns_not_visible
 
-    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes):
+    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes) -&gt; list[WebElement]:
         &#34;&#34;&#34;Checks that the specified columns are all hidden on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -157,9 +164,14 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
         &#34;&#34;&#34;
         column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
-        column_header.click()
 
-    def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str):
+        self._logger.info(f&#34;Clicking column header &#39;{column_text_or_dataIndex}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
+        self._action_chains.move_to_element(column_header)
+        self._action_chains.click()
+        self._action_chains.perform()
+
+    def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; WebElement:
         &#34;&#34;&#34;Gets the element for the specified column header&#39;s trigger
 
         Args:
@@ -167,7 +179,7 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the column header trigger.
+            WebElement: The DOM element for the column header trigger.
         &#34;&#34;&#34;
 
         # Check grid can be found and is visible
@@ -194,6 +206,9 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.move_to_element(column_header).perform()
 
         column_header_trigger = self.get_visible_column_header_trigger(grid_cq, column_text_or_dataIndex)
+
+        self._logger.info(f&#34;Clicking column header trigger &#39;{column_text_or_dataIndex}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
         self._action_chains.move_to_element(column_header_trigger)
         self._action_chains.click()
         self._action_chains.perform()
@@ -210,11 +225,13 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
+        self._logger.info(f&#34;Clearing selection on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
         script = self._CLEAR_SELECTION_TEMPLATE.format(grid_cq=grid_cq)
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True):
+    def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -&gt; WebElement:
         &#34;&#34;&#34; Gets the element for the row with the specified data or index in the grid.
 
         The grid must be visible.
@@ -226,7 +243,7 @@ class GridHelper(HasReferencedJavaScript):
                                            if the row is not found. Defaults to True.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the row or None if not found (and not thrown)
+            WebElement: The DOM element for the row or None if not found (and not thrown)
         &#34;&#34;&#34;
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
@@ -252,26 +269,28 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         row = self.get_row(grid_cq, row_data)
 
+        self._logger.info(f&#34;Clicking clicking row &#39;{row_data}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
         self._action_chains.move_to_element(row)
         self._action_chains.click()
         self._action_chains.perform()
 
-    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60) -&gt; WebElement:
         &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
 
         Args:
             grid_cq (str): The component query for the grid.
             row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the row
+            WebElement: The DOM element for the row
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         return self.get_row(grid_cq, row_data)
 
-    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60):
         &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
         Once we have found the row it is clicked.
@@ -279,13 +298,10 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             grid_cq (str): The component query for the grid.
             row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
-
-        Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the row
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
-        return self.click_row(grid_cq, row_data)
+        self.click_row(grid_cq, row_data)
 
     class ColumnNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified column
@@ -412,19 +428,23 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
 
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
-    def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str):
+    def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; WebElement:
         &#34;&#34;&#34;Gets the element for the specified column header
 
         Args:
             grid_cq (str): The component query for the owning grid
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+
+        Returns:
+            WebElement: The DOM element for the column header
         &#34;&#34;&#34;
 
         # Check grid can be found and is visible
@@ -439,7 +459,7 @@ class GridHelper(HasReferencedJavaScript):
         else:
             raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
 
-    def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str):
+    def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; bool:
         &#34;&#34;&#34;Determines whether the specified column is visible,
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -452,7 +472,7 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-    def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str):
+    def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; bool:
         &#34;&#34;&#34;Determines whether the specified column is hidden.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -465,7 +485,7 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
 
-    def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str):
+    def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str) -&gt; list[WebElement]:
         &#34;&#34;&#34;Checks that the specified columns are all visible on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -485,7 +505,7 @@ class GridHelper(HasReferencedJavaScript):
 
         return columns_not_visible
 
-    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes):
+    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes) -&gt; list[WebElement]:
         &#34;&#34;&#34;Checks that the specified columns are all hidden on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -514,9 +534,14 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
         &#34;&#34;&#34;
         column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
-        column_header.click()
 
-    def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str):
+        self._logger.info(f&#34;Clicking column header &#39;{column_text_or_dataIndex}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
+        self._action_chains.move_to_element(column_header)
+        self._action_chains.click()
+        self._action_chains.perform()
+
+    def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; WebElement:
         &#34;&#34;&#34;Gets the element for the specified column header&#39;s trigger
 
         Args:
@@ -524,7 +549,7 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the column header trigger.
+            WebElement: The DOM element for the column header trigger.
         &#34;&#34;&#34;
 
         # Check grid can be found and is visible
@@ -551,6 +576,9 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.move_to_element(column_header).perform()
 
         column_header_trigger = self.get_visible_column_header_trigger(grid_cq, column_text_or_dataIndex)
+
+        self._logger.info(f&#34;Clicking column header trigger &#39;{column_text_or_dataIndex}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
         self._action_chains.move_to_element(column_header_trigger)
         self._action_chains.click()
         self._action_chains.perform()
@@ -567,11 +595,13 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
+        self._logger.info(f&#34;Clearing selection on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
         script = self._CLEAR_SELECTION_TEMPLATE.format(grid_cq=grid_cq)
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True):
+    def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -&gt; WebElement:
         &#34;&#34;&#34; Gets the element for the row with the specified data or index in the grid.
 
         The grid must be visible.
@@ -583,7 +613,7 @@ class GridHelper(HasReferencedJavaScript):
                                            if the row is not found. Defaults to True.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the row or None if not found (and not thrown)
+            WebElement: The DOM element for the row or None if not found (and not thrown)
         &#34;&#34;&#34;
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
@@ -609,26 +639,28 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         row = self.get_row(grid_cq, row_data)
 
+        self._logger.info(f&#34;Clicking clicking row &#39;{row_data}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
         self._action_chains.move_to_element(row)
         self._action_chains.click()
         self._action_chains.perform()
 
-    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60) -&gt; WebElement:
         &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
 
         Args:
             grid_cq (str): The component query for the grid.
             row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
 
         Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the row
+            WebElement: The DOM element for the row
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         return self.get_row(grid_cq, row_data)
 
-    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60):
         &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
         Once we have found the row it is clicked.
@@ -636,13 +668,10 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             grid_cq (str): The component query for the grid.
             row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
-
-        Returns:
-            selenium.webdriver.remote.webelement: The DOM element for the row
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
-        return self.click_row(grid_cq, row_data)
+        self.click_row(grid_cq, row_data)
 
     class ColumnNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified column
@@ -748,7 +777,7 @@ class GridHelper(HasReferencedJavaScript):
 <h3>Methods</h3>
 <dl>
 <dt id="pyseext.GridHelper.GridHelper.check_columns_are_hidden"><code class="name flex">
-<span>def <span class="ident">check_columns_are_hidden</span></span>(<span>self, grid_cq: str, column_texts_or_dataIndexes)</span>
+<span>def <span class="ident">check_columns_are_hidden</span></span>(<span>self, grid_cq: str, column_texts_or_dataIndexes) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks that the specified columns are all hidden on the specified grid.
@@ -766,7 +795,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes):
+<pre><code class="python">def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes) -&gt; list[WebElement]:
     &#34;&#34;&#34;Checks that the specified columns are all hidden on the specified grid.
     Throws a ColumnNotFoundException if the column does not exist.
 
@@ -788,7 +817,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.check_columns_are_visible"><code class="name flex">
-<span>def <span class="ident">check_columns_are_visible</span></span>(<span>self, grid_cq: str, column_texts_or_dataIndexes: str)</span>
+<span>def <span class="ident">check_columns_are_visible</span></span>(<span>self, grid_cq: str, column_texts_or_dataIndexes: str) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks that the specified columns are all visible on the specified grid.
@@ -806,7 +835,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str):
+<pre><code class="python">def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str) -&gt; list[WebElement]:
     &#34;&#34;&#34;Checks that the specified columns are all visible on the specified grid.
     Throws a ColumnNotFoundException if the column does not exist.
 
@@ -855,6 +884,8 @@ This will only work if the grid supports deselection.</p>
     # Check grid can be found and is visible
     self._cq.wait_for_single_query_visible(grid_cq)
 
+    self._logger.info(f&#34;Clearing selection on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
     script = self._CLEAR_SELECTION_TEMPLATE.format(grid_cq=grid_cq)
     self.ensure_javascript_loaded()
     self._driver.execute_script(script)</code></pre>
@@ -886,7 +917,12 @@ The column must be visible.</p>
         column_text_or_dataIndex (str): The header text or dataIndex of the grid column
     &#34;&#34;&#34;
     column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
-    column_header.click()</code></pre>
+
+    self._logger.info(f&#34;Clicking column header &#39;{column_text_or_dataIndex}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
+    self._action_chains.move_to_element(column_header)
+    self._action_chains.click()
+    self._action_chains.perform()</code></pre>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.click_column_header_trigger"><code class="name flex">
@@ -917,6 +953,9 @@ The column must be visible.</p>
     self._action_chains.move_to_element(column_header).perform()
 
     column_header_trigger = self.get_visible_column_header_trigger(grid_cq, column_text_or_dataIndex)
+
+    self._logger.info(f&#34;Clicking column header trigger &#39;{column_text_or_dataIndex}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
     self._action_chains.move_to_element(column_header_trigger)
     self._action_chains.click()
     self._action_chains.perform()</code></pre>
@@ -951,13 +990,15 @@ The column must be visible.</p>
     # Check grid can be found and is visible
     row = self.get_row(grid_cq, row_data)
 
+    self._logger.info(f&#34;Clicking clicking row &#39;{row_data}&#39; on grid with CQ&#39; {grid_cq}&#39;&#34;)
+
     self._action_chains.move_to_element(row)
     self._action_chains.click()
     self._action_chains.perform()</code></pre>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.get_column_header"><code class="name flex">
-<span>def <span class="ident">get_column_header</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str)</span>
+<span>def <span class="ident">get_column_header</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the element for the specified column header</p>
@@ -967,17 +1008,25 @@ The column must be visible.</p>
 <dd>The component query for the owning grid</dd>
 <dt><strong><code>column_text_or_dataIndex</code></strong> :&ensp;<code>str</code></dt>
 <dd>The header text or dataIndex of the grid column</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>WebElement</code></dt>
+<dd>The DOM element for the column header</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str):
+<pre><code class="python">def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; WebElement:
     &#34;&#34;&#34;Gets the element for the specified column header
 
     Args:
         grid_cq (str): The component query for the owning grid
         column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+
+    Returns:
+        WebElement: The DOM element for the column header
     &#34;&#34;&#34;
 
     # Check grid can be found and is visible
@@ -994,7 +1043,7 @@ The column must be visible.</p>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.get_column_header_trigger"><code class="name flex">
-<span>def <span class="ident">get_column_header_trigger</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str)</span>
+<span>def <span class="ident">get_column_header_trigger</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the element for the specified column header's trigger</p>
@@ -1007,14 +1056,14 @@ The column must be visible.</p>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>selenium.webdriver.remote.webelement</code></dt>
+<dt><code>WebElement</code></dt>
 <dd>The DOM element for the column header trigger.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str):
+<pre><code class="python">def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; WebElement:
     &#34;&#34;&#34;Gets the element for the specified column header&#39;s trigger
 
     Args:
@@ -1022,7 +1071,7 @@ The column must be visible.</p>
         column_text_or_dataIndex (str): The header text or dataIndex of the grid column
 
     Returns:
-        selenium.webdriver.remote.webelement: The DOM element for the column header trigger.
+        WebElement: The DOM element for the column header trigger.
     &#34;&#34;&#34;
 
     # Check grid can be found and is visible
@@ -1039,7 +1088,7 @@ The column must be visible.</p>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.get_row"><code class="name flex">
-<span>def <span class="ident">get_row</span></span>(<span>self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True)</span>
+<span>def <span class="ident">get_row</span></span>(<span>self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the element for the row with the specified data or index in the grid.</p>
@@ -1056,14 +1105,14 @@ if the row is not found. Defaults to True.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>selenium.webdriver.remote.webelement</code></dt>
+<dt><code>WebElement</code></dt>
 <dd>The DOM element for the row or None if not found (and not thrown)</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True):
+<pre><code class="python">def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -&gt; WebElement:
     &#34;&#34;&#34; Gets the element for the row with the specified data or index in the grid.
 
     The grid must be visible.
@@ -1075,7 +1124,7 @@ if the row is not found. Defaults to True.</dd>
                                        if the row is not found. Defaults to True.
 
     Returns:
-        selenium.webdriver.remote.webelement: The DOM element for the row or None if not found (and not thrown)
+        WebElement: The DOM element for the row or None if not found (and not thrown)
     &#34;&#34;&#34;
     # Check grid can be found and is visible
     self._cq.wait_for_single_query_visible(grid_cq)
@@ -1091,7 +1140,7 @@ if the row is not found. Defaults to True.</dd>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.is_column_hidden"><code class="name flex">
-<span>def <span class="ident">is_column_hidden</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str)</span>
+<span>def <span class="ident">is_column_hidden</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Determines whether the specified column is hidden.
@@ -1109,7 +1158,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str):
+<pre><code class="python">def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; bool:
     &#34;&#34;&#34;Determines whether the specified column is hidden.
     Throws a ColumnNotFoundException if the column does not exist.
 
@@ -1124,7 +1173,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.is_column_visible"><code class="name flex">
-<span>def <span class="ident">is_column_visible</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str)</span>
+<span>def <span class="ident">is_column_visible</span></span>(<span>self, grid_cq: str, column_text_or_dataIndex: str) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Determines whether the specified column is visible,
@@ -1142,7 +1191,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str):
+<pre><code class="python">def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str) -&gt; bool:
     &#34;&#34;&#34;Determines whether the specified column is visible,
     Throws a ColumnNotFoundException if the column does not exist.
 
@@ -1157,7 +1206,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.wait_for_row"><code class="name flex">
-<span>def <span class="ident">wait_for_row</span></span>(<span>self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30)</span>
+<span>def <span class="ident">wait_for_row</span></span>(<span>self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Waits for the specified row to appear in the grid, reloading the store until
@@ -1169,35 +1218,35 @@ it is found, or until the timeout is hit.</p>
 <dt><strong><code>row_data</code></strong> :&ensp;<code>Union[int, dict]</code></dt>
 <dd>The row data or index of the record we are waiting for.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>The number of seconds to wait for the row before erroring. Defaults to 30.</dd>
+<dd>The number of seconds to wait for the row before erroring. Defaults to 60.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>selenium.webdriver.remote.webelement</code></dt>
+<dt><code>WebElement</code></dt>
 <dd>The DOM element for the row</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+<pre><code class="python">def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60) -&gt; WebElement:
     &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until
     it is found, or until the timeout is hit.
 
     Args:
         grid_cq (str): The component query for the grid.
         row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-        timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+        timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
 
     Returns:
-        selenium.webdriver.remote.webelement: The DOM element for the row
+        WebElement: The DOM element for the row
     &#34;&#34;&#34;
     WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
     return self.get_row(grid_cq, row_data)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.GridHelper.GridHelper.wait_to_click_row"><code class="name flex">
-<span>def <span class="ident">wait_to_click_row</span></span>(<span>self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30)</span>
+<span>def <span class="ident">wait_to_click_row</span></span>(<span>self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Waits for the specified row to appear in the grid, reloading the store until
@@ -1210,18 +1259,13 @@ Once we have found the row it is clicked.</p>
 <dt><strong><code>row_data</code></strong> :&ensp;<code>Union[int, dict]</code></dt>
 <dd>The row data or index of the record we are waiting for.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>The number of seconds to wait for the row before erroring. Defaults to 30.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>selenium.webdriver.remote.webelement</code></dt>
-<dd>The DOM element for the row</dd>
+<dd>The number of seconds to wait for the row before erroring. Defaults to 60.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+<pre><code class="python">def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60):
     &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until
     it is found, or until the timeout is hit.
     Once we have found the row it is clicked.
@@ -1229,13 +1273,10 @@ Once we have found the row it is clicked.</p>
     Args:
         grid_cq (str): The component query for the grid.
         row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-        timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
-
-    Returns:
-        selenium.webdriver.remote.webelement: The DOM element for the row
+        timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
     &#34;&#34;&#34;
     WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
-    return self.click_row(grid_cq, row_data)</code></pre>
+    self.click_row(grid_cq, row_data)</code></pre>
 </details>
 </dd>
 </dl>

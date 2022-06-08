@@ -1,10 +1,11 @@
 import logging
 import random
 import time
-from typing import Union
+from typing import Union, Any
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
@@ -32,7 +33,7 @@ class FieldHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def find_field_input_element(self, form_cq: str, name: str):
+    def find_field_input_element(self, form_cq: str, name: str) -> WebElement:
         """Attempts to get a field by name from the specified form panel
 
         Args:
@@ -40,13 +41,13 @@ class FieldHelper(HasReferencedJavaScript):
             name (str): The name of the field
 
         Returns:
-            selenium.webdriver.remote.webelement: The field's input element DOM element, or None if not found.
+            WebElement: The field's input element DOM element, or None if not found.
         """
         script = self._FIND_FIELD_INPUT_ELEMENT_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_field_xtype(self, form_cq: str, name: str):
+    def get_field_xtype(self, form_cq: str, name: str) -> str:
         """Attempts to get the xtype of a field by name from the specified form panel
 
         Args:
@@ -60,7 +61,7 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def get_field_value(self, form_cq: str, name: str):
+    def get_field_value(self, form_cq: str, name: str) -> Any:
         """Attempts to get the value of a field by name from the specified form panel
 
         Args:
@@ -88,7 +89,7 @@ class FieldHelper(HasReferencedJavaScript):
 
         script = self._SET_CHECKBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, checked=str(checked).lower())
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
     def set_field_value(self, form_cq: str, field_name: str, value: Union[int, str]):
         """Sets the value for a field to a numeric value.
@@ -104,13 +105,13 @@ class FieldHelper(HasReferencedJavaScript):
 
         script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, value=value)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
     def type_into_element(self, element, text: str, delay: int = None, tab_off: bool = False):
         """Types into an input element in a more realistic manner.
 
         Args:
-            element (selenium.webdriver.remote.webelement): The element to type into.
+            element (WebElement): The element to type into.
             text (str): The text to type.
             delay (int): The number of seconds to delay after typing.
             tab_off (bool): Indicates whether to tab off the field after typing, and delay.

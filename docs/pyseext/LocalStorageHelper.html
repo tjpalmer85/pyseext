@@ -26,7 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+<pre><code class="python">import logging
+from typing import Any
+from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
 class LocalStorageHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with using local storage, through Ext&#39;s interfaces.
@@ -43,10 +45,11 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def store_value(self, key: str, value):
         &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
@@ -60,9 +63,11 @@ class LocalStorageHelper(HasReferencedJavaScript):
             key (str): The key to use when storing the value.
             value (Any): The value to store.
         &#34;&#34;&#34;
+        self._logger.debug(f&#34;Storing value &#39;{value}&#39; under key &#39;{key}&#39;&#34;)
+
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
     def clear_value(self, key: str):
         &#34;&#34;&#34;Clears a value in our persistent storage (implemented as local storage).
@@ -70,18 +75,20 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             key (str): The key to clear.
         &#34;&#34;&#34;
+        self._logger.debug(f&#34;Clearing value with key &#39;{key}&#39;&#34;)
+
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
-    def get_stored_value(self, key: str):
+    def get_stored_value(self, key: str) -&gt; Any:
         &#34;&#34;&#34;Retrieves a value that has been saved in #storedData using #storeValue.
 
         Args:
             key (str): The key to use to retrieve the data.
 
         Returns:
-            The retrieved value or None if key does not exist.
+            Any: The retrieved value or None if key does not exist.
         &#34;&#34;&#34;
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
@@ -128,10 +135,11 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def store_value(self, key: str, value):
         &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
@@ -145,9 +153,11 @@ class LocalStorageHelper(HasReferencedJavaScript):
             key (str): The key to use when storing the value.
             value (Any): The value to store.
         &#34;&#34;&#34;
+        self._logger.debug(f&#34;Storing value &#39;{value}&#39; under key &#39;{key}&#39;&#34;)
+
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
     def clear_value(self, key: str):
         &#34;&#34;&#34;Clears a value in our persistent storage (implemented as local storage).
@@ -155,18 +165,20 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             key (str): The key to clear.
         &#34;&#34;&#34;
+        self._logger.debug(f&#34;Clearing value with key &#39;{key}&#39;&#34;)
+
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        self._driver.execute_script(script)
 
-    def get_stored_value(self, key: str):
+    def get_stored_value(self, key: str) -&gt; Any:
         &#34;&#34;&#34;Retrieves a value that has been saved in #storedData using #storeValue.
 
         Args:
             key (str): The key to use to retrieve the data.
 
         Returns:
-            The retrieved value or None if key does not exist.
+            Any: The retrieved value or None if key does not exist.
         &#34;&#34;&#34;
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
@@ -198,13 +210,15 @@ class LocalStorageHelper(HasReferencedJavaScript):
     Args:
         key (str): The key to clear.
     &#34;&#34;&#34;
+    self._logger.debug(f&#34;Clearing value with key &#39;{key}&#39;&#34;)
+
     script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
     self.ensure_javascript_loaded()
-    return self._driver.execute_script(script)</code></pre>
+    self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.LocalStorageHelper.LocalStorageHelper.get_stored_value"><code class="name flex">
-<span>def <span class="ident">get_stored_value</span></span>(<span>self, key: str)</span>
+<span>def <span class="ident">get_stored_value</span></span>(<span>self, key: str) ‑> Any</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieves a value that has been saved in #storedData using #storeValue.</p>
@@ -214,19 +228,22 @@ class LocalStorageHelper(HasReferencedJavaScript):
 <dd>The key to use to retrieve the data.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>The retrieved value or None if key does not exist.</p></div>
+<dl>
+<dt><code>Any</code></dt>
+<dd>The retrieved value or None if key does not exist.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_stored_value(self, key: str):
+<pre><code class="python">def get_stored_value(self, key: str) -&gt; Any:
     &#34;&#34;&#34;Retrieves a value that has been saved in #storedData using #storeValue.
 
     Args:
         key (str): The key to use to retrieve the data.
 
     Returns:
-        The retrieved value or None if key does not exist.
+        Any: The retrieved value or None if key does not exist.
     &#34;&#34;&#34;
     script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
     self.ensure_javascript_loaded()
@@ -264,9 +281,11 @@ If a value exists for the key it is overwritten.</p>
         key (str): The key to use when storing the value.
         value (Any): The value to store.
     &#34;&#34;&#34;
+    self._logger.debug(f&#34;Storing value &#39;{value}&#39; under key &#39;{key}&#39;&#34;)
+
     script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
     self.ensure_javascript_loaded()
-    return self._driver.execute_script(script)</code></pre>
+    self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
 </dl>
