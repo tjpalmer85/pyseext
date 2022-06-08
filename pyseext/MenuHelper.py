@@ -23,6 +23,23 @@ class MenuHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
+    def click_menu_item(self, cq: str, root_id: str = None):
+        """Finds a menu item using the supplied component query and clicks it.
+
+        Args:
+            cq (str): The component query to find the menu item.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
+        """
+        menu_item = self._cq.wait_for_single_query_visible(cq, root_id)
+
+        # Rather than call click, move mouse to button and click...
+        self._logger.info(f"Clicking menu item with CQ '{cq}'")
+
+        self._action_chains.move_to_element(menu_item)
+        self._action_chains.click()
+        self._action_chains.perform()
+
     def click_menu_item_by_text(self, text: str, root_id: str = None):
         """Finds a visible, enabled menu item with the specified text and clicks it.
 
