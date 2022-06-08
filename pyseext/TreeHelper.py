@@ -50,13 +50,13 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def wait_until_tree_not_loading(self, tree_cq: str, timeout: float = 10):
+    def wait_until_tree_not_loading(self, tree_cq: str, timeout: float = 30):
         """Waits until the tree identified by the component query is not loading,
         or the timeout is hit
 
         Args:
             tree_cq (str): The component query for the tree.
-            timeout (int, optional): The number of seconds to wait before erroring. Defaults to 10.
+            timeout (int, optional): The number of seconds to wait before erroring. Defaults to 30.
         """
         WebDriverWait(self._driver, timeout).until(TreeHelper.TreeNotLoadingExpectation(tree_cq))
 
@@ -165,7 +165,7 @@ class TreeHelper(HasReferencedJavaScript):
                            tree_cq: str,
                            node_text_or_data: Union[str, dict],
                            parent_node_text_or_data: Union[str, dict],
-                           timeout: float = 30):
+                           timeout: float = 60):
         """Method that waits until a tree node is available, refreshing the parent until it's
         found or the timeout is hit.
 
@@ -174,7 +174,7 @@ class TreeHelper(HasReferencedJavaScript):
             node_text_or_data (Union[str, dict]): The node text or data to find.
             parent_node_text_or_data (Union[str, dict]): The node text or data to use to find the nodes parent,
                                                          for refreshing purposes.
-            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element for the node icon.

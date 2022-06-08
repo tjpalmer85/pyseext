@@ -1,6 +1,6 @@
 
 globalThis.PySeExt = globalThis.PySeExt || {};
-globalThis.PySeExt.FormHelper = {
+globalThis.PySeExt.FieldHelper = {
     /**
      * Finds the specified field input element on the specified form.
      * @param {String} formCQ The CQ to get to the form panel.

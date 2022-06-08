@@ -242,14 +242,14 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.click()
         self._action_chains.perform()
 
-    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60):
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
 
         Args:
             grid_cq (str): The component query for the grid.
             row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element for the row
@@ -257,7 +257,7 @@ class GridHelper(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         return self.get_row(grid_cq, row_data)
 
-    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 30):
+    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60):
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
         Once we have found the row it is clicked.
@@ -265,7 +265,7 @@ class GridHelper(HasReferencedJavaScript):
         Args:
             grid_cq (str): The component query for the grid.
             row_data (Union[int, dict]): The row data or index of the record we are waiting for.
-            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 30.
+            timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element for the row

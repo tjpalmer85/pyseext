@@ -50,7 +50,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: str = None, timeout: float = 3):
+    def wait_for_query(self, cq: str, root_id: str = None, timeout: float = 10):
         """Method that waits for the specified CQ to match something
 
         Args:
@@ -58,7 +58,7 @@ class ComponentQuery(HasReferencedJavaScript):
             root (str):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
-            timeout (float): Number of seconds before timing out (default 3)
+            timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
             selenium.webdriver.remote.webelement[]: An array of DOM elements that match the query or an empty array if not found
@@ -66,7 +66,7 @@ class ComponentQuery(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         return self.query(cq, root_id)
 
-    def wait_for_single_query(self, cq: str, root_id: str = None, timeout: float = 3):
+    def wait_for_single_query(self, cq: str, root_id: str = None, timeout: float = 10):
         """Method that waits for the specified CQ to match a single result.
         If there are multiple matches then an error is thrown.
 
@@ -75,7 +75,7 @@ class ComponentQuery(HasReferencedJavaScript):
             root (str):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
-            timeout (float): Number of seconds before timing out (default 3)
+            timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element that matches the query
@@ -87,7 +87,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return results[0]
 
-    def wait_for_single_query_visible(self, cq: str, root_id: str = None, timeout: float = 3):
+    def wait_for_single_query_visible(self, cq: str, root_id: str = None, timeout: float = 10):
         """Method that waits for the specified CQ to match a single visible result.
         If there are multiple matches then an error is thrown.
 
@@ -96,7 +96,7 @@ class ComponentQuery(HasReferencedJavaScript):
             root (str):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
-            timeout (float): Number of seconds before timing out (default 3)
+            timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
             selenium.webdriver.remote.webelement: The DOM element that matches the query
