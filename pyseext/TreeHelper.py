@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -26,11 +27,12 @@ class TreeHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
         self._action_chains = ActionChains(driver)
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def is_tree_loading(self, tree_cq: str):
         """Determine whether the tree (any part of it) is currently loading.
@@ -151,6 +153,8 @@ class TreeHelper(HasReferencedJavaScript):
         node = self.get_node_icon_element(tree_cq, node_text_or_data)
 
         if node:
+            self._logger.info(f"Opening context menu on node '{node_text_or_data}' on tree with CQ '{tree_cq}'")
+
             self._action_chains.move_to_element(node)
             self._action_chains.context_click(node)
             self._action_chains.perform()
@@ -191,6 +195,8 @@ class TreeHelper(HasReferencedJavaScript):
             script = self._RELOAD_NODE_BY_TEXT_TEMPLATE.format(tree_cq=tree_cq, node_text=node_text_or_data)
         else:
             script = self._RELOAD_NODE_BY_DATA_TEMPLATE.format(tree_cq=tree_cq, node_data=node_text_or_data)
+
+        self._logger.info(f"Reloading node '{node_text_or_data}' on tree with CQ '{tree_cq}'")
 
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)

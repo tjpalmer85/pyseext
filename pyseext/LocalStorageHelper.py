@@ -1,3 +1,4 @@
+import logging
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
 class LocalStorageHelper(HasReferencedJavaScript):
@@ -15,10 +16,11 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def store_value(self, key: str, value):
         """Stores a value in our persistent storage (implemented as local storage).
@@ -32,6 +34,8 @@ class LocalStorageHelper(HasReferencedJavaScript):
             key (str): The key to use when storing the value.
             value (Any): The value to store.
         """
+        self._logger.debug(f"Storing value '{value}' under key '{key}'")
+
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
@@ -42,6 +46,8 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             key (str): The key to clear.
         """
+        self._logger.debug(f"Clearing value with key '{key}'")
+
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)

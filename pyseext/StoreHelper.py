@@ -1,3 +1,4 @@
+import logging
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
 class StoreHelper(HasReferencedJavaScript):
@@ -15,10 +16,11 @@ class StoreHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def reset_store_load_count(self, store_holder_cq: str):
         """Resets the load count on the specified store, provided the store is not configured with autoLoad set to true.
@@ -36,7 +38,7 @@ class StoreHelper(HasReferencedJavaScript):
         Args:
             store_holder_cq (str): The component query to use to find the store holder.
         """
-        print("Resetting loadCount on store owned by '{store_holder_cq}'".format(store_holder_cq=store_holder_cq))
+        self._logger.debug(f"Resetting loadCount on store owned by '{store_holder_cq}'")
 
         script = self._RESET_STORE_LOAD_COUNT_TEMPLATE.format(store_holder_cq=store_holder_cq)
         self.ensure_javascript_loaded()
@@ -51,13 +53,13 @@ class StoreHelper(HasReferencedJavaScript):
         Args:
             store_holder_cq (str): The component query to use to find the store holder.
         """
-        print("Waiting for store owned by '{store_holder_cq}' to load".format(store_holder_cq=store_holder_cq))
+        self._logger.debug(f"Waiting for store owned by '{store_holder_cq}' to load")
 
         async_script = self.get_async_script_content(self._WAIT_FOR_STORE_LOADED_TEMPLATE).format(store_holder_cq=store_holder_cq)
         self.ensure_javascript_loaded()
         self._driver.execute_async_script(async_script)
 
-        print("Store owned by '{store_holder_cq}' loaded".format(store_holder_cq=store_holder_cq))
+        self._logger.debug(f"Store owned by '{store_holder_cq}' loaded")
 
     def trigger_reload(self, store_holder_cq: str):
         """Triggers a reload on the specified store.

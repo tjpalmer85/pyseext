@@ -1,3 +1,4 @@
+import logging
 from selenium.webdriver.support.ui import WebDriverWait
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
@@ -13,10 +14,11 @@ class Core(HasReferencedJavaScript):
         """
 
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def wait_for_dom_ready(self, timeout: float = 30):
         """Method that waits until Ext indicates that the DOM is ready.

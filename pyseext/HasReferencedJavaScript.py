@@ -1,3 +1,4 @@
+import logging
 from selenium.webdriver.support.ui import WebDriverWait
 from pathlib import Path
 
@@ -10,14 +11,15 @@ class HasReferencedJavaScript:
     _SCRIPT_LOAD_TIMEOUT = 2
     _ASYNC_SCRIPT_TEMPLATE = "var {callback_parameter_name} = arguments[arguments.length - 1]; {script}"
 
-    def __init__(self, driver):
+    def __init__(self, driver, logger):
         """Initialises an instance of this class
 
         Args:
             driver (selenium.webdriver): The webdriver to use
+            logger (logging.Logger): The logger to use
         """
-
         self._driver = driver
+        self._logger = logger
         self.ensure_javascript_loaded()
 
     def ensure_javascript_loaded(self):
@@ -29,14 +31,13 @@ class HasReferencedJavaScript:
 
         # If our JavaScript has not been loaded then load it now
         if not self._driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
-            js_path = './js/PySeExt.{class_name}.js'.format(class_name=class_name)
-            print('Loading script: ', js_path)
+            js_path = f'./js/PySeExt.{class_name}.js'
+            self._logger.debug(f'Loading script: {js_path}')
 
             source_path = Path(__file__).resolve()
             source_dir = source_path.parent
 
             js_path = source_dir.joinpath(js_path)
-            print('Full path: ', js_path)
 
             self._driver.execute_script(open(js_path).read())
 

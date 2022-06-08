@@ -1,3 +1,4 @@
+import logging
 from selenium.webdriver.common.action_chains import ActionChains
 
 from pyseext.ComponentQuery import ComponentQuery
@@ -17,8 +18,8 @@ class ButtonHelper:
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
-
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
@@ -33,6 +34,8 @@ class ButtonHelper:
         button = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
+        self._logger.info(f"Clicking button with CQ '{cq}'")
+
         self._action_chains.move_to_element(button)
         self._action_chains.click()
         self._action_chains.perform()

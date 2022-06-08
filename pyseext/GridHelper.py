@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -27,12 +28,13 @@ class GridHelper(HasReferencedJavaScript):
         """
 
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str):
         """Gets the element for the specified column header
@@ -129,7 +131,12 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_dataIndex (str): The header text or dataIndex of the grid column
         """
         column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
-        column_header.click()
+
+        self._logger.info(f"Clicking column header '{column_text_or_dataIndex}' on grid with CQ' {grid_cq}'")
+
+        self._action_chains.move_to_element(column_header)
+        self._action_chains.click()
+        self._action_chains.perform()
 
     def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str):
         """Gets the element for the specified column header's trigger
@@ -166,6 +173,9 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.move_to_element(column_header).perform()
 
         column_header_trigger = self.get_visible_column_header_trigger(grid_cq, column_text_or_dataIndex)
+
+        self._logger.info(f"Clicking column header trigger '{column_text_or_dataIndex}' on grid with CQ' {grid_cq}'")
+
         self._action_chains.move_to_element(column_header_trigger)
         self._action_chains.click()
         self._action_chains.perform()
@@ -181,6 +191,8 @@ class GridHelper(HasReferencedJavaScript):
         """
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
+
+        self._logger.info(f"Clearing selection on grid with CQ' {grid_cq}'")
 
         script = self._CLEAR_SELECTION_TEMPLATE.format(grid_cq=grid_cq)
         self.ensure_javascript_loaded()
@@ -223,6 +235,8 @@ class GridHelper(HasReferencedJavaScript):
         """
         # Check grid can be found and is visible
         row = self.get_row(grid_cq, row_data)
+
+        self._logger.info(f"Clicking clicking row '{row_data}' on grid with CQ' {grid_cq}'")
 
         self._action_chains.move_to_element(row)
         self._action_chains.click()

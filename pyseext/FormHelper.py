@@ -1,3 +1,4 @@
+import logging
 import random
 import time
 from typing import Union
@@ -25,12 +26,13 @@ class FormHelper(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
         self._button_helper = ButtonHelper(driver)
         self._action_chains = ActionChains(driver)
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def find_field_input_element(self, form_cq: str, name: str):
         """Attempts to get a field by name from the specified form panel
@@ -87,6 +89,8 @@ class FormHelper(HasReferencedJavaScript):
         """
         if not type(field_values) is dict:
             raise TypeError("Parameter 'field_values' is not of type 'dict', but type '{type}'.".format(type=type(field_values)))
+
+        self._logger.info(f"Populating form '{form_cq}' with values: {field_values}")
 
         def get_field_config_member(value, member: str, default = None):
             """Gets the member from a field config.

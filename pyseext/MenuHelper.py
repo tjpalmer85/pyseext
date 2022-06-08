@@ -1,3 +1,4 @@
+import logging
 from selenium.webdriver.common.action_chains import ActionChains
 
 from pyseext.ComponentQuery import ComponentQuery
@@ -18,6 +19,7 @@ class MenuHelper:
         """
 
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
@@ -32,6 +34,8 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
         # Rather than call click, move mouse to the menu item and click...
+        self._logger.info(f"Clicking menu item '{text}'")
+
         self._action_chains.move_to_element(menu_item)
         self._action_chains.click()
         self._action_chains.perform()

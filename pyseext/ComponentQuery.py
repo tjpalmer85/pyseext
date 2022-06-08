@@ -1,3 +1,4 @@
+import logging
 from selenium.webdriver.support.ui import WebDriverWait
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
@@ -16,12 +17,12 @@ class ComponentQuery(HasReferencedJavaScript):
         Args:
             driver (selenium.webdriver): The webdriver to use
         """
-
         # Instance variables
+        self._logger = logging.getLogger(__name__)
         self._driver = driver
 
         # Initialise our base class
-        super().__init__(driver)
+        super().__init__(driver, self._logger)
 
     def query(self, cq: str, root_id: str = None):
         """Executes a ComponentQuery and returns the result
@@ -36,12 +37,18 @@ class ComponentQuery(HasReferencedJavaScript):
             selenium.webdriver.remote.webelement[]: An array of DOM elements that match the query or an empty array if not found
         """
         if root_id == None:
+            self._logger.debug(f"Executing CQ '{cq}'")
             script = self._QUERY_TEMPLATE.format(cq=cq)
         else:
+            self._logger.debug(f"Executing CQ '{cq}' under root '{root_id}'")
             script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, root_id=root_id)
 
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        query_result = self._driver.execute_script(script)
+
+        self._logger.debug(f"CQ '{cq}' gave results: {query_result}")
+
+        return query_result
 
     def wait_for_query(self, cq: str, root_id: str = None, timeout: float = 3):
         """Method that waits for the specified CQ to match something
