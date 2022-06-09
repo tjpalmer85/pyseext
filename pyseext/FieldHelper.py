@@ -95,9 +95,6 @@ class FieldHelper(HasReferencedJavaScript):
         """
         field_xtype = self.get_field_xtype(form_cq, field_name)
 
-        # FIXME: This is a mess!
-        # .....: Need a field helper class, and for much of this complexity factored out!
-        # .....: Also need much better support for comboboxes...
         if field_xtype:
             # Field found!
             field_value = self._core.try_get_object_member(value, 'value', value)
