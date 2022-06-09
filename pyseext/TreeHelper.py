@@ -223,7 +223,7 @@ class TreeHelper(HasReferencedJavaScript):
         def __str__(self):
             """Returns a string representation of this exception
             """
-            return self.message.format(node_text_or_data=self._node_text_or_data, _tree_cq=self._tree_cq)
+            return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
 
     class TreeNotLoadingExpectation():
         """ An expectation for checking that a tree is not loading.
