@@ -34,9 +34,9 @@ class StoreHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _RESET_STORE_LOAD_COUNT_TEMPLATE = &#34;return globalThis.PySeExt.StoreHelper.resetStoreLoadCount(&#39;{store_holder_cq}&#39;)&#34;
-    _WAIT_FOR_STORE_LOADED_TEMPLATE = &#34;return globalThis.PySeExt.StoreHelper.waitForStoreLoaded(&#39;{store_holder_cq}&#39;, callback)&#34;
-    _RELOAD_STORE_TEMPLATE = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
+    _RESET_STORE_LOAD_COUNT_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.resetStoreLoadCount(&#39;{store_holder_cq}&#39;)&#34;
+    _WAIT_FOR_STORE_LOADED_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.waitForStoreLoaded(&#39;{store_holder_cq}&#39;, callback)&#34;
+    _RELOAD_STORE_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -143,9 +143,9 @@ class StoreHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _RESET_STORE_LOAD_COUNT_TEMPLATE = &#34;return globalThis.PySeExt.StoreHelper.resetStoreLoadCount(&#39;{store_holder_cq}&#39;)&#34;
-    _WAIT_FOR_STORE_LOADED_TEMPLATE = &#34;return globalThis.PySeExt.StoreHelper.waitForStoreLoaded(&#39;{store_holder_cq}&#39;, callback)&#34;
-    _RELOAD_STORE_TEMPLATE = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
+    _RESET_STORE_LOAD_COUNT_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.resetStoreLoadCount(&#39;{store_holder_cq}&#39;)&#34;
+    _WAIT_FOR_STORE_LOADED_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.waitForStoreLoaded(&#39;{store_holder_cq}&#39;, callback)&#34;
+    _RELOAD_STORE_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class

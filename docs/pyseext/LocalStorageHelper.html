@@ -35,9 +35,9 @@ class LocalStorageHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _STORE_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.LocalStorageHelper.storeValue(&#39;{key}&#39;, {value})&#34;
-    _CLEAR_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
-    _GET_STORED_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
+    _STORE_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.storeValue(&#39;{key}&#39;, {value})&#34;
+    _CLEAR_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
+    _GET_STORED_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -125,9 +125,9 @@ class LocalStorageHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _STORE_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.LocalStorageHelper.storeValue(&#39;{key}&#39;, {value})&#34;
-    _CLEAR_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
-    _GET_STORED_VALUE_TEMPLATE = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
+    _STORE_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.storeValue(&#39;{key}&#39;, {value})&#34;
+    _CLEAR_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
+    _GET_STORED_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class

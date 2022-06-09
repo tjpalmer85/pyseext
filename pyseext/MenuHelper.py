@@ -8,8 +8,8 @@ class MenuHelper:
     """
 
     # Class variables
-    _ENABLED_MENU_ITEM_TEMPLATE = 'menuitem[text="{text}"][disabled=false]'
-    _DISABLED_MENU_ITEM_TEMPLATE = 'menuitem[text="{text}"][disabled=true]'
+    _ENABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=false]'
+    _DISABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=true]'
 
     def __init__(self, driver):
         """Initialises an instance of this class

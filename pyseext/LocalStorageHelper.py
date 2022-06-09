@@ -7,9 +7,9 @@ class LocalStorageHelper(HasReferencedJavaScript):
     """
 
     # Class variables
-    _STORE_VALUE_TEMPLATE = "return globalThis.PySeExt.LocalStorageHelper.storeValue('{key}', {value})"
-    _CLEAR_VALUE_TEMPLATE = "return globalThis.PySeExt.LocalStorageHelper.clearValue('{key}')"
-    _GET_STORED_VALUE_TEMPLATE = "return globalThis.PySeExt.LocalStorageHelper.getStoredValue('{key}')"
+    _STORE_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.storeValue('{key}', {value})"
+    _CLEAR_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.clearValue('{key}')"
+    _GET_STORED_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.getStoredValue('{key}')"
 
     def __init__(self, driver):
         """Initialises an instance of this class

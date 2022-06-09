@@ -10,8 +10,8 @@ class ComponentQuery(HasReferencedJavaScript):
     """
 
     # Class variables
-    _QUERY_TEMPLATE = "return globalThis.PySeExt.ComponentQuery.query('{cq}')"
-    _QUERY_TEMPLATE_WITH_ROOT = "return globalThis.PySeExt.ComponentQuery.query('{cq}', '{root_id}')"
+    _QUERY_TEMPLATE: str = "return globalThis.PySeExt.ComponentQuery.query('{cq}')"
+    _QUERY_TEMPLATE_WITH_ROOT: str = "return globalThis.PySeExt.ComponentQuery.query('{cq}', '{root_id}')"
 
     def __init__(self, driver):
         """Initialises an instance of this class

@@ -42,13 +42,13 @@ class GridHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Public class properties
-    GRID_CQ = &#34;gridpanel&#34;
+    GRID_CQ: str = &#34;gridpanel&#34;
 
     # Private class variables
-    _GET_COLUMN_HEADER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
-    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
-    _CLEAR_SELECTION_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.clearSelection(&#39;{grid_cq}&#39;)&#34;
-    _GET_ROW_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getRow(&#39;{grid_cq}&#39;, {row_data})&#34;
+    _GET_COLUMN_HEADER_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
+    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
+    _CLEAR_SELECTION_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.clearSelection(&#39;{grid_cq}&#39;)&#34;
+    _GET_ROW_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getRow(&#39;{grid_cq}&#39;, {row_data})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -412,13 +412,13 @@ class GridHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Public class properties
-    GRID_CQ = &#34;gridpanel&#34;
+    GRID_CQ: str = &#34;gridpanel&#34;
 
     # Private class variables
-    _GET_COLUMN_HEADER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
-    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
-    _CLEAR_SELECTION_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.clearSelection(&#39;{grid_cq}&#39;)&#34;
-    _GET_ROW_TEMPLATE = &#34;return globalThis.PySeExt.GridHelper.getRow(&#39;{grid_cq}&#39;, {row_data})&#34;
+    _GET_COLUMN_HEADER_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getColumnHeader(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
+    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger(&#39;{grid_cq}&#39;, &#39;{column_text_or_dataIndex}&#39;)&#34;
+    _CLEAR_SELECTION_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.clearSelection(&#39;{grid_cq}&#39;)&#34;
+    _GET_ROW_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getRow(&#39;{grid_cq}&#39;, {row_data})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -761,7 +761,7 @@ class GridHelper(HasReferencedJavaScript):
 <dd>
 <div class="desc"><p>Exception class thrown when we failed to find the specified column</p></div>
 </dd>
-<dt id="pyseext.GridHelper.GridHelper.GRID_CQ"><code class="name">var <span class="ident">GRID_CQ</span></code></dt>
+<dt id="pyseext.GridHelper.GridHelper.GRID_CQ"><code class="name">var <span class="ident">GRID_CQ</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>

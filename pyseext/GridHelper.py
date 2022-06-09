@@ -14,13 +14,13 @@ class GridHelper(HasReferencedJavaScript):
     """
 
     # Public class properties
-    GRID_CQ = "gridpanel"
+    GRID_CQ: str = "gridpanel"
 
     # Private class variables
-    _GET_COLUMN_HEADER_TEMPLATE = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_dataIndex}')"
-    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_dataIndex}')"
-    _CLEAR_SELECTION_TEMPLATE = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
-    _GET_ROW_TEMPLATE = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
+    _GET_COLUMN_HEADER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_dataIndex}')"
+    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_dataIndex}')"
+    _CLEAR_SELECTION_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
+    _GET_ROW_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
 
     def __init__(self, driver):
         """Initialises an instance of this class

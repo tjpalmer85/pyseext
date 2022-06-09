@@ -39,16 +39,16 @@ class TreeHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _IS_TREE_LOADING_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.isTreeLoading(&#39;{tree_cq}&#39;)&#34;
-    _GET_NODE_EXPANDER_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _GET_NODE_ICON_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _GET_NODE_TEXT_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _GET_NODE_EXPANDER_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByData(&#39;{tree_cq}&#39;, {node_data})&#34;
-    _GET_NODE_ICON_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByData(&#39;{tree_cq}&#39;, {node_data})&#34;
-    _GET_NODE_TEXT_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByData(&#39;{tree_cq}&#39;, {node_data})&#34;
-    _GET_NODE_ELEMENT_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeElementByData(&#39;{tree_cq}&#39;, {node_data}, &#39;{css_query}&#39;)&#34;
-    _RELOAD_NODE_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _RELOAD_NODE_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _IS_TREE_LOADING_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.isTreeLoading(&#39;{tree_cq}&#39;)&#34;
+    _GET_NODE_EXPANDER_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _GET_NODE_ICON_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _GET_NODE_TEXT_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _GET_NODE_EXPANDER_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _GET_NODE_ICON_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _GET_NODE_TEXT_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _GET_NODE_ELEMENT_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeElementByData(&#39;{tree_cq}&#39;, {node_data}, &#39;{css_query}&#39;)&#34;
+    _RELOAD_NODE_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _RELOAD_NODE_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByData(&#39;{tree_cq}&#39;, {node_data})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -335,16 +335,16 @@ class TreeHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _IS_TREE_LOADING_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.isTreeLoading(&#39;{tree_cq}&#39;)&#34;
-    _GET_NODE_EXPANDER_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _GET_NODE_ICON_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _GET_NODE_TEXT_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _GET_NODE_EXPANDER_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByData(&#39;{tree_cq}&#39;, {node_data})&#34;
-    _GET_NODE_ICON_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByData(&#39;{tree_cq}&#39;, {node_data})&#34;
-    _GET_NODE_TEXT_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByData(&#39;{tree_cq}&#39;, {node_data})&#34;
-    _GET_NODE_ELEMENT_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.getNodeElementByData(&#39;{tree_cq}&#39;, {node_data}, &#39;{css_query}&#39;)&#34;
-    _RELOAD_NODE_BY_TEXT_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
-    _RELOAD_NODE_BY_DATA_TEMPLATE = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _IS_TREE_LOADING_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.isTreeLoading(&#39;{tree_cq}&#39;)&#34;
+    _GET_NODE_EXPANDER_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _GET_NODE_ICON_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _GET_NODE_TEXT_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _GET_NODE_EXPANDER_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeExpanderByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _GET_NODE_ICON_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeIconByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _GET_NODE_TEXT_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeTextByData(&#39;{tree_cq}&#39;, {node_data})&#34;
+    _GET_NODE_ELEMENT_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeElementByData(&#39;{tree_cq}&#39;, {node_data}, &#39;{css_query}&#39;)&#34;
+    _RELOAD_NODE_BY_TEXT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByText(&#39;{tree_cq}&#39;, &#39;{node_text}&#39;)&#34;
+    _RELOAD_NODE_BY_DATA_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNodeByData(&#39;{tree_cq}&#39;, {node_data})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class

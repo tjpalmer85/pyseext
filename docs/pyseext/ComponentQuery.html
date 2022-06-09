@@ -38,8 +38,8 @@ class ComponentQuery(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _QUERY_TEMPLATE = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
-    _QUERY_TEMPLATE_WITH_ROOT = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
+    _QUERY_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
+    _QUERY_TEMPLATE_WITH_ROOT: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -205,8 +205,8 @@ class ComponentQuery(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     # Class variables
-    _QUERY_TEMPLATE = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
-    _QUERY_TEMPLATE_WITH_ROOT = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
+    _QUERY_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
+    _QUERY_TEMPLATE_WITH_ROOT: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class

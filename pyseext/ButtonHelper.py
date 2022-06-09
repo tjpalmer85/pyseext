@@ -8,9 +8,9 @@ class ButtonHelper:
     """
 
     # Class variables
-    _ENABLED_BUTTON_TEMPLATE = 'button[text="{text}"][disabled=false]'
-    _DISABLED_BUTTON_TEMPLATE = 'button[text="{text}"][disabled=true]'
-    _MESSAGEBOX_BUTTON_TEMPLATE = 'messagebox{{isVisible(true)}} button[text="{text}"]'
+    _ENABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=false]'
+    _DISABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=true]'
+    _MESSAGEBOX_BUTTON_TEMPLATE: str = 'messagebox{{isVisible(true)}} button[text="{text}"]'
 
     def __init__(self, driver):
         """Initialises an instance of this class

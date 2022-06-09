@@ -8,13 +8,7 @@ globalThis.PySeExt.FieldHelper = {
      * @returns The DOM for the field's input element
      */
     findFieldInputElement: function(formCQ, name) {
-        var formPanel = Ext.ComponentQuery.query(formCQ),
-            field;
-
-        if (formPanel && formPanel.length) {
-            formPanel = formPanel[0];
-            field = formPanel.getForm().findField(name);
-        }
+        var field = this.__getField(formCQ, name);
 
         return field && field.inputEl.dom;
     },
@@ -26,13 +20,7 @@ globalThis.PySeExt.FieldHelper = {
      * @returns {String} The xtype of the field, if found.
      */
     getFieldXType: function(formCQ, name) {
-        var formPanel = Ext.ComponentQuery.query(formCQ),
-            field;
-
-        if (formPanel && formPanel.length) {
-            formPanel = formPanel[0];
-            field = formPanel.getForm().findField(name);
-        }
+        var field = this.__getField(formCQ, name);
 
         return field && field.xtype;
     },
@@ -43,59 +31,100 @@ globalThis.PySeExt.FieldHelper = {
      * @param {String} name The name of the field.
      * @returns {Mixed} The value of the field, if found.
      */
-     getFieldValue: function(formCQ, name) {
-        var formPanel = Ext.ComponentQuery.query(formCQ),
-            field;
-
-        if (formPanel && formPanel.length) {
-            formPanel = formPanel[0];
-            field = formPanel.getForm().findField(name);
-        }
+    getFieldValue: function(formCQ, name) {
+        var field = this.__getField(formCQ, name);
 
         return field && field.getValue();
     },
 
     /**
-     * Finds the specified checkbox field and sets its value.
-     * @param {String} formCQ The CQ to get to the form panel.
-     * @param {String} name The name of the field.
-     * @param {Boolean} checked The checked state of the field.
-     */
-     setCheckboxValue: function(formCQ, name, checked) {
-        var formPanel = Ext.ComponentQuery.query(formCQ),
-            field;
-
-        if (formPanel && formPanel.length) {
-            formPanel = formPanel[0];
-            field = formPanel.getForm().findField(name);
-
-            if (field && field.isCheckbox) {
-                field.setValue(checked);
-            } else {
-                Ext.Error.raise("Field could not be found or was not a checkbox!");
-            }
-        }
-    },
-
-    /**
      * Finds the specified field and sets its value directly.
+     *
+     * Raises an error if the field was not found.
      * @param {String} formCQ The CQ to get to the form panel.
      * @param {String} name The name of the field.
      * @param {Number} value The value of the field.
      */
-     setFieldValue: function(formCQ, name, value) {
+    setFieldValue: function(formCQ, name, value) {
+        this.__getField(formCQ, name, true).setValue(value);
+    },
+
+    /**
+     * Determines whether the specified field is a remotely filtered combobox.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     * @returns {Boolean} True if the field was found, and is a remotely filtered combobox.
+     *                    False otherwise.
+     */
+     isRemotelyFilteredComboBox: function(formCQ, name) {
+        var field = this.__getField(formCQ, name),
+            isRemotelyFilteredComboBox;
+
+        isRemotelyFilteredComboBox = field instanceof globalThis.Ext.form.field.ComboBox &&
+                                     field.queryMode === 'remote';
+
+        return isRemotelyFilteredComboBox;
+    },
+
+    /**
+     * Resets the load count on the specified combobox.
+     *
+     * Raises an error if the field was not found.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     */
+    resetComboBoxStoreLoadCount: function(formCQ, name) {
+        var field = this.__getField(formCQ, name, true);
+
+        if (!field instanceof globalThis.Ext.form.field.ComboBox) {
+            globalThis.Ext.Error.raise("Specified field is not a combobox!");
+        }
+
+        globalThis.PySeExt.StoreHelper.__resetStoreLoadCount(field.getStore());
+    },
+
+    /**
+     * Waits for the store on the specified combobox to have loaded.
+     *
+     * Raises an error if the field was not found.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     * @param {Function} callback The callback to call when the store has loaded.
+     */
+     waitForComboBoxStoreLoaded: function(formCQ, name, callback) {
+        var field = this.__getField(formCQ, name);
+
+        if (!field instanceof globalThis.Ext.form.field.ComboBox) {
+            globalThis.Ext.Error.raise("Specified field is not a combobox!");
+        }
+
+        globalThis.PySeExt.StoreHelper.__waitForStoreLoaded(field.getStore(), callback);
+    },
+
+    /**
+     * Finds a field in a form panel.
+     * Raises an error if not found.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     * @param {Boolean} throwIfNotFound Indicates whether to raise an error if not found.
+     *                                  If omitted then value is taken to be false.
+     * @returns {Ext.form.field.Base} The field instance.
+     */
+    __getField: function(formCQ, name, throwIfNotFound) {
         var formPanel = Ext.ComponentQuery.query(formCQ),
             field;
 
         if (formPanel && formPanel.length) {
             formPanel = formPanel[0];
             field = formPanel.getForm().findField(name);
-
-            if (field) {
-                field.setValue(value);
-            } else {
-                Ext.Error.raise("Field could not be found!");
-            }
+        } else if (throwIfNotFound) {
+            globalThis.Ext.Error.raise("Form panel could not be found!");
         }
+
+        if (!field && throwIfNotFound) {
+            globalThis.Ext.Error.raise("Field could not be found!");
+        }
+
+        return field;
     }
 };

@@ -27,7 +27,10 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import logging
+from typing import Union, Any
+
 from selenium.webdriver.support.ui import WebDriverWait
+
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
 class Core(HasReferencedJavaScript):
@@ -57,6 +60,26 @@ class Core(HasReferencedJavaScript):
             timeout (float): Number of seconds before timing out (default 30)
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())
+
+    def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+        &#34;&#34;&#34;Attempts to get the member from an object, but if object itself is not a dictionary
+        then it is returned.
+
+        Useful when a value in a dictionary we&#39;re processing might be an object or not, and we
+        want to process them in the same way.
+
+        Args:
+            object (Union[dict, Any]): The object from which to get the member&#39;s value.
+            member (str): The key for the member we&#39;re after.
+            default (Any, optional): The default to return if not found. Defaults to None.
+
+        Returns:
+            Any: The value of the member, or the default if not found.
+        &#34;&#34;&#34;
+        if isinstance(object, dict):
+            return object.get(member, default)
+        else:
+            return default
 
     class IsDomReadyExpectation():
         &#34;&#34;&#34; An expectation for checking Ext.isDomReady
@@ -125,6 +148,26 @@ class Core(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())
 
+    def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+        &#34;&#34;&#34;Attempts to get the member from an object, but if object itself is not a dictionary
+        then it is returned.
+
+        Useful when a value in a dictionary we&#39;re processing might be an object or not, and we
+        want to process them in the same way.
+
+        Args:
+            object (Union[dict, Any]): The object from which to get the member&#39;s value.
+            member (str): The key for the member we&#39;re after.
+            default (Any, optional): The default to return if not found. Defaults to None.
+
+        Returns:
+            Any: The value of the member, or the default if not found.
+        &#34;&#34;&#34;
+        if isinstance(object, dict):
+            return object.get(member, default)
+        else:
+            return default
+
     class IsDomReadyExpectation():
         &#34;&#34;&#34; An expectation for checking Ext.isDomReady
         &#34;&#34;&#34;
@@ -151,6 +194,53 @@ class Core(HasReferencedJavaScript):
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="pyseext.Core.Core.try_get_object_member"><code class="name flex">
+<span>def <span class="ident">try_get_object_member</span></span>(<span>self, object: Union[dict, Any], member: str, default=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attempts to get the member from an object, but if object itself is not a dictionary
+then it is returned.</p>
+<p>Useful when a value in a dictionary we're processing might be an object or not, and we
+want to process them in the same way.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>object</code></strong> :&ensp;<code>Union[dict, Any]</code></dt>
+<dd>The object from which to get the member's value.</dd>
+<dt><strong><code>member</code></strong> :&ensp;<code>str</code></dt>
+<dd>The key for the member we're after.</dd>
+<dt><strong><code>default</code></strong> :&ensp;<code>Any</code>, optional</dt>
+<dd>The default to return if not found. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>The value of the member, or the default if not found.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+    &#34;&#34;&#34;Attempts to get the member from an object, but if object itself is not a dictionary
+    then it is returned.
+
+    Useful when a value in a dictionary we&#39;re processing might be an object or not, and we
+    want to process them in the same way.
+
+    Args:
+        object (Union[dict, Any]): The object from which to get the member&#39;s value.
+        member (str): The key for the member we&#39;re after.
+        default (Any, optional): The default to return if not found. Defaults to None.
+
+    Returns:
+        Any: The value of the member, or the default if not found.
+    &#34;&#34;&#34;
+    if isinstance(object, dict):
+        return object.get(member, default)
+    else:
+        return default</code></pre>
+</details>
+</dd>
 <dt id="pyseext.Core.Core.wait_for_dom_ready"><code class="name flex">
 <span>def <span class="ident">wait_for_dom_ready</span></span>(<span>self, timeout: float = 30)</span>
 </code></dt>
@@ -210,6 +300,7 @@ Will throw a TimeOutException if the value is not true within the specified time
 <h4><code><a title="pyseext.Core.Core" href="#pyseext.Core.Core">Core</a></code></h4>
 <ul class="">
 <li><code><a title="pyseext.Core.Core.IsDomReadyExpectation" href="#pyseext.Core.Core.IsDomReadyExpectation">IsDomReadyExpectation</a></code></li>
+<li><code><a title="pyseext.Core.Core.try_get_object_member" href="#pyseext.Core.Core.try_get_object_member">try_get_object_member</a></code></li>
 <li><code><a title="pyseext.Core.Core.wait_for_dom_ready" href="#pyseext.Core.Core.wait_for_dom_ready">wait_for_dom_ready</a></code></li>
 </ul>
 </li>

@@ -18,6 +18,19 @@ globalThis.PySeExt.StoreHelper = {
     resetStoreLoadCount: function(storeHolderCQ) {
         var store = globalThis.PySeExt.StoreHelper.__getStoreFromStoreHolder(storeHolderCQ);
 
+        this.__resetStoreLoadCount(store);
+    },
+
+    /**
+     * Resets the load count on the specified store, provided the store is not configured with autoLoad set to true.
+     * If set to auto load then this method does nothing.
+     *
+     * The load count on a store is incremented everytime a load occurs. It is not reset when the data is cleared.
+     * A store's isLoaded method returns true if the load count is greater than zero.
+     *
+     * @param  {Ext.data.Store} store The store to reset the load count on.
+     */
+    __resetStoreLoadCount: function(store) {
         if (!store.getAutoLoad()) {
             store.loadCount = 0;
         }

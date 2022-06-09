@@ -1,0 +1,68 @@
+import logging
+import random
+import time
+
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.webelement import WebElement
+
+class InputHelper():
+    """A class to help with user input.
+    """
+
+    TYPING_SLEEP_MINIMUM: float = 0.0001
+    TYPING_SLEEP_MAXIMUM: float = 0.002
+
+    def __init__(self, driver):
+        """Initialises an instance of this class
+
+        Args:
+            driver (selenium.webdriver): The webdriver to use
+        """
+        self._logger = logging.getLogger(__name__)
+        self._driver = driver
+        self._action_chains = ActionChains(driver)
+
+    def type_into_element(self, element: WebElement, text: str, delay: float = None, tab_off: bool = False):
+        """Types into an input element in a realistic manner.
+
+        Args:
+            element (WebElement): The element to type into.
+            text (str): The text to type.
+            delay (float, optional): The number of seconds to delay after typing. Defaults to None.
+            tab_off (bool, optional): Indicates whether to tab off the field after typing, and delay. Defaults to False.
+        """
+        # Ensure text really is a string
+        text = str(text)
+
+        # First move to and click on element to give it focus
+        self._action_chains.move_to_element(element)
+        self._action_chains.click()
+        self._action_chains.perform()
+
+        # Now type each character
+        self.type(text)
+
+        if delay:
+            self._action_chains.pause(delay)
+            self._action_chains.perform()
+
+        if tab_off:
+            self.type_tab()
+
+    def type(self, text: str):
+        """Types into the currently focused element in a realistic manner.
+
+        Args:
+            text (str): The text to type.
+        """
+        for character in text:
+            self._action_chains.send_keys(character)
+            self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+            self._action_chains.perform()
+
+    def type_tab(self):
+        """Type a tab character into the currently focused element.
+        """
+        self._action_chains.send_keys(Keys.TAB)
+        self._action_chains.perform()

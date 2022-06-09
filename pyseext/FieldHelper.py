@@ -1,25 +1,26 @@
 import logging
-import random
 import time
 from typing import Union, Any
 
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 from pyseext.Core import Core
+from pyseext.InputHelper import InputHelper
 
 class FieldHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext fields
     """
 
     # Class variables
-    _FIND_FIELD_INPUT_ELEMENT_TEMPLATE = "return globalThis.PySeExt.FieldHelper.findFieldInputElement('{form_cq}', '{name}')"
-    _GET_FIELD_XTYPE_TEMPLATE = "return globalThis.PySeExt.FieldHelper.getFieldXType('{form_cq}', '{name}')"
-    _GET_FIELD_VALUE_TEMPLATE = "return globalThis.PySeExt.FieldHelper.getFieldValue('{form_cq}', '{name}')"
-    _SET_CHECKBOX_VALUE_TEMPLATE = "return globalThis.PySeExt.FieldHelper.setCheckboxValue('{form_cq}', '{name}', {checked})"
-    _SET_FIELD_VALUE_TEMPLATE = "return globalThis.PySeExt.FieldHelper.setFieldValue('{form_cq}', '{name}', {value})"
+    _FIND_FIELD_INPUT_ELEMENT_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.findFieldInputElement('{form_cq}', '{name}')"
+    _GET_FIELD_XTYPE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.getFieldXType('{form_cq}', '{name}')"
+    _GET_FIELD_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.getFieldValue('{form_cq}', '{name}')"
+    _SET_FIELD_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.setFieldValue('{form_cq}', '{name}', {value})"
+    _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox('{form_cq}', '{name}')"
+    _RESET_COMBOBOX_STORE_LOAD_COUNT_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.resetComboBoxStoreLoadCount('{form_cq}', '{name}')"
+    _WAIT_FOR_COMBOBOX_STORE_LOADED_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.waitForComboBoxStoreLoaded('{form_cq}', '{name}', callback)"
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -31,6 +32,7 @@ class FieldHelper(HasReferencedJavaScript):
         self._driver = driver
         self._action_chains = ActionChains(driver)
         self._core = Core(driver)
+        self._input_helper = InputHelper(driver)
 
         # Initialise our base class
         super().__init__(driver, self._logger)
@@ -77,22 +79,6 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_checkbox_value(self, form_cq: str, field_name: str, checked: bool = True):
-        """Sets the checked value for a checkbox.
-
-        Args:
-            form_cq (str): The component query that identifies the form panel in which to look for the field
-            name (str): The name of the field
-            checked (bool, optional): The checked value for the checkbox. Defaults to True.
-        """
-
-        # FIXME: Perhaps change this to get the value, and if checked state is not correct to
-        # .....: click on the element?
-
-        script = self._SET_CHECKBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, checked=str(checked).lower())
-        self.ensure_javascript_loaded()
-        self._driver.execute_script(script)
-
     def set_field_value(self, form_cq: str, field_name: str, value: Union[dict, int, str]):
         """Sets the value for a field.
 
@@ -119,22 +105,58 @@ class FieldHelper(HasReferencedJavaScript):
             tab_off = self._core.try_get_object_member(value, 'tab_off', False)
 
             # Now need to set it's value
-            if (field_xtype.endswith('textfield') or
+            if (field_xtype.endswith('combo') or field_xtype.endswith('combobox')):
+                is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, field_name)
+                is_value_a_dict = isinstance(field_value, dict)
+
+                if is_combo_remote:
+                    if not is_value_a_dict:
+                        # We want to type into the combobox, to filter it, and wait for it to load.
+                        # Once loaded we expect to have a single value that will end up selected.
+                        field = self.find_field_input_element(form_cq, field_name)
+                        self._input_helper.type_into_element(field, field_value)
+
+                        # This reset has to be here it seems, rather than before typing.
+                        # I suspect that the load count gets incremented a few times as the box
+                        # is typed into or something?
+
+                        # Anyway, remote combos will take longer to load than this statement does.
+                        # If not, then I guess that's a nice problem to have :-)
+                        self._reset_combobox_store_load_count(form_cq, field_name)
+                        self._wait_for_combobox_store_loaded(form_cq, field_name)
+
+                        # FIXME: Does the store have a count of one?
+                        # .....: Do we really care? If multiple then the top one will be highlighted...
+
+                        # Seems we need to tab off or sometimes the value will not stick?!
+                        self._input_helper.type_tab()
+                    else:
+                        raise NotImplementedError()
+                else:
+                    if not is_value_a_dict:
+                        # We can just type into the combobox
+                        field = self.find_field_input_element(form_cq, field_name)
+                        self._input_helper.type_into_element(field, field_value, delay, tab_off)
+                    else:
+                        raise NotImplementedError()
+
+            elif (field_xtype.endswith('textfield') or
                 field_xtype.endswith('number') or
-                field_xtype.endswith('datefield') or
-                ((field_xtype.endswith('combo') or field_xtype.endswith('combobox')) and
-                    isinstance(field_value, str))):
+                field_xtype.endswith('datefield')):
                 # Field can be typed into
                 field = self.find_field_input_element(form_cq, field_name)
-                self.type_into_element(field, field_value, delay, tab_off)
-            elif field_xtype.endswith('checkbox'):
-                self.set_checkbox_value(form_cq, field_name, field_value)
-            elif (field_xtype.endswith('combo') or
-                field_xtype.endswith('combobox') or
-                field_xtype.endswith('radiogroup') or   # FIXME: For a radio group, can get child controls using getBoxes(query), so could click on children if wanted!
+                self._input_helper.type_into_element(field, field_value, delay, tab_off)
+
+            elif (field_xtype.endswith('checkbox') or
+                field_xtype.endswith('radiogroup') or
                 field_xtype.endswith('radio')):
 
-                # We want to directly set the value on the field rather than type it in
+                # FIXME: We could click on the elements here, after checking whether they
+                # .....: are already set to the value we want.
+                # .....: For a radio group, can get child controls using getBoxes(query),
+                # .....: so could click on children if wanted!
+
+                # Directly set the value on the field
                 self.set_field_value_directly(form_cq, field_name, field_value)
 
                 if delay:
@@ -156,52 +178,50 @@ class FieldHelper(HasReferencedJavaScript):
         if isinstance(value, str):
             value = "'{value}'".format(value=value)
 
+        # If value is a boolean we want to force it to lowercase
+        if isinstance(value, bool):
+            value = str(value).lower()
+
         script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, value=value)
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def type_into_element(self, element, text: str, delay: int = None, tab_off: bool = False):
-        """Types into an input element in a more realistic manner.
+    def _is_field_remotely_filtered_combobox(self, form_cq: str, name: str) -> bool:
+        """Attempts to find a field by name from the specified form panel, and determine whether
+        it is a remotely filtered combobox.
 
         Args:
-            element (WebElement): The element to type into.
-            text (str): The text to type.
-            delay (int): The number of seconds to delay after typing.
-            tab_off (bool): Indicates whether to tab off the field after typing, and delay.
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field was found, and is a remotely filtered combobox. False otherwise.
         """
-        # Ensure text really is a string
-        text = str(text)
+        script = self._IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
-        # First move to and click on element to give it focus
-        self._action_chains.move_to_element(element)
-        self._action_chains.click()
-        self._action_chains.perform()
-
-        # Now type each character
-        self.type(text)
-
-        if delay:
-            time.sleep(delay)
-
-        if tab_off:
-            self.type_tab()
-
-    def type(self, text: str):
-        """Types into the currently focused element in a realistic manner.
+    def _reset_combobox_store_load_count(self, form_cq: str, name: str):
+        """Resets the load count on the specified combobox.
 
         Args:
-            text (str): The text to type.
+            form_cq (str): The component query that identifies the form panel in which to find the field.
+            name (str): The name of the field.
         """
-        for character in text:
-            self._action_chains.send_keys(character)
-            self._action_chains.perform()
-            time.sleep(random.uniform(0.0001, 0.002))
+        script = self._RESET_COMBOBOX_STORE_LOAD_COUNT_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        self._driver.execute_script(script)
 
-    def type_tab(self):
-        """Type a tab character into the currently focused element
+    def _wait_for_combobox_store_loaded(self, form_cq: str, name: str):
+        """Waits for the store on the specified combobox to have loaded.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to find the field.
+            name (str): The name of the field.
         """
-        self._action_chains.send_keys(Keys.TAB)
-        self._action_chains.perform()
+        async_script = self.get_async_script_content(self._WAIT_FOR_COMBOBOX_STORE_LOADED_TEMPLATE).format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        self._driver.execute_async_script(async_script)
 
     class FieldNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified field
