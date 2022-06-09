@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.Core import Core
 
 class FieldHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext fields
@@ -29,6 +30,7 @@ class FieldHelper(HasReferencedJavaScript):
         self._logger = logging.getLogger(__name__)
         self._driver = driver
         self._action_chains = ActionChains(driver)
+        self._core = Core(driver)
 
         # Initialise our base class
         super().__init__(driver, self._logger)
@@ -91,8 +93,59 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def set_field_value(self, form_cq: str, field_name: str, value: Union[int, str]):
-        """Sets the value for a field to a numeric value.
+    def set_field_value(self, form_cq: str, field_name: str, value: Union[dict, int, str]):
+        """Sets the value for a field.
+
+        If the field can be typed into by a user, and the value is typeable, then that is the approach taken.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field.
+            field_name (str): The name of the field.
+            value (Union[dict, int, str]): The value for the field.
+                                           Supports being specified as a dictionary that can contain:
+                                               - value (Union[int, str]): The value to set.
+                                               - data (dict): A dictionary containing the data to find in the fields store.
+                                                              If the field is not a store holder then an exception is thrown.
+        """
+        field_xtype = self.get_field_xtype(form_cq, field_name)
+
+        # FIXME: This is a mess!
+        # .....: Need a field helper class, and for much of this complexity factored out!
+        # .....: Also need much better support for comboboxes...
+        if field_xtype:
+            # Field found!
+            field_value = self._core.try_get_object_member(value, 'value', value)
+            delay = self._core.try_get_object_member(value, 'delay')
+            tab_off = self._core.try_get_object_member(value, 'tab_off', False)
+
+            # Now need to set it's value
+            if (field_xtype.endswith('textfield') or
+                field_xtype.endswith('number') or
+                field_xtype.endswith('datefield') or
+                ((field_xtype.endswith('combo') or field_xtype.endswith('combobox')) and
+                    isinstance(field_value, str))):
+                # Field can be typed into
+                field = self.find_field_input_element(form_cq, field_name)
+                self.type_into_element(field, field_value, delay, tab_off)
+            elif field_xtype.endswith('checkbox'):
+                self.set_checkbox_value(form_cq, field_name, field_value)
+            elif (field_xtype.endswith('combo') or
+                field_xtype.endswith('combobox') or
+                field_xtype.endswith('radiogroup') or   # FIXME: For a radio group, can get child controls using getBoxes(query), so could click on children if wanted!
+                field_xtype.endswith('radio')):
+
+                # We want to directly set the value on the field rather than type it in
+                self.set_field_value_directly(form_cq, field_name, field_value)
+
+                if delay:
+                    time.sleep(delay)
+            else:
+                raise FieldHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
+        else:
+            raise FieldHelper.FieldNotFoundException(form_cq, field_name)
+
+    def set_field_value_directly(self, form_cq: str, field_name: str, value: Union[int, str]):
+        """Sets the value for a field using Ext's setValue method.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field

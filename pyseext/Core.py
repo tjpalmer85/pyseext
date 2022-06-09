@@ -1,5 +1,8 @@
 import logging
+from typing import Union, Any
+
 from selenium.webdriver.support.ui import WebDriverWait
+
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
 
 class Core(HasReferencedJavaScript):
@@ -29,6 +32,26 @@ class Core(HasReferencedJavaScript):
             timeout (float): Number of seconds before timing out (default 30)
         """
         WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())
+
+    def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+        """Attempts to get the member from an object, but if object itself is not a dictionary
+        then it is returned.
+
+        Useful when a value in a dictionary we're processing might be an object or not, and we
+        want to process them in the same way.
+
+        Args:
+            object (Union[dict, Any]): The object from which to get the member's value.
+            member (str): The key for the member we're after.
+            default (Any, optional): The default to return if not found. Defaults to None.
+
+        Returns:
+            Any: The value of the member, or the default if not found.
+        """
+        if isinstance(object, dict):
+            return object.get(member, default)
+        else:
+            return default
 
     class IsDomReadyExpectation():
         """ An expectation for checking Ext.isDomReady
