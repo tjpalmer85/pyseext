@@ -14,6 +14,10 @@ class Core(HasReferencedJavaScript):
     _IS_DOM_READY: str = "return !!(globalThis.Ext && globalThis.Ext.isDomReady)"
     _IS_AJAX_REQUEST_IN_PROGRESS: str = "return globalThis.PySeExt.Core.isAjaxRequestInProgress()"
 
+    # FIXME: Could use a means of injecting event sniffing perhaps?
+    # .....: Using Ext.mixin.Observable.capture
+
+    # FIXME: Another thought is to inject a means to show field names on forms, xtype on components, etc?
 
     def __init__(self, driver):
         """Initialises an instance of this class.
