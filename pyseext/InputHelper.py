@@ -35,6 +35,9 @@ class InputHelper():
         # Ensure text really is a string
         text = str(text)
 
+        # Clear the element first, in case has something in it
+        element.clear()
+
         # First move to and click on element to give it focus
         self._action_chains.move_to_element(element)
         self._action_chains.click()

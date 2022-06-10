@@ -48,7 +48,6 @@ class ObservableHelper(HasReferencedJavaScript):
                                                                                            member_accessor = member_accessor)
         self.ensure_javascript_loaded()
 
-        # FIXME: Need to catch thrown timeout and contain
         result = self._driver.execute_async_script(async_script)
 
         if isinstance(result, str):

@@ -5,6 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.Core import Core
 
 class TreeHelper(HasReferencedJavaScript):
     """A class to help with using trees, through Ext's interfaces.
@@ -31,6 +32,7 @@ class TreeHelper(HasReferencedJavaScript):
         self._logger = logging.getLogger(__name__)
         self._driver = driver
         self._action_chains = ActionChains(driver)
+        self._core = Core(driver)
 
         # Initialise our base class
         super().__init__(driver, self._logger)

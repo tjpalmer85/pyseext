@@ -129,13 +129,18 @@ class FieldHelper(HasReferencedJavaScript):
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
                     else:
+                        # FIXME: Implement!
                         raise NotImplementedError()
                 else:
                     if not is_value_a_dict:
                         # We can just type into the combobox
                         field = self.find_field_input_element(form_cq, field_name)
                         self._input_helper.type_into_element(field, field_value, delay, tab_off)
+
+                        # Seems we need to tab off or sometimes the value will not stick?!
+                        self._input_helper.type_tab()
                     else:
+                        # FIXME: Implement!
                         raise NotImplementedError()
 
             elif (field_xtype.endswith('textfield') or

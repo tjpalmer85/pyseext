@@ -21,5 +21,13 @@ globalThis.PySeExt.Core = {
         }
 
         return value;
+    },
+
+    /**
+     * Indicates whether there is currently an Ajax request in progress.
+     * @return {Boolean} True if there is a request in progress, false otherwise.
+     */
+    isAjaxRequestInProgress: function() {
+        return globalThis.Ext.Ajax.isLoading();
     }
 };
