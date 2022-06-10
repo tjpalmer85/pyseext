@@ -65,4 +65,5 @@ class InputHelper():
         """Type a tab character into the currently focused element.
         """
         self._action_chains.send_keys(Keys.TAB)
+        self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
         self._action_chains.perform()

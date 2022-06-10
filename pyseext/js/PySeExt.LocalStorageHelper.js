@@ -57,7 +57,7 @@ globalThis.PySeExt.LocalStorageHelper = {
             value = parseFloat(value);
         }
 
-        // FIXME: Cast to other supported types...
+        // Add casts to other supported types as needed...
 
         return value;
     }

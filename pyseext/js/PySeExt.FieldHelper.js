@@ -56,7 +56,7 @@ globalThis.PySeExt.FieldHelper = {
      * @returns {Boolean} True if the field was found, and is a remotely filtered combobox.
      *                    False otherwise.
      */
-     isRemotelyFilteredComboBox: function(formCQ, name) {
+    isRemotelyFilteredComboBox: function(formCQ, name) {
         var field = this.__getField(formCQ, name),
             isRemotelyFilteredComboBox;
 
@@ -91,7 +91,7 @@ globalThis.PySeExt.FieldHelper = {
      * @param {String} name The name of the field.
      * @param {Function} callback The callback to call when the store has loaded.
      */
-     waitForComboBoxStoreLoaded: function(formCQ, name, callback) {
+    waitForComboBoxStoreLoaded: function(formCQ, name, callback) {
         var field = this.__getField(formCQ, name);
 
         if (!field instanceof globalThis.Ext.form.field.ComboBox) {
@@ -102,8 +102,25 @@ globalThis.PySeExt.FieldHelper = {
     },
 
     /**
+     * Method to focus on a field on a form by (zero-based) index or name.
+     *
+     * Raises an error if the field was not found.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String|Integer} indexOrName The zero-based index or name of the field to focus.
+     */
+    focusField: function(formCQ, indexOrName) {
+        var me = this;
+
+        if (globalThis.Ext.isString(indexOrName)) {
+            me.__getField(formCQ, indexOrName, true).focus();
+        } else {
+            me.__getFieldAtIndex(formCQ, indexOrName).focus();
+        }
+    },
+
+    /**
      * Finds a field in a form panel.
-     * Raises an error if not found.
+     * Optionally raises an error if not found.
      * @param {String} formCQ The CQ to get to the form panel.
      * @param {String} name The name of the field.
      * @param {Boolean} throwIfNotFound Indicates whether to raise an error if not found.
@@ -126,5 +143,33 @@ globalThis.PySeExt.FieldHelper = {
         }
 
         return field;
+    },
+
+    /**
+     * Gets a field in a form panel by index.
+     *
+     * Raises an error if the index is outside of the bounds of the fields,
+     * or is otherwise invalid.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {Number} index The index of the field.
+     * @returns {Ext.form.field.Base} The field instance.
+     */
+     __getFieldAtIndex: function(formCQ, index) {
+        var formPanel = Ext.ComponentQuery.query(formCQ),
+            field;
+
+        if (formPanel && formPanel.length) {
+            formPanel = formPanel[0];
+            field = formPanel.getForm().getFields().getAt(index);
+        } else {
+            globalThis.Ext.Error.raise("Form panel could not be found!");
+        }
+
+        if (!field) {
+            globalThis.Ext.Error.raise("Field could not be found!");
+        }
+
+        return field;
     }
+
 };

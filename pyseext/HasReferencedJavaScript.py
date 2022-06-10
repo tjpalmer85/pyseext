@@ -8,7 +8,7 @@ class HasReferencedJavaScript:
 
     # Class variables
     _SCRIPT_LOADED_TEST_TEMPLATE: str = "return globalThis.Ext && globalThis.Ext.isDefined && globalThis.Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
-    _SCRIPT_LOAD_TIMEOUT: float = 5
+    _SCRIPT_LOAD_TIMEOUT: float = 10
     _ASYNC_SCRIPT_TEMPLATE: str = "var {callback_parameter_name} = arguments[arguments.length - 1]; {script}"
 
     def __init__(self, driver, logger):

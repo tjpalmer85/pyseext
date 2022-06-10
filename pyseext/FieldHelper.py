@@ -21,6 +21,7 @@ class FieldHelper(HasReferencedJavaScript):
     _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox('{form_cq}', '{name}')"
     _RESET_COMBOBOX_STORE_LOAD_COUNT_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.resetComboBoxStoreLoadCount('{form_cq}', '{name}')"
     _WAIT_FOR_COMBOBOX_STORE_LOADED_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.waitForComboBoxStoreLoaded('{form_cq}', '{name}', callback)"
+    _FOCUS_FIELD_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.focusField('{form_cq}', {index_or_name})"
 
     def __init__(self, driver):
         """Initialises an instance of this class
@@ -173,13 +174,28 @@ class FieldHelper(HasReferencedJavaScript):
         """
         # If value is a string then we want to quote it in our script
         if isinstance(value, str):
-            value = "'{value}'".format(value=value)
+            value = f"'{value}'"
 
         # If value is a boolean we want to force it to lowercase
         if isinstance(value, bool):
             value = str(value).lower()
 
         script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, value=value)
+        self.ensure_javascript_loaded()
+        self._driver.execute_script(script)
+
+    def focus_field(self, form_cq: str, index_or_name: Union[int, str]):
+        """Method to focus on a field on a form by (zero-based) index or name.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            index_or_name: (Union[int, str]): The zero-based index or name of the field to focus.
+        """
+        # If value is a string then we want to quote it in our script
+        if isinstance(index_or_name, str):
+            index_or_name = f"'{index_or_name}'"
+
+        script = self._FOCUS_FIELD_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
