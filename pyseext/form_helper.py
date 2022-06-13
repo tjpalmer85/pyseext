@@ -24,7 +24,7 @@ class FormHelper():
         self._field_helper = FieldHelper(driver)
         self._input_helper = InputHelper(driver)
 
-    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int]]]):
+    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
         """Sets the values on the specified form panel.
 
         If using the list version, you can only supply values that can be typed into input elements, so
@@ -32,7 +32,7 @@ class FormHelper():
 
         Args:
             form_cq (str): The component query that identifies the form panel on which to set the values.
-            field_values (Union[dict, list[Union[str, float, int]]]):
+            field_values (Union[dict, list[Union[str, float, int, None]]]):
                 Either a dictionary containing the 'name' and 'value' of the fields.
                     The values can be strings, numbers or an object containing:
                         - value (Any): The value for the field

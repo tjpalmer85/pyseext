@@ -90,13 +90,13 @@ class GridHelper(HasReferencedJavaScript):
         """
         return not self.get_column_header(grid_cq, column_text_or_data_index).is_displayed()
 
-    def check_columns_are_visible(self, grid_cq: str, column_text_or_data_indexes: str) -> list[WebElement]:
+    def check_columns_are_visible(self, grid_cq: str, column_text_or_data_indexes: list[str]) -> list[WebElement]:
         """Checks that the specified columns are all visible on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_data_indexes (array): An array containing the header text or dataIndex of the grid columns to check
+            column_text_or_data_indexes (list[str]): An array containing the header text or dataIndex of the grid columns to check
 
         Returns:
             An array of columns that are not visible, if any.
@@ -110,13 +110,13 @@ class GridHelper(HasReferencedJavaScript):
 
         return columns_not_visible
 
-    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_data_indexes) -> list[WebElement]:
+    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_data_indexes: list[str]) -> list[WebElement]:
         """Checks that the specified columns are all hidden on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_texts_or_data_indexes (array): An array containing the header text or dataIndex of the grid columns to check
+            column_texts_or_data_indexes (list[str]): An array containing the header text or dataIndex of the grid columns to check
 
         Returns:
             An array of columns that are not hidden, if any.
