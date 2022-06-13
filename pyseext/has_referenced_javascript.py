@@ -1,13 +1,17 @@
-import logging
-from selenium.webdriver.support.ui import WebDriverWait
+"""
+Module that contains our HasReferencedJavaScript class.
+"""
 from pathlib import Path
+
+from selenium.webdriver.support.ui import WebDriverWait
 
 class HasReferencedJavaScript:
     """Base class to be used by our test classes that have JavaScript that they need to load
     """
 
     # Class variables
-    _SCRIPT_LOADED_TEST_TEMPLATE: str = "return globalThis.Ext && globalThis.Ext.isDefined && globalThis.Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
+    _SCRIPT_LOADED_TEST_TEMPLATE: str = \
+        "return globalThis.Ext && globalThis.Ext.isDefined && globalThis.Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
     _SCRIPT_LOAD_TIMEOUT: float = 10
     _ASYNC_SCRIPT_TEMPLATE: str = "var {callback_parameter_name} = arguments[arguments.length - 1]; {script}"
 
@@ -39,10 +43,12 @@ class HasReferencedJavaScript:
 
             js_path = source_dir.joinpath(js_path)
 
-            self._driver.execute_script(open(js_path).read())
+            self._driver.execute_script(open(js_path, encoding = "utf-8").read())
 
             # Wait for it to the loaded
-            WebDriverWait(self._driver, self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name, self._SCRIPT_LOADED_TEST_TEMPLATE))
+            WebDriverWait(self._driver,
+                          self._SCRIPT_LOAD_TIMEOUT).until(HasReferencedJavaScript.JavaScriptLoadedExpectation(class_name,
+                                                                                                               self._SCRIPT_LOADED_TEST_TEMPLATE))
 
     def get_async_script_content(self, script: str, callback_parameter_name: str = 'callback') -> str:
         """Builds some async script content, to call some JavaScript that takes a callback function.

@@ -1,5 +1,8 @@
+"""
+Module that contains our StoreHelper class.
+"""
 import logging
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class StoreHelper(HasReferencedJavaScript):
     """A class to help with using stores, through Ext's interfaces.

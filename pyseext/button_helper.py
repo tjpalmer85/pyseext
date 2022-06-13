@@ -1,7 +1,13 @@
+"""
+Module that contains our ButtonHelper class.
+"""
+
 import logging
+from typing import Union
+
 from selenium.webdriver.common.action_chains import ActionChains
 
-from pyseext.ComponentQuery import ComponentQuery
+from pyseext.component_query import ComponentQuery
 
 class ButtonHelper:
     """A class to help with interacting with Ext buttons
@@ -23,7 +29,7 @@ class ButtonHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_button(self, cq: str, root_id: str = None):
+    def click_button(self, cq: str, root_id: Union[str, None] = None):
         """Finds a button using the supplied component query and clicks it.
 
         Args:
@@ -34,13 +40,13 @@ class ButtonHelper:
         button = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
-        self._logger.info(f"Clicking button with CQ '{cq}'")
+        self._logger.info("Clicking button with CQ '%s'", cq)
 
         self._action_chains.move_to_element(button)
         self._action_chains.click()
         self._action_chains.perform()
 
-    def click_button_by_text(self, text: str, root_id: str = None):
+    def click_button_by_text(self, text: str, root_id: Union[str, None] = None):
         """Finds a visible, enabled button with the specified text and clicks it.
 
         Args:
@@ -50,7 +56,7 @@ class ButtonHelper:
         """
         self.click_button(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_enabled(self, text: str, root_id: str = None):
+    def check_button_enabled(self, text: str, root_id: Union[str, None] = None):
         """Checks that we can find an enabled button with the specified text.
 
         Args:
@@ -60,7 +66,7 @@ class ButtonHelper:
         """
         self._cq.wait_for_single_query(self._ENABLED_BUTTON_TEMPLATE.format(text=text), root_id)
 
-    def check_button_disabled(self, text: str, root_id: str = None):
+    def check_button_disabled(self, text: str, root_id: Union[str, None] = None):
         """Checks that we can find a disabled button with the specified text.
 
         Args:

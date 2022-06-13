@@ -1,3 +1,6 @@
+"""
+Module that contains our FieldHelper class.
+"""
 import logging
 import time
 from typing import Union, Any
@@ -5,9 +8,9 @@ from typing import Union, Any
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
-from pyseext.Core import Core
-from pyseext.InputHelper import InputHelper
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
+from pyseext.core import Core
+from pyseext.input_helper import InputHelper
 
 class FieldHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext fields

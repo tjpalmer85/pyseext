@@ -1,6 +1,9 @@
+"""
+Module that contains our LocalStorageHelper class.
+"""
 import logging
 from typing import Any
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class LocalStorageHelper(HasReferencedJavaScript):
     """A class to help with using local storage, through Ext's interfaces.

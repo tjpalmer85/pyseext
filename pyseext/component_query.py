@@ -1,9 +1,14 @@
+"""
+Module that contains our ComponentQuery class.
+"""
 import logging
-import array
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.remote.webelement import WebElement
+from typing import Union
 
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.ui import WebDriverWait
+
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
+
 
 class ComponentQuery(HasReferencedJavaScript):
     """A class to help with using Ext.ComponentQuery
@@ -26,38 +31,38 @@ class ComponentQuery(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def query(self, cq: str, root_id: str = None) -> list[WebElement]:
+    def query(self, cq: str, root_id: Union[str, None] = None) -> list[WebElement]:
         """Executes a ComponentQuery and returns the result
 
         Args:
             cq (str): The query to execute
-            root_id (str):
+            root_id (str, optional):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
 
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found
         """
-        if root_id == None:
-            self._logger.debug(f"Executing CQ '{cq}'")
+        if root_id is None:
+            self._logger.debug("Executing CQ '%s'", cq)
             script = self._QUERY_TEMPLATE.format(cq=cq)
         else:
-            self._logger.debug(f"Executing CQ '{cq}' under root '{root_id}'")
+            self._logger.debug("Executing CQ '%s' under root '%s'", cq, root_id)
             script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, root_id=root_id)
 
         self.ensure_javascript_loaded()
         query_result = self._driver.execute_script(script)
 
-        self._logger.debug(f"CQ '{cq}' gave results: {query_result}")
+        self._logger.debug("CQ '%s' gave results: %s", cq, query_result)
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: str = None, timeout: float = 10) -> list[WebElement]:
+    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -> list[WebElement]:
         """Method that waits for the specified CQ to match something
 
         Args:
             cq (str): The query to execute
-            root (str):
+            root (str, optional):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
@@ -68,13 +73,13 @@ class ComponentQuery(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         return self.query(cq, root_id)
 
-    def wait_for_single_query(self, cq: str, root_id: str = None, timeout: float = 10) -> WebElement:
+    def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -> WebElement:
         """Method that waits for the specified CQ to match a single result.
         If there are multiple matches then an error is thrown.
 
         Args:
             cq (str): The query to execute
-            root (str):
+            root (str, optional):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
@@ -89,13 +94,13 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return results[0]
 
-    def wait_for_single_query_visible(self, cq: str, root_id: str = None, timeout: float = 10) -> WebElement:
+    def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -> WebElement:
         """Method that waits for the specified CQ to match a single visible result.
         If there are multiple matches then an error is thrown.
 
         Args:
             cq (str): The query to execute
-            root (str):
+            root (str, optional):
                 The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
@@ -121,7 +126,7 @@ class ComponentQuery(HasReferencedJavaScript):
             """Method that determines whether a CQ is found
             """
             results = ComponentQuery(driver).query(self._cq)
-            return results != None and len(results) > 0
+            return results is not None and len(results) > 0
 
     class QueryMatchedMultipleElementsException(Exception):
         """Exception class thrown when expecting a single component query match and get multiple
@@ -133,7 +138,8 @@ class ComponentQuery(HasReferencedJavaScript):
             Args:
                 cq (str): The component query that has been executed
                 count (int): The number of results that we got
-                message (str, optional): The message for the exception. Must contain a 'cq' and 'count' format inserts. Defaults to "Expected a single match from ComponentQuery '{cq}' but got '{count}'".
+                message (str, optional): The message for the exception. Must contain a 'cq' and 'count' format inserts.
+                                         Defaults to "Expected a single match from ComponentQuery '{cq}' but got '{count}'".
             """
             self.message = message
             self._cq = cq

@@ -1,6 +1,10 @@
+"""
+Module that contains our ObservableHelper class.
+"""
 import logging
+from typing import Union
 
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class ObservableHelper(HasReferencedJavaScript):
     """A class to help with observable objects in Ext.
@@ -22,7 +26,7 @@ class ObservableHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def wait_for_event(self, component_cq: str, event_name: str, timeout: float = 10, member_accessor: str = None):
+    def wait_for_event(self, component_cq: str, event_name: str, timeout: float = 10, member_accessor: Union[str, None] = None):
         """Method to find an observable using a component query, optionally access a member on it (to get an owned observable),
         and then wait for an event with the specified name.
 
@@ -87,12 +91,12 @@ class ObservableHelper(HasReferencedJavaScript):
         def __str__(self):
             """Returns a string representation of this exception
             """
-            if (self._member_accessor):
+            if self._member_accessor:
                 return self.message.format(event_name = self._event_name,
                                            component_cq = self._component_cq,
                                            member_accessor = self._member_accessor,
                                            error = self._error)
-            else:
-                return self.message.format(event_name = self._event_name,
-                                           component_cq = self._component_cq,
-                                           error = self._error)
+
+            return self.message.format(event_name = self._event_name,
+                                        component_cq = self._component_cq,
+                                        error = self._error)

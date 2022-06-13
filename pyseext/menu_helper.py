@@ -1,7 +1,12 @@
+"""
+Module that contains our MenuHelper class.
+"""
 import logging
+from typing import Union
+
 from selenium.webdriver.common.action_chains import ActionChains
 
-from pyseext.ComponentQuery import ComponentQuery
+from pyseext.component_query import ComponentQuery
 
 class MenuHelper:
     """A class to help with interacting with Ext menus and menu items
@@ -23,7 +28,7 @@ class MenuHelper:
         self._cq = ComponentQuery(driver)
         self._action_chains = ActionChains(driver)
 
-    def click_menu_item(self, cq: str, root_id: str = None):
+    def click_menu_item(self, cq: str, root_id: Union[str, None] = None):
         """Finds a menu item using the supplied component query and clicks it.
 
         Args:
@@ -40,7 +45,7 @@ class MenuHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def click_menu_item_by_text(self, text: str, root_id: str = None):
+    def click_menu_item_by_text(self, text: str, root_id: Union[str, None] = None):
         """Finds a visible, enabled menu item with the specified text and clicks it.
 
         Args:
@@ -57,7 +62,7 @@ class MenuHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def check_menu_item_enabled(self, text: str, root_id: str = None):
+    def check_menu_item_enabled(self, text: str, root_id: Union[str, None] = None):
         """Checks that we can find an enabled menu item with the specified text.
 
         Args:
@@ -67,7 +72,7 @@ class MenuHelper:
         """
         self._cq.wait_for_single_query(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
-    def check_menu_item_disabled(self, text: str, root_id:str = None):
+    def check_menu_item_disabled(self, text: str, root_id:Union[str, None] = None):
         """Checks that we can find a disabled menu item with the specified text.
 
         Args:

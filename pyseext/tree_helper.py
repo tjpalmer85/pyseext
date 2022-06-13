@@ -1,11 +1,14 @@
+"""
+Module that contains our TreeHelper class.
+"""
 import logging
 from typing import Union
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
-from pyseext.Core import Core
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
+from pyseext.core import Core
 
 class TreeHelper(HasReferencedJavaScript):
     """A class to help with using trees, through Ext's interfaces.

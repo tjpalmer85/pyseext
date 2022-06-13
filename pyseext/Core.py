@@ -1,10 +1,13 @@
+"""
+Module that contains our Core class.
+"""
 import logging
 import time
 from typing import Union, Any
 
 from selenium.webdriver.support.ui import WebDriverWait
 
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class Core(HasReferencedJavaScript):
     """A class to help with core testing functionality.
@@ -44,7 +47,7 @@ class Core(HasReferencedJavaScript):
         """
         WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())
 
-    def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+    def try_get_object_member(self, obj: Union[dict, Any], member: str, default = None):
         """Attempts to get the member from an object, but if object itself is not a dictionary
         then it is returned.
 
@@ -59,8 +62,8 @@ class Core(HasReferencedJavaScript):
         Returns:
             Any: The value of the member, or the default if not found.
         """
-        if isinstance(object, dict):
-            return object.get(member, default)
+        if isinstance(obj, dict):
+            return obj.get(member, default)
         else:
             return default
 
@@ -106,7 +109,7 @@ class Core(HasReferencedJavaScript):
         """ An expectation for checking whether there is an Ajax call in progress.
         """
 
-        def __init__(self, recheck_time_if_false: float = None):
+        def __init__(self, recheck_time_if_false: Union[float, None] = None):
             """Initialises an instance of this class.
 
             Args:

@@ -1,9 +1,12 @@
+"""
+Module that contains our FormHelper class.
+"""
 import logging
 from typing import Union
 
-from pyseext.FieldHelper import FieldHelper
-from pyseext.ButtonHelper import ButtonHelper
-from pyseext.InputHelper import InputHelper
+from pyseext.field_helper import FieldHelper
+from pyseext.button_helper import ButtonHelper
+from pyseext.input_helper import InputHelper
 
 class FormHelper():
     """A class to help with interacting with Ext form panels and forms
@@ -21,7 +24,7 @@ class FormHelper():
         self._field_helper = FieldHelper(driver)
         self._input_helper = InputHelper(driver)
 
-    def set_form_values(self, form_cq: str, field_values: Union[dict, list[str, float, int]]):
+    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int]]]):
         """Sets the values on the specified form panel.
 
         If using the list version, you can only supply values that can be typed into input elements, so
@@ -29,23 +32,24 @@ class FormHelper():
 
         Args:
             form_cq (str): The component query that identifies the form panel on which to set the values.
-            field_values (Union[dict, list[str, float, int]]): Either a dictionary containing the 'name' and 'value' of the fields.
-                                                                    The values can be strings, numbers or an object containing:
-                                                                        - value (Any): The value for the field
-                                                                        - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
-                                                                        - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
-                                                                                          and only works with fields that are being typed into.
-                                                               Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
-                                                                    A value of None in the array means that no value should be entered.
+            field_values (Union[dict, list[Union[str, float, int]]]):
+                Either a dictionary containing the 'name' and 'value' of the fields.
+                    The values can be strings, numbers or an object containing:
+                        - value (Any): The value for the field
+                        - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
+                        - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
+                                            and only works with fields that are being typed into.
+                Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
+                    A value of None in the array means that no value should be entered.
 
         """
-        if type(field_values) is dict:
-            self._logger.info(f"Populating form '{form_cq}' with values: {field_values}")
+        if isinstance(field_values, dict):
+            self._logger.info("Populating form '%s' with values: %s", form_cq, field_values)
 
             for field_name in field_values.keys():
                 self._field_helper.set_field_value(form_cq, field_name, field_values[field_name])
 
-        elif type(field_values) is list:
+        elif isinstance(field_values, list):
             self._field_helper.focus_field(form_cq, 0)
 
             for field_value in field_values:

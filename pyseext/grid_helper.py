@@ -1,13 +1,16 @@
+"""
+Module that contains our GridHelper class.
+"""
 import logging
 from typing import Union
-import array
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
-from pyseext.ComponentQuery import ComponentQuery
-from pyseext.StoreHelper import StoreHelper
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
+from pyseext.component_query import ComponentQuery
+from pyseext.store_helper import StoreHelper
 
 class GridHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext grid panels
