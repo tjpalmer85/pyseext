@@ -4,7 +4,7 @@ Module that contains our GridHelper class.
 import logging
 from typing import Union
 
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -20,8 +20,8 @@ class GridHelper(HasReferencedJavaScript):
     GRID_CQ: str = "gridpanel"
 
     # Private class variables
-    _GET_COLUMN_HEADER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_dataIndex}')"
-    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_dataIndex}')"
+    _GET_COLUMN_HEADER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_data_index}')"
+    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_data_index}')"
     _CLEAR_SELECTION_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
     _GET_ROW_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
 
@@ -41,12 +41,12 @@ class GridHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def get_column_header(self, grid_cq: str, column_text_or_dataIndex: str) -> WebElement:
+    def get_column_header(self, grid_cq: str, column_text_or_data_index: str) -> WebElement:
         """Gets the element for the specified column header
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+            column_text_or_data_index (str): The header text or dataIndex of the grid column
 
         Returns:
             WebElement: The DOM element for the column header
@@ -55,103 +55,103 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        script = self._GET_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_data_index=column_text_or_data_index)
         self.ensure_javascript_loaded()
         column_header = self._driver.execute_script(script)
 
         if column_header:
             return column_header
         else:
-            raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
+            raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_data_index)
 
-    def is_column_visible(self, grid_cq: str, column_text_or_dataIndex: str) -> bool:
+    def is_column_visible(self, grid_cq: str, column_text_or_data_index: str) -> bool:
         """Determines whether the specified column is visible,
         Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+            column_text_or_data_index (str): The header text or dataIndex of the grid column
 
         Returns:
             True if the column is visible, False otherwise.
         """
-        return self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
+        return self.get_column_header(grid_cq, column_text_or_data_index).is_displayed()
 
-    def is_column_hidden(self, grid_cq: str, column_text_or_dataIndex: str) -> bool:
+    def is_column_hidden(self, grid_cq: str, column_text_or_data_index: str) -> bool:
         """Determines whether the specified column is hidden.
         Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+            column_text_or_data_index (str): The header text or dataIndex of the grid column
 
         Returns:
             True if the column is hidden, False otherwise.
         """
-        return not self.get_column_header(grid_cq, column_text_or_dataIndex).is_displayed()
+        return not self.get_column_header(grid_cq, column_text_or_data_index).is_displayed()
 
-    def check_columns_are_visible(self, grid_cq: str, column_texts_or_dataIndexes: str) -> list[WebElement]:
+    def check_columns_are_visible(self, grid_cq: str, column_text_or_data_indexes: str) -> list[WebElement]:
         """Checks that the specified columns are all visible on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
+            column_text_or_data_indexes (array): An array containing the header text or dataIndex of the grid columns to check
 
         Returns:
             An array of columns that are not visible, if any.
         """
         columns_not_visible = []
 
-        for column_text_or_dataIndex in column_texts_or_dataIndexes:
-            is_visible = self.is_column_visible(grid_cq, column_text_or_dataIndex)
-            if is_visible == False:
-                columns_not_visible.append(column_text_or_dataIndex)
+        for column_text_or_data_index in column_text_or_data_indexes:
+            is_visible = self.is_column_visible(grid_cq, column_text_or_data_index)
+            if not is_visible:
+                columns_not_visible.append(column_text_or_data_index)
 
         return columns_not_visible
 
-    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_dataIndexes) -> list[WebElement]:
+    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_data_indexes) -> list[WebElement]:
         """Checks that the specified columns are all hidden on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (array): An array containing the header text or dataIndex of the grid columns to check
+            column_texts_or_data_indexes (array): An array containing the header text or dataIndex of the grid columns to check
 
         Returns:
             An array of columns that are not hidden, if any.
         """
         column_not_hidden = []
 
-        for column_text_or_dataIndex in column_texts_or_dataIndexes:
-            is_hidden = self.is_column_hidden(grid_cq, column_text_or_dataIndex)
-            if is_hidden == False:
-                column_not_hidden.append(column_text_or_dataIndex)
+        for column_text_or_data_index in column_texts_or_data_indexes:
+            is_hidden = self.is_column_hidden(grid_cq, column_text_or_data_index)
+            if not is_hidden:
+                column_not_hidden.append(column_text_or_data_index)
 
         return column_not_hidden
 
-    def click_column_header(self, grid_cq: str, column_text_or_dataIndex: str):
+    def click_column_header(self, grid_cq: str, column_text_or_data_index: str):
         """Clicks on the specified column header.
         The column must be visible.
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+            column_text_or_data_index (str): The header text or dataIndex of the grid column
         """
-        column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
+        column_header = self.get_column_header(grid_cq, column_text_or_data_index)
 
-        self._logger.info(f"Clicking column header '{column_text_or_dataIndex}' on grid with CQ' {grid_cq}'")
+        self._logger.info("Clicking column header '%s' on grid with CQ '%s'", column_text_or_data_index, grid_cq)
 
         self._action_chains.move_to_element(column_header)
         self._action_chains.click()
         self._action_chains.perform()
 
-    def get_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str) -> WebElement:
+    def get_column_header_trigger(self, grid_cq: str, column_text_or_data_index: str) -> WebElement:
         """Gets the element for the specified column header's trigger
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+            column_text_or_data_index (str): The header text or dataIndex of the grid column
 
         Returns:
             WebElement: The DOM element for the column header trigger.
@@ -160,29 +160,29 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_dataIndex=column_text_or_dataIndex)
+        script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_data_index=column_text_or_data_index)
         self.ensure_javascript_loaded()
         column_header_trigger = self._driver.execute_script(script)
 
         if column_header_trigger:
             return column_header_trigger
         else:
-            raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_dataIndex)
+            raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_data_index)
 
-    def click_column_header_trigger(self, grid_cq: str, column_text_or_dataIndex: str):
+    def click_column_header_trigger(self, grid_cq: str, column_text_or_data_index: str):
         """Clicks on the specified column header's trigger
 
         Args:
             grid_cq (str): The component query for the owning grid
-            column_text_or_dataIndex (str): The header text or dataIndex of the grid column
+            column_text_or_data_index (str): The header text or dataIndex of the grid column
         """
         # We need to move to the header before the trigger becomes interactable
-        column_header = self.get_column_header(grid_cq, column_text_or_dataIndex)
+        column_header = self.get_column_header(grid_cq, column_text_or_data_index)
         self._action_chains.move_to_element(column_header).perform()
 
-        column_header_trigger = self.get_visible_column_header_trigger(grid_cq, column_text_or_dataIndex)
+        column_header_trigger = self.get_column_header_trigger(grid_cq, column_text_or_data_index)
 
-        self._logger.info(f"Clicking column header trigger '{column_text_or_dataIndex}' on grid with CQ' {grid_cq}'")
+        self._logger.info("Clicking column header trigger '%s' on grid with CQ '%s'", column_text_or_data_index, grid_cq)
 
         self._action_chains.move_to_element(column_header_trigger)
         self._action_chains.click()
@@ -200,7 +200,7 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
-        self._logger.info(f"Clearing selection on grid with CQ' {grid_cq}'")
+        self._logger.info("Clearing selection on grid with CQ '%s'", grid_cq)
 
         script = self._CLEAR_SELECTION_TEMPLATE.format(grid_cq=grid_cq)
         self.ensure_javascript_loaded()
@@ -227,10 +227,10 @@ class GridHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         row = self._driver.execute_script(script)
 
-        if row or should_throw_exception != True:
+        if row or not should_throw_exception:
             return row
-        else:
-            raise GridHelper.RowNotFoundException(grid_cq, row_data)
+
+        raise GridHelper.RowNotFoundException(grid_cq, row_data)
 
     def click_row(self, grid_cq: str, row_data: Union[int, dict]):
         """ Clicks the row with the specified data or index in the grid.
@@ -244,7 +244,7 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         row = self.get_row(grid_cq, row_data)
 
-        self._logger.info(f"Clicking clicking row '{row_data}' on grid with CQ' {grid_cq}'")
+        self._logger.info("Clicking clicking row '%s' on grid with CQ '%s'", row_data, grid_cq)
 
         self._action_chains.move_to_element(row)
         self._action_chains.click()
@@ -282,30 +282,36 @@ class GridHelper(HasReferencedJavaScript):
         """Exception class thrown when we failed to find the specified column
         """
 
-        def __init__(self, grid_cq: str, column_text_or_dataIndex: str, message: str = "Failed to find column with text (or dataIndex) '{column_text_or_dataIndex}' on grid with CQ '{grid_cq}'."):
+        def __init__(self,
+                     grid_cq: str,
+                     column_text_or_data_index: str,
+                     message: str = "Failed to find column with text (or dataIndex) '{column_text_or_data_index}' on grid with CQ '{grid_cq}'."):
             """Initialises an instance of this exception
 
             Args:
                 grid_cq (str): The CQ used to find the grid
-                column_text_or_dataIndex (str): The header text or dataIndex of the grid column
-                message (str, optional): The exception message. Defaults to "Failed to find column with text (or dataIndex) '{column_text_or_dataIndex}' on grid with CQ '{grid_cq}'.".
+                column_text_or_data_index (str): The header text or dataIndex of the grid column
+                message (str, optional): The exception message. Defaults to "Failed to find column with text (or dataIndex) '{column_text_or_data_index}' on grid with CQ '{grid_cq}'.".
             """
             self.message = message
             self._grid_cq = grid_cq
-            self._column_text_or_dataIndex = column_text_or_dataIndex
+            self._column_text_or_data_index = column_text_or_data_index
 
             super().__init__(self.message)
 
         def __str__(self):
             """Returns a string representation of this exception
             """
-            return self.message.format(column_text_or_dataIndex=self._column_text_or_dataIndex, grid_cq=self._grid_cq)
+            return self.message.format(column_text_or_data_index=self._column_text_or_data_index, grid_cq=self._grid_cq)
 
     class RowNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified row
         """
 
-        def __init__(self, grid_cq: str, row_data: Union[int, dict], message: str = "Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'."):
+        def __init__(self,
+                     grid_cq: str,
+                     row_data: Union[int, dict],
+                     message: str = "Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'."):
             """Initialises an instance of this exception
 
             Args:

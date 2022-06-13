@@ -272,14 +272,19 @@ class FieldHelper(HasReferencedJavaScript):
         supported for the given field xtype.
         """
 
-        def __init__(self, form_cq: str, field_name: str, xtype: str, message: str = "The field named '{field_name}' on form with CQ '{form_cq}' is of an xtype '{xtype}' which is not supported for the requested operation."):
+        def __init__(self,
+                     form_cq: str,
+                     field_name: str,
+                     xtype: str,
+                     message: str = "The field named '{field_name}' on form with CQ '{form_cq}' is of an xtype '{xtype}' which is not supported for the requested operation."):
             """Initialises an instance of this exception
 
             Args:
                 form_cq (str): The CQ used to find the form
                 field_name (str): The name of the field
                 xtype (str): The xtype of the field.
-                message (str, optional): The exception message. Defaults to "The field named '{field_name}' on form with CQ '{form_cq}' is of an xtype '{xtype}' which is not supported for the requested operation."
+                message (str, optional): The exception message.
+                                        Defaults to "The field named '{field_name}' on form with CQ '{form_cq}' is of an xtype '{xtype}' which is not supported for the requested operation."
             """
             self.message = message
             self._form_cq = form_cq

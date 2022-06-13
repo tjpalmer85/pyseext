@@ -3,7 +3,7 @@ Module that contains our TreeHelper class.
 """
 import logging
 from typing import Union
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -159,7 +159,7 @@ class TreeHelper(HasReferencedJavaScript):
         node = self.get_node_icon_element(tree_cq, node_text_or_data)
 
         if node:
-            self._logger.info(f"Opening context menu on node '{node_text_or_data}' on tree with CQ '{tree_cq}'")
+            self._logger.info("Opening context menu on node '%s' on tree with CQ '%s'", node_text_or_data, tree_cq)
 
             self._action_chains.move_to_element(node)
             self._action_chains.context_click(node)
@@ -202,7 +202,7 @@ class TreeHelper(HasReferencedJavaScript):
         else:
             script = self._RELOAD_NODE_BY_DATA_TEMPLATE.format(tree_cq=tree_cq, node_data=node_text_or_data)
 
-        self._logger.info(f"Reloading node '{node_text_or_data}' on tree with CQ '{tree_cq}'")
+        self._logger.info("Reloading node '%s' on tree with CQ '%s'", node_text_or_data, tree_cq)
 
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
@@ -211,7 +211,10 @@ class TreeHelper(HasReferencedJavaScript):
         """Exception class thrown when we failed to find the specified node
         """
 
-        def __init__(self, tree_cq: str, node_text_or_data: Union[str, dict], message: str = "Failed to find node with data (or text) '{node_text_or_data}' on tree with CQ '{tree_cq}'."):
+        def __init__(self,
+                     tree_cq: str,
+                     node_text_or_data: Union[str, dict],
+                     message: str = "Failed to find node with data (or text) '{node_text_or_data}' on tree with CQ '{tree_cq}'."):
             """Initialises an instance of this exception
 
             Args:
@@ -244,7 +247,7 @@ class TreeHelper(HasReferencedJavaScript):
             """
             tree_helper = TreeHelper(driver)
 
-            return tree_helper.is_tree_loading(self._tree_cq) == False
+            return not tree_helper.is_tree_loading(self._tree_cq)
 
     class NodeFoundExpectation():
         """ An expectation for checking that a node has been found
@@ -276,7 +279,7 @@ class TreeHelper(HasReferencedJavaScript):
             node = tree_helper.get_node_icon_element(self._tree_cq, self._node_text_or_data)
             if node:
                 return True
-            else:
-                # Trigger a reload of the parent
-                tree_helper.reload_node(self._tree_cq, self._parent_node_text_or_data)
-                return False
+
+            # Trigger a reload of the parent
+            tree_helper.reload_node(self._tree_cq, self._parent_node_text_or_data)
+            return False

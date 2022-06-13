@@ -5,7 +5,7 @@ import logging
 import time
 from typing import Union, Any
 
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
@@ -47,7 +47,7 @@ class Core(HasReferencedJavaScript):
         """
         WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())
 
-    def try_get_object_member(self, obj: Union[dict, Any], member: str, default = None):
+    def try_get_object_member(self, obj: Union[dict, Any], member: str, default: Any = None) -> Any:
         """Attempts to get the member from an object, but if object itself is not a dictionary
         then it is returned.
 

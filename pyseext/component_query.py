@@ -5,7 +5,7 @@ import logging
 from typing import Union
 
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 

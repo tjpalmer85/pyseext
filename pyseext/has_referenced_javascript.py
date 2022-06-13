@@ -3,7 +3,7 @@ Module that contains our HasReferencedJavaScript class.
 """
 from pathlib import Path
 
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 
 class HasReferencedJavaScript:
     """Base class to be used by our test classes that have JavaScript that they need to load

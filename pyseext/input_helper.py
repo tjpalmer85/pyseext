@@ -3,6 +3,7 @@ Module that contains our InputHelper class.
 """
 import logging
 import random
+from typing import Union
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -25,7 +26,7 @@ class InputHelper():
         self._driver = driver
         self._action_chains = ActionChains(driver)
 
-    def type_into_element(self, element: WebElement, text: str, delay: float = None, tab_off: bool = False):
+    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False):
         """Types into an input element in a realistic manner.
 
         Args:
