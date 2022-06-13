@@ -41,7 +41,7 @@ class StoreHelper(HasReferencedJavaScript):
         Args:
             store_holder_cq (str): The component query to use to find the store holder.
         """
-        self._logger.debug(f"Resetting loadCount on store owned by '{store_holder_cq}'")
+        self._logger.debug("Resetting loadCount on store owned by '%s'", store_holder_cq)
 
         script = self._RESET_STORE_LOAD_COUNT_TEMPLATE.format(store_holder_cq=store_holder_cq)
         self.ensure_javascript_loaded()
@@ -56,13 +56,13 @@ class StoreHelper(HasReferencedJavaScript):
         Args:
             store_holder_cq (str): The component query to use to find the store holder.
         """
-        self._logger.debug(f"Waiting for store owned by '{store_holder_cq}' to load")
+        self._logger.debug("Waiting for store owned by '%s' to load", store_holder_cq)
 
         async_script = self.get_async_script_content(self._WAIT_FOR_STORE_LOADED_TEMPLATE).format(store_holder_cq=store_holder_cq)
         self.ensure_javascript_loaded()
         self._driver.execute_async_script(async_script)
 
-        self._logger.debug(f"Store owned by '{store_holder_cq}' loaded")
+        self._logger.debug("Store owned by '%s' loaded", store_holder_cq)
 
     def trigger_reload(self, store_holder_cq: str):
         """Triggers a reload on the specified store.
