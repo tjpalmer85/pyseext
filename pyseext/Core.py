@@ -64,8 +64,8 @@ class Core(HasReferencedJavaScript):
         """
         if isinstance(obj, dict):
             return obj.get(member, default)
-        else:
-            return default
+
+        return default
 
     def is_ajax_request_in_progress(self) -> bool:
         """Indicates whether there is currently an Ajax request in progress.

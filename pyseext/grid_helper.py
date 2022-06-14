@@ -61,8 +61,8 @@ class GridHelper(HasReferencedJavaScript):
 
         if column_header:
             return column_header
-        else:
-            raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_data_index)
+
+        raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_data_index)
 
     def is_column_visible(self, grid_cq: str, column_text_or_data_index: str) -> bool:
         """Determines whether the specified column is visible,
@@ -166,8 +166,8 @@ class GridHelper(HasReferencedJavaScript):
 
         if column_header_trigger:
             return column_header_trigger
-        else:
-            raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_data_index)
+
+        raise GridHelper.ColumnNotFoundException(grid_cq, column_text_or_data_index)
 
     def click_column_header_trigger(self, grid_cq: str, column_text_or_data_index: str):
         """Clicks on the specified column header's trigger
@@ -354,10 +354,10 @@ class GridHelper(HasReferencedJavaScript):
             row = grid_helper.get_row(self._grid_cq, self._row_data, False)
             if row:
                 return True
-            else:
-                # Trigger a reload, and wait for it to complete
-                store_helper = StoreHelper(driver)
-                store_helper.reset_store_load_count(self._grid_cq)
-                store_helper.trigger_reload(self._grid_cq)
-                store_helper.wait_for_store_loaded(self._grid_cq)
-                return False
+
+            # Trigger a reload, and wait for it to complete
+            store_helper = StoreHelper(driver)
+            store_helper.reset_store_load_count(self._grid_cq)
+            store_helper.trigger_reload(self._grid_cq)
+            store_helper.wait_for_store_loaded(self._grid_cq)
+            return False

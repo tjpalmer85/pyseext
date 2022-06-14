@@ -8,7 +8,7 @@ from pyseext.field_helper import FieldHelper
 from pyseext.button_helper import ButtonHelper
 from pyseext.input_helper import InputHelper
 
-class FormHelper():
+class FormHelper:
     """A class to help with interacting with Ext form panels and forms
     """
 
