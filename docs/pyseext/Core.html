@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>pyseext.Core API documentation</title>
-<meta name="description" content="" />
+<title>pyseext.core API documentation</title>
+<meta name="description" content="Module that contains our Core class." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,23 +19,37 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>pyseext.Core</code></h1>
+<h1 class="title">Module <code>pyseext.core</code></h1>
 </header>
 <section id="section-intro">
+<p>Module that contains our Core class.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import logging
+<pre><code class="python">&#34;&#34;&#34;
+Module that contains our Core class.
+&#34;&#34;&#34;
+import logging
+import time
 from typing import Union, Any
 
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 
-from pyseext.HasReferencedJavaScript import HasReferencedJavaScript
+from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class Core(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with core testing functionality.
     &#34;&#34;&#34;
+
+    # Class variables
+    _IS_DOM_READY: str = &#34;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#34;
+    _IS_AJAX_REQUEST_IN_PROGRESS: str = &#34;return globalThis.PySeExt.Core.isAjaxRequestInProgress()&#34;
+
+    # FIXME: Could use a means of injecting event sniffing perhaps?
+    # .....: Using Ext.mixin.Observable.capture
+
+    # FIXME: Another thought is to inject a means to show field names on forms, xtype on components, etc?
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class.
@@ -54,6 +68,7 @@ class Core(HasReferencedJavaScript):
     def wait_for_dom_ready(self, timeout: float = 30):
         &#34;&#34;&#34;Method that waits until Ext indicates that the DOM is ready.
         Calls Ext.isDomReady.
+
         Will throw a TimeOutException if the value is not true within the specified timeout period.
 
         Args:
@@ -61,7 +76,7 @@ class Core(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())
 
-    def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+    def try_get_object_member(self, obj: Union[dict, Any], member: str, default: Any = None) -&gt; Any:
         &#34;&#34;&#34;Attempts to get the member from an object, but if object itself is not a dictionary
         then it is returned.
 
@@ -76,10 +91,35 @@ class Core(HasReferencedJavaScript):
         Returns:
             Any: The value of the member, or the default if not found.
         &#34;&#34;&#34;
-        if isinstance(object, dict):
-            return object.get(member, default)
+        if isinstance(obj, dict):
+            return obj.get(member, default)
         else:
             return default
+
+    def is_ajax_request_in_progress(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates whether there is currently an Ajax request in progress.
+
+        Returns:
+            bool: True if there is a request in progress, False otherwise.
+        &#34;&#34;&#34;
+        script = self._IS_AJAX_REQUEST_IN_PROGRESS
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
+    def wait_for_no_ajax_requests_in_progress(self,
+                                              timeout: float = 30,
+                                              poll_frequecy: float = 0.2,
+                                              recheck_time_if_false: float = 0.2):
+        &#34;&#34;&#34;Method that waits until there are no Ajax requests in progress.
+
+        Will throw a TimeOutException if the value is not true within the specified timeout period.
+
+        Args:
+            timeout (float, optional): Number of seconds before timing out. Defaults to 30.
+            poll_frequency (float, optional): Number of seconds to poll. Defaults to 0.2.
+            recheck_time_if_false (float, optional): If we get a result such that no Ajax calls are in progress, this is the amount of time to wait to check again. Defaults to 0.2.
+        &#34;&#34;&#34;
+        WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(Core.IsNoAjaxCallInProgressExpectation(recheck_time_if_false))
 
     class IsDomReadyExpectation():
         &#34;&#34;&#34; An expectation for checking Ext.isDomReady
@@ -92,7 +132,31 @@ class Core(HasReferencedJavaScript):
         def __call__(self, driver):
             &#34;&#34;&#34;Method that determines whether Ext.isDomReady
             &#34;&#34;&#34;
-            return driver.execute_script(&#39;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#39;)</code></pre>
+            return driver.execute_script(Core._IS_DOM_READY)
+
+    class IsNoAjaxCallInProgressExpectation():
+        &#34;&#34;&#34; An expectation for checking whether there is an Ajax call in progress.
+        &#34;&#34;&#34;
+
+        def __init__(self, recheck_time_if_false: Union[float, None] = None):
+            &#34;&#34;&#34;Initialises an instance of this class.
+
+            Args:
+                recheck_time_if_false (float, optional): If we get a value of false (so there is not a call in progress),
+                                                         this is the amount of time to wait to check again. Defaults to None.
+            &#34;&#34;&#34;
+            self._recheck_time_if_false = recheck_time_if_false
+
+        def __call__(self, driver):
+            &#34;&#34;&#34;Method that determines whether Ext.isDomReady
+            &#34;&#34;&#34;
+            is_call_in_progress = Core(driver).is_ajax_request_in_progress()
+
+            if not is_call_in_progress and self._recheck_time_if_false:
+                time.sleep(self._recheck_time_if_false)
+                is_call_in_progress = Core(driver).is_ajax_request_in_progress()
+
+            return not is_call_in_progress</code></pre>
 </details>
 </section>
 <section>
@@ -104,7 +168,7 @@ class Core(HasReferencedJavaScript):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="pyseext.Core.Core"><code class="flex name class">
+<dt id="pyseext.core.Core"><code class="flex name class">
 <span>class <span class="ident">Core</span></span>
 <span>(</span><span>driver)</span>
 </code></dt>
@@ -124,6 +188,15 @@ class Core(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with core testing functionality.
     &#34;&#34;&#34;
 
+    # Class variables
+    _IS_DOM_READY: str = &#34;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#34;
+    _IS_AJAX_REQUEST_IN_PROGRESS: str = &#34;return globalThis.PySeExt.Core.isAjaxRequestInProgress()&#34;
+
+    # FIXME: Could use a means of injecting event sniffing perhaps?
+    # .....: Using Ext.mixin.Observable.capture
+
+    # FIXME: Another thought is to inject a means to show field names on forms, xtype on components, etc?
+
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class.
 
@@ -141,6 +214,7 @@ class Core(HasReferencedJavaScript):
     def wait_for_dom_ready(self, timeout: float = 30):
         &#34;&#34;&#34;Method that waits until Ext indicates that the DOM is ready.
         Calls Ext.isDomReady.
+
         Will throw a TimeOutException if the value is not true within the specified timeout period.
 
         Args:
@@ -148,7 +222,7 @@ class Core(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())
 
-    def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+    def try_get_object_member(self, obj: Union[dict, Any], member: str, default: Any = None) -&gt; Any:
         &#34;&#34;&#34;Attempts to get the member from an object, but if object itself is not a dictionary
         then it is returned.
 
@@ -163,10 +237,35 @@ class Core(HasReferencedJavaScript):
         Returns:
             Any: The value of the member, or the default if not found.
         &#34;&#34;&#34;
-        if isinstance(object, dict):
-            return object.get(member, default)
+        if isinstance(obj, dict):
+            return obj.get(member, default)
         else:
             return default
+
+    def is_ajax_request_in_progress(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates whether there is currently an Ajax request in progress.
+
+        Returns:
+            bool: True if there is a request in progress, False otherwise.
+        &#34;&#34;&#34;
+        script = self._IS_AJAX_REQUEST_IN_PROGRESS
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
+    def wait_for_no_ajax_requests_in_progress(self,
+                                              timeout: float = 30,
+                                              poll_frequecy: float = 0.2,
+                                              recheck_time_if_false: float = 0.2):
+        &#34;&#34;&#34;Method that waits until there are no Ajax requests in progress.
+
+        Will throw a TimeOutException if the value is not true within the specified timeout period.
+
+        Args:
+            timeout (float, optional): Number of seconds before timing out. Defaults to 30.
+            poll_frequency (float, optional): Number of seconds to poll. Defaults to 0.2.
+            recheck_time_if_false (float, optional): If we get a result such that no Ajax calls are in progress, this is the amount of time to wait to check again. Defaults to 0.2.
+        &#34;&#34;&#34;
+        WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(Core.IsNoAjaxCallInProgressExpectation(recheck_time_if_false))
 
     class IsDomReadyExpectation():
         &#34;&#34;&#34; An expectation for checking Ext.isDomReady
@@ -179,23 +278,76 @@ class Core(HasReferencedJavaScript):
         def __call__(self, driver):
             &#34;&#34;&#34;Method that determines whether Ext.isDomReady
             &#34;&#34;&#34;
-            return driver.execute_script(&#39;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#39;)</code></pre>
+            return driver.execute_script(Core._IS_DOM_READY)
+
+    class IsNoAjaxCallInProgressExpectation():
+        &#34;&#34;&#34; An expectation for checking whether there is an Ajax call in progress.
+        &#34;&#34;&#34;
+
+        def __init__(self, recheck_time_if_false: Union[float, None] = None):
+            &#34;&#34;&#34;Initialises an instance of this class.
+
+            Args:
+                recheck_time_if_false (float, optional): If we get a value of false (so there is not a call in progress),
+                                                         this is the amount of time to wait to check again. Defaults to None.
+            &#34;&#34;&#34;
+            self._recheck_time_if_false = recheck_time_if_false
+
+        def __call__(self, driver):
+            &#34;&#34;&#34;Method that determines whether Ext.isDomReady
+            &#34;&#34;&#34;
+            is_call_in_progress = Core(driver).is_ajax_request_in_progress()
+
+            if not is_call_in_progress and self._recheck_time_if_false:
+                time.sleep(self._recheck_time_if_false)
+                is_call_in_progress = Core(driver).is_ajax_request_in_progress()
+
+            return not is_call_in_progress</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript">HasReferencedJavaScript</a></li>
+<li><a title="pyseext.has_referenced_javascript.HasReferencedJavaScript" href="has_referenced_javascript.html#pyseext.has_referenced_javascript.HasReferencedJavaScript">HasReferencedJavaScript</a></li>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="pyseext.Core.Core.IsDomReadyExpectation"><code class="name">var <span class="ident">IsDomReadyExpectation</span></code></dt>
+<dt id="pyseext.core.Core.IsDomReadyExpectation"><code class="name">var <span class="ident">IsDomReadyExpectation</span></code></dt>
 <dd>
 <div class="desc"><p>An expectation for checking Ext.isDomReady</p></div>
+</dd>
+<dt id="pyseext.core.Core.IsNoAjaxCallInProgressExpectation"><code class="name">var <span class="ident">IsNoAjaxCallInProgressExpectation</span></code></dt>
+<dd>
+<div class="desc"><p>An expectation for checking whether there is an Ajax call in progress.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="pyseext.Core.Core.try_get_object_member"><code class="name flex">
-<span>def <span class="ident">try_get_object_member</span></span>(<span>self, object: Union[dict, Any], member: str, default=None)</span>
+<dt id="pyseext.core.Core.is_ajax_request_in_progress"><code class="name flex">
+<span>def <span class="ident">is_ajax_request_in_progress</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Indicates whether there is currently an Ajax request in progress.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if there is a request in progress, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_ajax_request_in_progress(self) -&gt; bool:
+    &#34;&#34;&#34;Indicates whether there is currently an Ajax request in progress.
+
+    Returns:
+        bool: True if there is a request in progress, False otherwise.
+    &#34;&#34;&#34;
+    script = self._IS_AJAX_REQUEST_IN_PROGRESS
+    self.ensure_javascript_loaded()
+    return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
+<dt id="pyseext.core.Core.try_get_object_member"><code class="name flex">
+<span>def <span class="ident">try_get_object_member</span></span>(<span>self, obj: Union[dict, Any], member: str, default: Any = None) ‑> Any</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Attempts to get the member from an object, but if object itself is not a dictionary
@@ -220,7 +372,7 @@ want to process them in the same way.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def try_get_object_member(self, object: Union[dict, Any], member: str, default = None):
+<pre><code class="python">def try_get_object_member(self, obj: Union[dict, Any], member: str, default: Any = None) -&gt; Any:
     &#34;&#34;&#34;Attempts to get the member from an object, but if object itself is not a dictionary
     then it is returned.
 
@@ -235,19 +387,19 @@ want to process them in the same way.</p>
     Returns:
         Any: The value of the member, or the default if not found.
     &#34;&#34;&#34;
-    if isinstance(object, dict):
-        return object.get(member, default)
+    if isinstance(obj, dict):
+        return obj.get(member, default)
     else:
         return default</code></pre>
 </details>
 </dd>
-<dt id="pyseext.Core.Core.wait_for_dom_ready"><code class="name flex">
+<dt id="pyseext.core.Core.wait_for_dom_ready"><code class="name flex">
 <span>def <span class="ident">wait_for_dom_ready</span></span>(<span>self, timeout: float = 30)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method that waits until Ext indicates that the DOM is ready.
-Calls Ext.isDomReady.
-Will throw a TimeOutException if the value is not true within the specified timeout period.</p>
+Calls Ext.isDomReady.</p>
+<p>Will throw a TimeOutException if the value is not true within the specified timeout period.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
@@ -260,6 +412,7 @@ Will throw a TimeOutException if the value is not true within the specified time
 <pre><code class="python">def wait_for_dom_ready(self, timeout: float = 30):
     &#34;&#34;&#34;Method that waits until Ext indicates that the DOM is ready.
     Calls Ext.isDomReady.
+
     Will throw a TimeOutException if the value is not true within the specified timeout period.
 
     Args:
@@ -268,14 +421,49 @@ Will throw a TimeOutException if the value is not true within the specified time
     WebDriverWait(self._driver, timeout).until(Core.IsDomReadyExpectation())</code></pre>
 </details>
 </dd>
+<dt id="pyseext.core.Core.wait_for_no_ajax_requests_in_progress"><code class="name flex">
+<span>def <span class="ident">wait_for_no_ajax_requests_in_progress</span></span>(<span>self, timeout: float = 30, poll_frequecy: float = 0.2, recheck_time_if_false: float = 0.2)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Method that waits until there are no Ajax requests in progress.</p>
+<p>Will throw a TimeOutException if the value is not true within the specified timeout period.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>timeout</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Number of seconds before timing out. Defaults to 30.</dd>
+<dt><strong><code>poll_frequency</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Number of seconds to poll. Defaults to 0.2.</dd>
+<dt><strong><code>recheck_time_if_false</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>If we get a result such that no Ajax calls are in progress, this is the amount of time to wait to check again. Defaults to 0.2.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wait_for_no_ajax_requests_in_progress(self,
+                                          timeout: float = 30,
+                                          poll_frequecy: float = 0.2,
+                                          recheck_time_if_false: float = 0.2):
+    &#34;&#34;&#34;Method that waits until there are no Ajax requests in progress.
+
+    Will throw a TimeOutException if the value is not true within the specified timeout period.
+
+    Args:
+        timeout (float, optional): Number of seconds before timing out. Defaults to 30.
+        poll_frequency (float, optional): Number of seconds to poll. Defaults to 0.2.
+        recheck_time_if_false (float, optional): If we get a result such that no Ajax calls are in progress, this is the amount of time to wait to check again. Defaults to 0.2.
+    &#34;&#34;&#34;
+    WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(Core.IsNoAjaxCallInProgressExpectation(recheck_time_if_false))</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript">HasReferencedJavaScript</a></b></code>:
+<li><code><b><a title="pyseext.has_referenced_javascript.HasReferencedJavaScript" href="has_referenced_javascript.html#pyseext.has_referenced_javascript.HasReferencedJavaScript">HasReferencedJavaScript</a></b></code>:
 <ul class="hlist">
-<li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.JavaScriptLoadedExpectation" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.JavaScriptLoadedExpectation">JavaScriptLoadedExpectation</a></code></li>
-<li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.ensure_javascript_loaded" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.ensure_javascript_loaded">ensure_javascript_loaded</a></code></li>
-<li><code><a title="pyseext.HasReferencedJavaScript.HasReferencedJavaScript.get_async_script_content" href="HasReferencedJavaScript.html#pyseext.HasReferencedJavaScript.HasReferencedJavaScript.get_async_script_content">get_async_script_content</a></code></li>
+<li><code><a title="pyseext.has_referenced_javascript.HasReferencedJavaScript.JavaScriptLoadedExpectation" href="has_referenced_javascript.html#pyseext.has_referenced_javascript.HasReferencedJavaScript.JavaScriptLoadedExpectation">JavaScriptLoadedExpectation</a></code></li>
+<li><code><a title="pyseext.has_referenced_javascript.HasReferencedJavaScript.ensure_javascript_loaded" href="has_referenced_javascript.html#pyseext.has_referenced_javascript.HasReferencedJavaScript.ensure_javascript_loaded">ensure_javascript_loaded</a></code></li>
+<li><code><a title="pyseext.has_referenced_javascript.HasReferencedJavaScript.get_async_script_content" href="has_referenced_javascript.html#pyseext.has_referenced_javascript.HasReferencedJavaScript.get_async_script_content">get_async_script_content</a></code></li>
 </ul>
 </li>
 </ul>
@@ -297,11 +485,14 @@ Will throw a TimeOutException if the value is not true within the specified time
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="pyseext.Core.Core" href="#pyseext.Core.Core">Core</a></code></h4>
+<h4><code><a title="pyseext.core.Core" href="#pyseext.core.Core">Core</a></code></h4>
 <ul class="">
-<li><code><a title="pyseext.Core.Core.IsDomReadyExpectation" href="#pyseext.Core.Core.IsDomReadyExpectation">IsDomReadyExpectation</a></code></li>
-<li><code><a title="pyseext.Core.Core.try_get_object_member" href="#pyseext.Core.Core.try_get_object_member">try_get_object_member</a></code></li>
-<li><code><a title="pyseext.Core.Core.wait_for_dom_ready" href="#pyseext.Core.Core.wait_for_dom_ready">wait_for_dom_ready</a></code></li>
+<li><code><a title="pyseext.core.Core.IsDomReadyExpectation" href="#pyseext.core.Core.IsDomReadyExpectation">IsDomReadyExpectation</a></code></li>
+<li><code><a title="pyseext.core.Core.IsNoAjaxCallInProgressExpectation" href="#pyseext.core.Core.IsNoAjaxCallInProgressExpectation">IsNoAjaxCallInProgressExpectation</a></code></li>
+<li><code><a title="pyseext.core.Core.is_ajax_request_in_progress" href="#pyseext.core.Core.is_ajax_request_in_progress">is_ajax_request_in_progress</a></code></li>
+<li><code><a title="pyseext.core.Core.try_get_object_member" href="#pyseext.core.Core.try_get_object_member">try_get_object_member</a></code></li>
+<li><code><a title="pyseext.core.Core.wait_for_dom_ready" href="#pyseext.core.Core.wait_for_dom_ready">wait_for_dom_ready</a></code></li>
+<li><code><a title="pyseext.core.Core.wait_for_no_ajax_requests_in_progress" href="#pyseext.core.Core.wait_for_no_ajax_requests_in_progress">wait_for_no_ajax_requests_in_progress</a></code></li>
 </ul>
 </li>
 </ul>
