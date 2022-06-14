@@ -38,7 +38,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
             key (str): The key to use when storing the value.
             value (Any): The value to store.
         """
-        self._logger.debug(f"Storing value '{value}' under key '{key}'")
+        self._logger.debug("Storing value '%s' under key '%s'", value, key)
 
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
@@ -50,7 +50,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             key (str): The key to clear.
         """
-        self._logger.debug(f"Clearing value with key '{key}'")
+        self._logger.debug("Clearing value with key '%s'", key)
 
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()

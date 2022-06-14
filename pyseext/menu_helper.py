@@ -39,7 +39,7 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
-        self._logger.info(f"Clicking menu item with CQ '{cq}'")
+        self._logger.info("Clicking menu item with CQ '%s'", cq)
 
         self._action_chains.move_to_element(menu_item)
         self._action_chains.click()
@@ -56,7 +56,7 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
         # Rather than call click, move mouse to the menu item and click...
-        self._logger.info(f"Clicking menu item '{text}'")
+        self._logger.info("Clicking menu item '%s'", text)
 
         self._action_chains.move_to_element(menu_item)
         self._action_chains.click()
