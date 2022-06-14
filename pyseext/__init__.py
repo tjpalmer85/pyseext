@@ -1,5 +1,7 @@
 """
-The __init__ module for the package 'pyseext'
+A package to aid the testing of ExtJS applications from Python using Selenium.
+
+See: https://github.com/westy/pyseext
 """
 import logging
 
