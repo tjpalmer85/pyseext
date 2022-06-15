@@ -68,11 +68,11 @@ class ObservableHelper(HasReferencedJavaScript):
             member_accessor (str, optional): The name of the member to access on the component to find the observable to watch. Defaults to None.
         &#34;&#34;&#34;
         if member_accessor:
-            self._logger.debug(f&#34;Waiting for event &#39;{event_name}&#39; on &#39;{component_cq}[{member_accessor}]&#39;&#34;)
+            self._logger.debug(&#34;Waiting for event &#39;%s&#39; on &#39;%s[%s]&#39;&#34;, event_name, component_cq, member_accessor)
             # Wrap in quotes
             member_accessor = f&#34;&#39;{member_accessor}&#39;&#34;
         else:
-            self._logger.debug(f&#34;Waiting for event &#39;{event_name}&#39; on &#39;{component_cq}&#39;&#34;)
+            self._logger.debug(&#34;Waiting for event &#39;%s&#39; on &#39;%s&#39;&#34;, event_name, component_cq)
             member_accessor = &#39;undefined&#39;
 
         async_script = self.get_async_script_content(self._WAIT_FOR_EVENT_TEMPLATE).format(component_cq = component_cq,
@@ -88,9 +88,9 @@ class ObservableHelper(HasReferencedJavaScript):
             raise ObservableHelper.WaitForEventException(component_cq, event_name, member_accessor, result)
 
         if member_accessor:
-            self._logger.debug(f&#34;Event &#39;{event_name}&#39; on &#39;{component_cq}[{member_accessor}]&#39; received!&#34;)
+            self._logger.debug(&#34;Event &#39;%s&#39; on &#39;%s[%s]&#39; received!&#34;, event_name, component_cq, member_accessor)
         else:
-            self._logger.debug(f&#34;Event &#39;{event_name}&#39; on &#39;{component_cq}&#39; received!&#34;)
+            self._logger.debug(&#34;Event &#39;%s&#39; on &#39;%s&#39; received!&#34;, event_name, component_cq)
 
     class WaitForEventException(Exception):
         &#34;&#34;&#34;Exception class thrown when waiting for event returned an error.
@@ -189,11 +189,11 @@ class ObservableHelper(HasReferencedJavaScript):
             member_accessor (str, optional): The name of the member to access on the component to find the observable to watch. Defaults to None.
         &#34;&#34;&#34;
         if member_accessor:
-            self._logger.debug(f&#34;Waiting for event &#39;{event_name}&#39; on &#39;{component_cq}[{member_accessor}]&#39;&#34;)
+            self._logger.debug(&#34;Waiting for event &#39;%s&#39; on &#39;%s[%s]&#39;&#34;, event_name, component_cq, member_accessor)
             # Wrap in quotes
             member_accessor = f&#34;&#39;{member_accessor}&#39;&#34;
         else:
-            self._logger.debug(f&#34;Waiting for event &#39;{event_name}&#39; on &#39;{component_cq}&#39;&#34;)
+            self._logger.debug(&#34;Waiting for event &#39;%s&#39; on &#39;%s&#39;&#34;, event_name, component_cq)
             member_accessor = &#39;undefined&#39;
 
         async_script = self.get_async_script_content(self._WAIT_FOR_EVENT_TEMPLATE).format(component_cq = component_cq,
@@ -209,9 +209,9 @@ class ObservableHelper(HasReferencedJavaScript):
             raise ObservableHelper.WaitForEventException(component_cq, event_name, member_accessor, result)
 
         if member_accessor:
-            self._logger.debug(f&#34;Event &#39;{event_name}&#39; on &#39;{component_cq}[{member_accessor}]&#39; received!&#34;)
+            self._logger.debug(&#34;Event &#39;%s&#39; on &#39;%s[%s]&#39; received!&#34;, event_name, component_cq, member_accessor)
         else:
-            self._logger.debug(f&#34;Event &#39;{event_name}&#39; on &#39;{component_cq}&#39; received!&#34;)
+            self._logger.debug(&#34;Event &#39;%s&#39; on &#39;%s&#39; received!&#34;, event_name, component_cq)
 
     class WaitForEventException(Exception):
         &#34;&#34;&#34;Exception class thrown when waiting for event returned an error.
@@ -299,11 +299,11 @@ and then wait for an event with the specified name.</p>
         member_accessor (str, optional): The name of the member to access on the component to find the observable to watch. Defaults to None.
     &#34;&#34;&#34;
     if member_accessor:
-        self._logger.debug(f&#34;Waiting for event &#39;{event_name}&#39; on &#39;{component_cq}[{member_accessor}]&#39;&#34;)
+        self._logger.debug(&#34;Waiting for event &#39;%s&#39; on &#39;%s[%s]&#39;&#34;, event_name, component_cq, member_accessor)
         # Wrap in quotes
         member_accessor = f&#34;&#39;{member_accessor}&#39;&#34;
     else:
-        self._logger.debug(f&#34;Waiting for event &#39;{event_name}&#39; on &#39;{component_cq}&#39;&#34;)
+        self._logger.debug(&#34;Waiting for event &#39;%s&#39; on &#39;%s&#39;&#34;, event_name, component_cq)
         member_accessor = &#39;undefined&#39;
 
     async_script = self.get_async_script_content(self._WAIT_FOR_EVENT_TEMPLATE).format(component_cq = component_cq,
@@ -319,9 +319,9 @@ and then wait for an event with the specified name.</p>
         raise ObservableHelper.WaitForEventException(component_cq, event_name, member_accessor, result)
 
     if member_accessor:
-        self._logger.debug(f&#34;Event &#39;{event_name}&#39; on &#39;{component_cq}[{member_accessor}]&#39; received!&#34;)
+        self._logger.debug(&#34;Event &#39;%s&#39; on &#39;%s[%s]&#39; received!&#34;, event_name, component_cq, member_accessor)
     else:
-        self._logger.debug(f&#34;Event &#39;{event_name}&#39; on &#39;{component_cq}&#39; received!&#34;)</code></pre>
+        self._logger.debug(&#34;Event &#39;%s&#39; on &#39;%s&#39; received!&#34;, event_name, component_cq)</code></pre>
 </details>
 </dd>
 </dl>

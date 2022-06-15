@@ -55,7 +55,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def store_value(self, key: str, value):
+    def store_value(self, key: str, value: Any):
         &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
         If a value exists for the key it is overwritten.
 
@@ -67,7 +67,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
             key (str): The key to use when storing the value.
             value (Any): The value to store.
         &#34;&#34;&#34;
-        self._logger.debug(f&#34;Storing value &#39;{value}&#39; under key &#39;{key}&#39;&#34;)
+        self._logger.debug(&#34;Storing value &#39;%s&#39; under key &#39;%s&#39;&#34;, value, key)
 
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
@@ -79,7 +79,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             key (str): The key to clear.
         &#34;&#34;&#34;
-        self._logger.debug(f&#34;Clearing value with key &#39;{key}&#39;&#34;)
+        self._logger.debug(&#34;Clearing value with key &#39;%s&#39;&#34;, key)
 
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
@@ -145,7 +145,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def store_value(self, key: str, value):
+    def store_value(self, key: str, value: Any):
         &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
         If a value exists for the key it is overwritten.
 
@@ -157,7 +157,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
             key (str): The key to use when storing the value.
             value (Any): The value to store.
         &#34;&#34;&#34;
-        self._logger.debug(f&#34;Storing value &#39;{value}&#39; under key &#39;{key}&#39;&#34;)
+        self._logger.debug(&#34;Storing value &#39;%s&#39; under key &#39;%s&#39;&#34;, value, key)
 
         script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
         self.ensure_javascript_loaded()
@@ -169,7 +169,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
         Args:
             key (str): The key to clear.
         &#34;&#34;&#34;
-        self._logger.debug(f&#34;Clearing value with key &#39;{key}&#39;&#34;)
+        self._logger.debug(&#34;Clearing value with key &#39;%s&#39;&#34;, key)
 
         script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
         self.ensure_javascript_loaded()
@@ -214,7 +214,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
     Args:
         key (str): The key to clear.
     &#34;&#34;&#34;
-    self._logger.debug(f&#34;Clearing value with key &#39;{key}&#39;&#34;)
+    self._logger.debug(&#34;Clearing value with key &#39;%s&#39;&#34;, key)
 
     script = self._CLEAR_VALUE_TEMPLATE.format(key=key)
     self.ensure_javascript_loaded()
@@ -255,7 +255,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
 </details>
 </dd>
 <dt id="pyseext.local_storage_helper.LocalStorageHelper.store_value"><code class="name flex">
-<span>def <span class="ident">store_value</span></span>(<span>self, key: str, value)</span>
+<span>def <span class="ident">store_value</span></span>(<span>self, key: str, value: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Stores a value in our persistent storage (implemented as local storage).
@@ -273,7 +273,7 @@ If a value exists for the key it is overwritten.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def store_value(self, key: str, value):
+<pre><code class="python">def store_value(self, key: str, value: Any):
     &#34;&#34;&#34;Stores a value in our persistent storage (implemented as local storage).
     If a value exists for the key it is overwritten.
 
@@ -285,7 +285,7 @@ If a value exists for the key it is overwritten.</p>
         key (str): The key to use when storing the value.
         value (Any): The value to store.
     &#34;&#34;&#34;
-    self._logger.debug(f&#34;Storing value &#39;{value}&#39; under key &#39;{key}&#39;&#34;)
+    self._logger.debug(&#34;Storing value &#39;%s&#39; under key &#39;%s&#39;&#34;, value, key)
 
     script = self._STORE_VALUE_TEMPLATE.format(key=key, value=value)
     self.ensure_javascript_loaded()

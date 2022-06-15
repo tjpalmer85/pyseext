@@ -67,41 +67,6 @@ globalThis.PySeExt.FieldHelper = {
     },
 
     /**
-     * Resets the load count on the specified combobox.
-     *
-     * Raises an error if the field was not found.
-     * @param {String} formCQ The CQ to get to the form panel.
-     * @param {String} name The name of the field.
-     */
-    resetComboBoxStoreLoadCount: function(formCQ, name) {
-        var field = this.__getField(formCQ, name, true);
-
-        if (!field instanceof globalThis.Ext.form.field.ComboBox) {
-            globalThis.Ext.Error.raise("Specified field is not a combobox!");
-        }
-
-        globalThis.PySeExt.StoreHelper.__resetStoreLoadCount(field.getStore());
-    },
-
-    /**
-     * Waits for the store on the specified combobox to have loaded.
-     *
-     * Raises an error if the field was not found.
-     * @param {String} formCQ The CQ to get to the form panel.
-     * @param {String} name The name of the field.
-     * @param {Function} callback The callback to call when the store has loaded.
-     */
-    waitForComboBoxStoreLoaded: function(formCQ, name, callback) {
-        var field = this.__getField(formCQ, name);
-
-        if (!field instanceof globalThis.Ext.form.field.ComboBox) {
-            globalThis.Ext.Error.raise("Specified field is not a combobox!");
-        }
-
-        globalThis.PySeExt.StoreHelper.__waitForStoreLoaded(field.getStore(), callback);
-    },
-
-    /**
      * Method to focus on a field on a form by (zero-based) index or name.
      *
      * Raises an error if the field was not found.

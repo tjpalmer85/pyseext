@@ -68,7 +68,7 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
-        self._logger.info(f&#34;Clicking menu item with CQ &#39;{cq}&#39;&#34;)
+        self._logger.info(&#34;Clicking menu item with CQ &#39;%s&#39;&#34;, cq)
 
         self._action_chains.move_to_element(menu_item)
         self._action_chains.click()
@@ -85,7 +85,7 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
         # Rather than call click, move mouse to the menu item and click...
-        self._logger.info(f&#34;Clicking menu item &#39;{text}&#39;&#34;)
+        self._logger.info(&#34;Clicking menu item &#39;%s&#39;&#34;, text)
 
         self._action_chains.move_to_element(menu_item)
         self._action_chains.click()
@@ -168,7 +168,7 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
-        self._logger.info(f&#34;Clicking menu item with CQ &#39;{cq}&#39;&#34;)
+        self._logger.info(&#34;Clicking menu item with CQ &#39;%s&#39;&#34;, cq)
 
         self._action_chains.move_to_element(menu_item)
         self._action_chains.click()
@@ -185,7 +185,7 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
         # Rather than call click, move mouse to the menu item and click...
-        self._logger.info(f&#34;Clicking menu item &#39;{text}&#39;&#34;)
+        self._logger.info(&#34;Clicking menu item &#39;%s&#39;&#34;, text)
 
         self._action_chains.move_to_element(menu_item)
         self._action_chains.click()
@@ -297,7 +297,7 @@ If omitted, all components within the document are included in the search.</dd>
     menu_item = self._cq.wait_for_single_query_visible(cq, root_id)
 
     # Rather than call click, move mouse to button and click...
-    self._logger.info(f&#34;Clicking menu item with CQ &#39;{cq}&#39;&#34;)
+    self._logger.info(&#34;Clicking menu item with CQ &#39;%s&#39;&#34;, cq)
 
     self._action_chains.move_to_element(menu_item)
     self._action_chains.click()
@@ -332,7 +332,7 @@ If omitted, all components within the document are included in the search.</dd>
     menu_item = self._cq.wait_for_single_query_visible(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
     # Rather than call click, move mouse to the menu item and click...
-    self._logger.info(f&#34;Clicking menu item &#39;{text}&#39;&#34;)
+    self._logger.info(&#34;Clicking menu item &#39;%s&#39;&#34;, text)
 
     self._action_chains.move_to_element(menu_item)
     self._action_chains.click()

@@ -26,7 +26,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def store_value(self, key: str, value):
+    def store_value(self, key: str, value: Any):
         """Stores a value in our persistent storage (implemented as local storage).
         If a value exists for the key it is overwritten.
 

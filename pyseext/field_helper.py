@@ -11,6 +11,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 from pyseext.core import Core
 from pyseext.input_helper import InputHelper
+from pyseext.store_helper import StoreHelper
 
 class FieldHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext fields
@@ -22,8 +23,6 @@ class FieldHelper(HasReferencedJavaScript):
     _GET_FIELD_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.getFieldValue('{form_cq}', '{name}')"
     _SET_FIELD_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.setFieldValue('{form_cq}', '{name}', {value})"
     _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox('{form_cq}', '{name}')"
-    _RESET_COMBOBOX_STORE_LOAD_COUNT_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.resetComboBoxStoreLoadCount('{form_cq}', '{name}')"
-    _WAIT_FOR_COMBOBOX_STORE_LOADED_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.waitForComboBoxStoreLoaded('{form_cq}', '{name}', callback)"
     _FOCUS_FIELD_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.focusField('{form_cq}', {index_or_name})"
 
     def __init__(self, driver):
@@ -37,6 +36,7 @@ class FieldHelper(HasReferencedJavaScript):
         self._action_chains = ActionChains(driver)
         self._core = Core(driver)
         self._input_helper = InputHelper(driver)
+        self._store_helper = StoreHelper(driver)
 
         # Initialise our base class
         super().__init__(driver, self._logger)
@@ -123,8 +123,9 @@ class FieldHelper(HasReferencedJavaScript):
 
                         # Anyway, remote combos will take longer to load than this statement does.
                         # If not, then I guess that's a nice problem to have :-)
-                        self._reset_combobox_store_load_count(form_cq, field_name)
-                        self._wait_for_combobox_store_loaded(form_cq, field_name)
+                        combobox_cq = self.get_field_component_query(form_cq, field_name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+                        self._store_helper.wait_for_store_loaded(combobox_cq)
 
                         # FIXME: Does the store have a count of one?
                         # .....: Do we really care? If multiple then the top one will be highlighted...
@@ -207,6 +208,33 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
+    def get_field_component_query(self, form_cq: str, field_name: str):
+        """Builds the component query for a field on a form.
+
+        This is useful, since allows you to interact with a field using component query, so can
+        utilise the methods in StoreHelper, say.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            field_name (str): The name of the field.
+        """
+        return f'{form_cq} field[name="{field_name}"]'
+
+    def check_field_value(self, form_cq: str, field_name: str, value: Any) -> bool:
+        """Method that checks that the value of the specified field is that specified.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field.
+            field_name (str): The name of the field
+            value (Any): The value that we expect the field to have.
+
+        Returns:
+            bool: True if the value of the field matches the expected, False otherwise.
+        """
+        field_value = self.get_field_value(form_cq, field_name)
+
+        return field_value == value
+
     def _is_field_remotely_filtered_combobox(self, form_cq: str, name: str) -> bool:
         """Attempts to find a field by name from the specified form panel, and determine whether
         it is a remotely filtered combobox.
@@ -221,28 +249,6 @@ class FieldHelper(HasReferencedJavaScript):
         script = self._IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
-
-    def _reset_combobox_store_load_count(self, form_cq: str, name: str):
-        """Resets the load count on the specified combobox.
-
-        Args:
-            form_cq (str): The component query that identifies the form panel in which to find the field.
-            name (str): The name of the field.
-        """
-        script = self._RESET_COMBOBOX_STORE_LOAD_COUNT_TEMPLATE.format(form_cq=form_cq, name=name)
-        self.ensure_javascript_loaded()
-        self._driver.execute_script(script)
-
-    def _wait_for_combobox_store_loaded(self, form_cq: str, name: str):
-        """Waits for the store on the specified combobox to have loaded.
-
-        Args:
-            form_cq (str): The component query that identifies the form panel in which to find the field.
-            name (str): The name of the field.
-        """
-        async_script = self.get_async_script_content(self._WAIT_FOR_COMBOBOX_STORE_LOADED_TEMPLATE).format(form_cq=form_cq, name=name)
-        self.ensure_javascript_loaded()
-        self._driver.execute_async_script(async_script)
 
     class FieldNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified field

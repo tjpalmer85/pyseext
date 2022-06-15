@@ -86,3 +86,8 @@ class StoreHelper(HasReferencedJavaScript):
         self.reset_store_load_count(store_holder_cq)
         self.trigger_reload(store_holder_cq)
         self.wait_for_store_loaded(store_holder_cq)
+
+    # FIXME: Some method ideas:
+    # .....:    - check_store_contains(self, store_holder_cq: str, data: list[dict], should_only_contain_specified_data: bool = False)= > bool
+    # .....:        Method that checks that the store contains the specified data, and optionally only the specified data.
+    # .....:        Can be used to check combobox data, say.

@@ -93,8 +93,8 @@ class Core(HasReferencedJavaScript):
         &#34;&#34;&#34;
         if isinstance(obj, dict):
             return obj.get(member, default)
-        else:
-            return default
+
+        return default
 
     def is_ajax_request_in_progress(self) -&gt; bool:
         &#34;&#34;&#34;Indicates whether there is currently an Ajax request in progress.
@@ -239,8 +239,8 @@ class Core(HasReferencedJavaScript):
         &#34;&#34;&#34;
         if isinstance(obj, dict):
             return obj.get(member, default)
-        else:
-            return default
+
+        return default
 
     def is_ajax_request_in_progress(self) -&gt; bool:
         &#34;&#34;&#34;Indicates whether there is currently an Ajax request in progress.
@@ -389,8 +389,8 @@ want to process them in the same way.</p>
     &#34;&#34;&#34;
     if isinstance(obj, dict):
         return obj.get(member, default)
-    else:
-        return default</code></pre>
+
+    return default</code></pre>
 </details>
 </dd>
 <dt id="pyseext.core.Core.wait_for_dom_ready"><code class="name flex">
