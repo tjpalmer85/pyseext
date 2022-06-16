@@ -84,6 +84,61 @@ globalThis.PySeExt.FieldHelper = {
     },
 
     /**
+     * Selects a value on a combobox field by finding a record with the specified data.
+     *
+     * Ensures that the select event is fired if the record is found and selected.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     * @param {Object} data The data to find in the combobox store and select.
+     * @returns {Boolean} Indicates whether a record was found and selected.
+     */
+    selectComboBoxValue: function(formCQ, name, data) {
+        var me = this,
+            field = me.__getField(formCQ, name, true),
+            store,
+            index,
+            record;
+
+        if (field instanceof globalThis.Ext.form.field.ComboBox) {
+            store = field.getStore();
+
+            if (store.isLoaded()) {
+                index = store.getData().findIndexBy(function(record) {
+                    var prop,
+                        doAllMembersMatch = true;
+
+                    for (prop in data) {
+                        if (data.hasOwnProperty(prop)) {
+                            if (data[prop] !== record.get(prop)) {
+                                doAllMembersMatch = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    return doAllMembersMatch;
+                });
+
+                if (index === -1) {
+                    // Record was not found
+                    return false;
+                } else {
+                    record = store.getAt(index);
+
+                    field.select(record);
+                    field.fireEvent('select', field, record);
+
+                    return true;
+                }
+            } else {
+                globalThis.Ext.Error.raise("The combobox store is not loaded!");
+            }
+        } else {
+            globalThis.Ext.Error.raise("Field is not a combobox!");
+        }
+    },
+
+    /**
      * Finds a field in a form panel.
      * Optionally raises an error if not found.
      * @param {String} formCQ The CQ to get to the form panel.

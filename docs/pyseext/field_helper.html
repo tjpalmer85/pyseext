@@ -53,6 +53,7 @@ class FieldHelper(HasReferencedJavaScript):
     _SET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.setFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
     _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
     _FOCUS_FIELD_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.focusField(&#39;{form_cq}&#39;, {index_or_name})&#34;
+    _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -112,21 +113,21 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_field_value(self, form_cq: str, field_name: str, value: Union[dict, int, str]):
+    def set_field_value(self, form_cq: str, name: str, value: Union[dict, int, str]):
         &#34;&#34;&#34;Sets the value for a field.
 
         If the field can be typed into by a user, and the value is typeable, then that is the approach taken.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field.
-            field_name (str): The name of the field.
+            name (str): The name of the field.
             value (Union[dict, int, str]): The value for the field.
                                            Supports being specified as a dictionary that can contain:
                                                - value (Union[int, str]): The value to set.
                                                - data (dict): A dictionary containing the data to find in the fields store.
                                                               If the field is not a store holder then an exception is thrown.
         &#34;&#34;&#34;
-        field_xtype = self.get_field_xtype(form_cq, field_name)
+        field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
             # Field found!
@@ -136,14 +137,14 @@ class FieldHelper(HasReferencedJavaScript):
 
             # Now need to set it&#39;s value
             if (field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)):
-                is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, field_name)
+                is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, name)
                 is_value_a_dict = isinstance(field_value, dict)
 
                 if is_combo_remote:
                     if not is_value_a_dict:
                         # We want to type into the combobox, to filter it, and wait for it to load.
                         # Once loaded we expect to have a single value that will end up selected.
-                        field = self.find_field_input_element(form_cq, field_name)
+                        field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, field_value)
 
                         # This reset has to be here it seems, rather than before typing.
@@ -152,7 +153,7 @@ class FieldHelper(HasReferencedJavaScript):
 
                         # Anyway, remote combos will take longer to load than this statement does.
                         # If not, then I guess that&#39;s a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, field_name)
+                        combobox_cq = self.get_field_component_query(form_cq, name)
                         self._store_helper.reset_store_load_count(combobox_cq)
                         self._store_helper.wait_for_store_loaded(combobox_cq)
 
@@ -167,20 +168,22 @@ class FieldHelper(HasReferencedJavaScript):
                 else:
                     if not is_value_a_dict:
                         # We can just type into the combobox
-                        field = self.find_field_input_element(form_cq, field_name)
+                        field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, field_value, delay, tab_off)
 
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
                     else:
-                        # FIXME: Implement!
-                        raise NotImplementedError()
+                        was_value_selected = self.select_combobox_value(form_cq, name, field_value)
+
+                        if not was_value_selected:
+                            raise FieldHelper.RecordNotFoundException(form_cq, name, field_value)
 
             elif (field_xtype.endswith(&#39;textfield&#39;) or
                 field_xtype.endswith(&#39;number&#39;) or
                 field_xtype.endswith(&#39;datefield&#39;)):
                 # Field can be typed into
-                field = self.find_field_input_element(form_cq, field_name)
+                field = self.find_field_input_element(form_cq, name)
                 self._input_helper.type_into_element(field, field_value, delay, tab_off)
 
             elif (field_xtype.endswith(&#39;checkbox&#39;) or
@@ -193,16 +196,16 @@ class FieldHelper(HasReferencedJavaScript):
                 # .....: so could click on children if wanted!
 
                 # Directly set the value on the field
-                self.set_field_value_directly(form_cq, field_name, field_value)
+                self.set_field_value_directly(form_cq, name, field_value)
 
                 if delay:
                     time.sleep(delay)
             else:
-                raise FieldHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
+                raise FieldHelper.UnsupportedFieldXTypeException(form_cq, name, field_xtype)
         else:
-            raise FieldHelper.FieldNotFoundException(form_cq, field_name)
+            raise FieldHelper.FieldNotFoundException(form_cq, name)
 
-    def set_field_value_directly(self, form_cq: str, field_name: str, value: Union[int, str]):
+    def set_field_value_directly(self, form_cq: str, name: str, value: Union[int, str]):
         &#34;&#34;&#34;Sets the value for a field using Ext&#39;s setValue method.
 
         Args:
@@ -218,7 +221,7 @@ class FieldHelper(HasReferencedJavaScript):
         if isinstance(value, bool):
             value = str(value).lower()
 
-        script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, value=value)
+        script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name, value=value)
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
@@ -237,7 +240,7 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def get_field_component_query(self, form_cq: str, field_name: str):
+    def get_field_component_query(self, form_cq: str, name: str):
         &#34;&#34;&#34;Builds the component query for a field on a form.
 
         This is useful, since allows you to interact with a field using component query, so can
@@ -245,24 +248,45 @@ class FieldHelper(HasReferencedJavaScript):
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
-            field_name (str): The name of the field.
+            name (str): The name of the field.
         &#34;&#34;&#34;
-        return f&#39;{form_cq} field[name=&#34;{field_name}&#34;]&#39;
+        return f&#39;{form_cq} field[name=&#34;{name}&#34;]&#39;
 
-    def check_field_value(self, form_cq: str, field_name: str, value: Any) -&gt; bool:
+    def check_field_value(self, form_cq: str, name: str, value: Any) -&gt; bool:
         &#34;&#34;&#34;Method that checks that the value of the specified field is that specified.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field.
-            field_name (str): The name of the field
+            name (str): The name of the field
             value (Any): The value that we expect the field to have.
 
         Returns:
             bool: True if the value of the field matches the expected, False otherwise.
         &#34;&#34;&#34;
-        field_value = self.get_field_value(form_cq, field_name)
+        field_value = self.get_field_value(form_cq, name)
 
         return field_value == value
+
+    def select_combobox_value(self, form_cq: str, name: str, data: dict) -&gt; bool:
+        &#34;&#34;&#34;Selects a value on a combobox field by finding a record with the specified data.
+        All members of the data object must match a record in the store.
+
+        Waits until the combobox has finished loading first, and ensures that the select
+        event is fired on the combobox if the record is found.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+            data (dict): The data to find in the store and select.
+
+        Returns:
+            True if the value was found and selected, False otherwise.
+        &#34;&#34;&#34;
+        self._store_helper.wait_for_store_loaded(self.get_field_component_query(form_cq, name))
+
+        script = self._SELECT_COMBOBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=name, data=data)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
     def _is_field_remotely_filtered_combobox(self, form_cq: str, name: str) -&gt; bool:
         &#34;&#34;&#34;Attempts to find a field by name from the specified form panel, and determine whether
@@ -283,24 +307,24 @@ class FieldHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
         &#34;&#34;&#34;
 
-        def __init__(self, form_cq: str, field_name: str, message: str = &#34;Failed to find field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
+        def __init__(self, form_cq: str, name: str, message: str = &#34;Failed to find field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
                 form_cq (str): The CQ used to find the form
-                field_name (str): The name of the field
-                message (str, optional): The exception message. Defaults to &#34;Failed to find field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;.
+                name (str): The name of the field
+                message (str, optional): The exception message. Defaults to &#34;Failed to find field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;.
             &#34;&#34;&#34;
             self.message = message
             self._form_cq = form_cq
-            self._field_name = field_name
+            self._name = name
 
             super().__init__(self.message)
 
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception
             &#34;&#34;&#34;
-            return self.message.format(field_name=self._field_name, form_cq=self._form_cq)
+            return self.message.format(name=self._name, form_cq=self._form_cq)
 
     class UnsupportedFieldXTypeException(Exception):
         &#34;&#34;&#34;Exception class thrown when we have been asked to perform an action that is not
@@ -309,21 +333,21 @@ class FieldHelper(HasReferencedJavaScript):
 
         def __init__(self,
                      form_cq: str,
-                     field_name: str,
+                     name: str,
                      xtype: str,
-                     message: str = &#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;):
+                     message: str = &#34;The field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
                 form_cq (str): The CQ used to find the form
-                field_name (str): The name of the field
+                name (str): The name of the field
                 xtype (str): The xtype of the field.
                 message (str, optional): The exception message.
-                                        Defaults to &#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;
+                                        Defaults to &#34;The field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;
             &#34;&#34;&#34;
             self.message = message
             self._form_cq = form_cq
-            self._field_name = field_name
+            self._name = name
             self._xtype = xtype
 
             super().__init__(self.message)
@@ -331,7 +355,32 @@ class FieldHelper(HasReferencedJavaScript):
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception
             &#34;&#34;&#34;
-            return self.message.format(field_name=self._field_name, form_cq=self._form_cq, xtype=self._xtype)</code></pre>
+            return self.message.format(name=self._name, form_cq=self._form_cq, xtype=self._xtype)
+
+    class RecordNotFoundException(Exception):
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified record in the a combobox
+        &#34;&#34;&#34;
+
+        def __init__(self, form_cq: str, name: str, data: dict, message: str = &#34;Failed to find record with data &#39;{data}&#39; in combobox named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                form_cq (str): The CQ used to find the form
+                name (str): The name of the combobox
+                data (dict): The data for the record we were looking for.
+                message (str, optional): The exception message. Defaults to &#34;Failed to find record with data &#39;{data}&#39; in combobox named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;.
+            &#34;&#34;&#34;
+            self.message = message
+            self._form_cq = form_cq
+            self._name = name
+            self._data = data
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception
+            &#34;&#34;&#34;
+            return self.message.format(data=self._data, name=self._name, form_cq=self._form_cq)</code></pre>
 </details>
 </section>
 <section>
@@ -370,6 +419,7 @@ class FieldHelper(HasReferencedJavaScript):
     _SET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.setFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
     _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
     _FOCUS_FIELD_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.focusField(&#39;{form_cq}&#39;, {index_or_name})&#34;
+    _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
 
     def __init__(self, driver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -429,21 +479,21 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_field_value(self, form_cq: str, field_name: str, value: Union[dict, int, str]):
+    def set_field_value(self, form_cq: str, name: str, value: Union[dict, int, str]):
         &#34;&#34;&#34;Sets the value for a field.
 
         If the field can be typed into by a user, and the value is typeable, then that is the approach taken.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field.
-            field_name (str): The name of the field.
+            name (str): The name of the field.
             value (Union[dict, int, str]): The value for the field.
                                            Supports being specified as a dictionary that can contain:
                                                - value (Union[int, str]): The value to set.
                                                - data (dict): A dictionary containing the data to find in the fields store.
                                                               If the field is not a store holder then an exception is thrown.
         &#34;&#34;&#34;
-        field_xtype = self.get_field_xtype(form_cq, field_name)
+        field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
             # Field found!
@@ -453,14 +503,14 @@ class FieldHelper(HasReferencedJavaScript):
 
             # Now need to set it&#39;s value
             if (field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)):
-                is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, field_name)
+                is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, name)
                 is_value_a_dict = isinstance(field_value, dict)
 
                 if is_combo_remote:
                     if not is_value_a_dict:
                         # We want to type into the combobox, to filter it, and wait for it to load.
                         # Once loaded we expect to have a single value that will end up selected.
-                        field = self.find_field_input_element(form_cq, field_name)
+                        field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, field_value)
 
                         # This reset has to be here it seems, rather than before typing.
@@ -469,7 +519,7 @@ class FieldHelper(HasReferencedJavaScript):
 
                         # Anyway, remote combos will take longer to load than this statement does.
                         # If not, then I guess that&#39;s a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, field_name)
+                        combobox_cq = self.get_field_component_query(form_cq, name)
                         self._store_helper.reset_store_load_count(combobox_cq)
                         self._store_helper.wait_for_store_loaded(combobox_cq)
 
@@ -484,20 +534,22 @@ class FieldHelper(HasReferencedJavaScript):
                 else:
                     if not is_value_a_dict:
                         # We can just type into the combobox
-                        field = self.find_field_input_element(form_cq, field_name)
+                        field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, field_value, delay, tab_off)
 
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
                     else:
-                        # FIXME: Implement!
-                        raise NotImplementedError()
+                        was_value_selected = self.select_combobox_value(form_cq, name, field_value)
+
+                        if not was_value_selected:
+                            raise FieldHelper.RecordNotFoundException(form_cq, name, field_value)
 
             elif (field_xtype.endswith(&#39;textfield&#39;) or
                 field_xtype.endswith(&#39;number&#39;) or
                 field_xtype.endswith(&#39;datefield&#39;)):
                 # Field can be typed into
-                field = self.find_field_input_element(form_cq, field_name)
+                field = self.find_field_input_element(form_cq, name)
                 self._input_helper.type_into_element(field, field_value, delay, tab_off)
 
             elif (field_xtype.endswith(&#39;checkbox&#39;) or
@@ -510,16 +562,16 @@ class FieldHelper(HasReferencedJavaScript):
                 # .....: so could click on children if wanted!
 
                 # Directly set the value on the field
-                self.set_field_value_directly(form_cq, field_name, field_value)
+                self.set_field_value_directly(form_cq, name, field_value)
 
                 if delay:
                     time.sleep(delay)
             else:
-                raise FieldHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
+                raise FieldHelper.UnsupportedFieldXTypeException(form_cq, name, field_xtype)
         else:
-            raise FieldHelper.FieldNotFoundException(form_cq, field_name)
+            raise FieldHelper.FieldNotFoundException(form_cq, name)
 
-    def set_field_value_directly(self, form_cq: str, field_name: str, value: Union[int, str]):
+    def set_field_value_directly(self, form_cq: str, name: str, value: Union[int, str]):
         &#34;&#34;&#34;Sets the value for a field using Ext&#39;s setValue method.
 
         Args:
@@ -535,7 +587,7 @@ class FieldHelper(HasReferencedJavaScript):
         if isinstance(value, bool):
             value = str(value).lower()
 
-        script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, value=value)
+        script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name, value=value)
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
@@ -554,7 +606,7 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def get_field_component_query(self, form_cq: str, field_name: str):
+    def get_field_component_query(self, form_cq: str, name: str):
         &#34;&#34;&#34;Builds the component query for a field on a form.
 
         This is useful, since allows you to interact with a field using component query, so can
@@ -562,24 +614,45 @@ class FieldHelper(HasReferencedJavaScript):
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
-            field_name (str): The name of the field.
+            name (str): The name of the field.
         &#34;&#34;&#34;
-        return f&#39;{form_cq} field[name=&#34;{field_name}&#34;]&#39;
+        return f&#39;{form_cq} field[name=&#34;{name}&#34;]&#39;
 
-    def check_field_value(self, form_cq: str, field_name: str, value: Any) -&gt; bool:
+    def check_field_value(self, form_cq: str, name: str, value: Any) -&gt; bool:
         &#34;&#34;&#34;Method that checks that the value of the specified field is that specified.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field.
-            field_name (str): The name of the field
+            name (str): The name of the field
             value (Any): The value that we expect the field to have.
 
         Returns:
             bool: True if the value of the field matches the expected, False otherwise.
         &#34;&#34;&#34;
-        field_value = self.get_field_value(form_cq, field_name)
+        field_value = self.get_field_value(form_cq, name)
 
         return field_value == value
+
+    def select_combobox_value(self, form_cq: str, name: str, data: dict) -&gt; bool:
+        &#34;&#34;&#34;Selects a value on a combobox field by finding a record with the specified data.
+        All members of the data object must match a record in the store.
+
+        Waits until the combobox has finished loading first, and ensures that the select
+        event is fired on the combobox if the record is found.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+            data (dict): The data to find in the store and select.
+
+        Returns:
+            True if the value was found and selected, False otherwise.
+        &#34;&#34;&#34;
+        self._store_helper.wait_for_store_loaded(self.get_field_component_query(form_cq, name))
+
+        script = self._SELECT_COMBOBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=name, data=data)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
     def _is_field_remotely_filtered_combobox(self, form_cq: str, name: str) -&gt; bool:
         &#34;&#34;&#34;Attempts to find a field by name from the specified form panel, and determine whether
@@ -600,24 +673,24 @@ class FieldHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
         &#34;&#34;&#34;
 
-        def __init__(self, form_cq: str, field_name: str, message: str = &#34;Failed to find field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
+        def __init__(self, form_cq: str, name: str, message: str = &#34;Failed to find field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
                 form_cq (str): The CQ used to find the form
-                field_name (str): The name of the field
-                message (str, optional): The exception message. Defaults to &#34;Failed to find field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;.
+                name (str): The name of the field
+                message (str, optional): The exception message. Defaults to &#34;Failed to find field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;.
             &#34;&#34;&#34;
             self.message = message
             self._form_cq = form_cq
-            self._field_name = field_name
+            self._name = name
 
             super().__init__(self.message)
 
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception
             &#34;&#34;&#34;
-            return self.message.format(field_name=self._field_name, form_cq=self._form_cq)
+            return self.message.format(name=self._name, form_cq=self._form_cq)
 
     class UnsupportedFieldXTypeException(Exception):
         &#34;&#34;&#34;Exception class thrown when we have been asked to perform an action that is not
@@ -626,21 +699,21 @@ class FieldHelper(HasReferencedJavaScript):
 
         def __init__(self,
                      form_cq: str,
-                     field_name: str,
+                     name: str,
                      xtype: str,
-                     message: str = &#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;):
+                     message: str = &#34;The field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
                 form_cq (str): The CQ used to find the form
-                field_name (str): The name of the field
+                name (str): The name of the field
                 xtype (str): The xtype of the field.
                 message (str, optional): The exception message.
-                                        Defaults to &#34;The field named &#39;{field_name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;
+                                        Defaults to &#34;The field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39; is of an xtype &#39;{xtype}&#39; which is not supported for the requested operation.&#34;
             &#34;&#34;&#34;
             self.message = message
             self._form_cq = form_cq
-            self._field_name = field_name
+            self._name = name
             self._xtype = xtype
 
             super().__init__(self.message)
@@ -648,7 +721,32 @@ class FieldHelper(HasReferencedJavaScript):
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception
             &#34;&#34;&#34;
-            return self.message.format(field_name=self._field_name, form_cq=self._form_cq, xtype=self._xtype)</code></pre>
+            return self.message.format(name=self._name, form_cq=self._form_cq, xtype=self._xtype)
+
+    class RecordNotFoundException(Exception):
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified record in the a combobox
+        &#34;&#34;&#34;
+
+        def __init__(self, form_cq: str, name: str, data: dict, message: str = &#34;Failed to find record with data &#39;{data}&#39; in combobox named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                form_cq (str): The CQ used to find the form
+                name (str): The name of the combobox
+                data (dict): The data for the record we were looking for.
+                message (str, optional): The exception message. Defaults to &#34;Failed to find record with data &#39;{data}&#39; in combobox named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;.
+            &#34;&#34;&#34;
+            self.message = message
+            self._form_cq = form_cq
+            self._name = name
+            self._data = data
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception
+            &#34;&#34;&#34;
+            return self.message.format(data=self._data, name=self._name, form_cq=self._form_cq)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -660,6 +758,10 @@ class FieldHelper(HasReferencedJavaScript):
 <dd>
 <div class="desc"><p>Exception class thrown when we failed to find the specified field</p></div>
 </dd>
+<dt id="pyseext.field_helper.FieldHelper.RecordNotFoundException"><code class="name">var <span class="ident">RecordNotFoundException</span></code></dt>
+<dd>
+<div class="desc"><p>Exception class thrown when we failed to find the specified record in the a combobox</p></div>
+</dd>
 <dt id="pyseext.field_helper.FieldHelper.UnsupportedFieldXTypeException"><code class="name">var <span class="ident">UnsupportedFieldXTypeException</span></code></dt>
 <dd>
 <div class="desc"><p>Exception class thrown when we have been asked to perform an action that is not
@@ -669,7 +771,7 @@ supported for the given field xtype.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="pyseext.field_helper.FieldHelper.check_field_value"><code class="name flex">
-<span>def <span class="ident">check_field_value</span></span>(<span>self, form_cq: str, field_name: str, value: Any) ‑> bool</span>
+<span>def <span class="ident">check_field_value</span></span>(<span>self, form_cq: str, name: str, value: Any) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method that checks that the value of the specified field is that specified.</p>
@@ -677,7 +779,7 @@ supported for the given field xtype.</p></div>
 <dl>
 <dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query that identifies the form panel in which to look for the field.</dd>
-<dt><strong><code>field_name</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The name of the field</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>Any</code></dt>
 <dd>The value that we expect the field to have.</dd>
@@ -691,18 +793,18 @@ supported for the given field xtype.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_field_value(self, form_cq: str, field_name: str, value: Any) -&gt; bool:
+<pre><code class="python">def check_field_value(self, form_cq: str, name: str, value: Any) -&gt; bool:
     &#34;&#34;&#34;Method that checks that the value of the specified field is that specified.
 
     Args:
         form_cq (str): The component query that identifies the form panel in which to look for the field.
-        field_name (str): The name of the field
+        name (str): The name of the field
         value (Any): The value that we expect the field to have.
 
     Returns:
         bool: True if the value of the field matches the expected, False otherwise.
     &#34;&#34;&#34;
-    field_value = self.get_field_value(form_cq, field_name)
+    field_value = self.get_field_value(form_cq, name)
 
     return field_value == value</code></pre>
 </details>
@@ -776,7 +878,7 @@ supported for the given field xtype.</p></div>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.get_field_component_query"><code class="name flex">
-<span>def <span class="ident">get_field_component_query</span></span>(<span>self, form_cq: str, field_name: str)</span>
+<span>def <span class="ident">get_field_component_query</span></span>(<span>self, form_cq: str, name: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Builds the component query for a field on a form.</p>
@@ -786,14 +888,14 @@ utilise the methods in StoreHelper, say.</p>
 <dl>
 <dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query that identifies the form panel in which to look for the field</dd>
-<dt><strong><code>field_name</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The name of the field.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_field_component_query(self, form_cq: str, field_name: str):
+<pre><code class="python">def get_field_component_query(self, form_cq: str, name: str):
     &#34;&#34;&#34;Builds the component query for a field on a form.
 
     This is useful, since allows you to interact with a field using component query, so can
@@ -801,9 +903,9 @@ utilise the methods in StoreHelper, say.</p>
 
     Args:
         form_cq (str): The component query that identifies the form panel in which to look for the field
-        field_name (str): The name of the field.
+        name (str): The name of the field.
     &#34;&#34;&#34;
-    return f&#39;{form_cq} field[name=&#34;{field_name}&#34;]&#39;</code></pre>
+    return f&#39;{form_cq} field[name=&#34;{name}&#34;]&#39;</code></pre>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.get_field_value"><code class="name flex">
@@ -878,8 +980,53 @@ utilise the methods in StoreHelper, say.</p>
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
+<dt id="pyseext.field_helper.FieldHelper.select_combobox_value"><code class="name flex">
+<span>def <span class="ident">select_combobox_value</span></span>(<span>self, form_cq: str, name: str, data: dict) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Selects a value on a combobox field by finding a record with the specified data.
+All members of the data object must match a record in the store.</p>
+<p>Waits until the combobox has finished loading first, and ensures that the select
+event is fired on the combobox if the record is found.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+<dt><strong><code>data</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The data to find in the store and select.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the value was found and selected, False otherwise.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_combobox_value(self, form_cq: str, name: str, data: dict) -&gt; bool:
+    &#34;&#34;&#34;Selects a value on a combobox field by finding a record with the specified data.
+    All members of the data object must match a record in the store.
+
+    Waits until the combobox has finished loading first, and ensures that the select
+    event is fired on the combobox if the record is found.
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+        data (dict): The data to find in the store and select.
+
+    Returns:
+        True if the value was found and selected, False otherwise.
+    &#34;&#34;&#34;
+    self._store_helper.wait_for_store_loaded(self.get_field_component_query(form_cq, name))
+
+    script = self._SELECT_COMBOBOX_VALUE_TEMPLATE.format(form_cq=form_cq, name=name, data=data)
+    self.ensure_javascript_loaded()
+    return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
 <dt id="pyseext.field_helper.FieldHelper.set_field_value"><code class="name flex">
-<span>def <span class="ident">set_field_value</span></span>(<span>self, form_cq: str, field_name: str, value: Union[dict, int, str])</span>
+<span>def <span class="ident">set_field_value</span></span>(<span>self, form_cq: str, name: str, value: Union[dict, int, str])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Sets the value for a field.</p>
@@ -888,7 +1035,7 @@ utilise the methods in StoreHelper, say.</p>
 <dl>
 <dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query that identifies the form panel in which to look for the field.</dd>
-<dt><strong><code>field_name</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The name of the field.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>Union[dict, int, str]</code></dt>
 <dd>The value for the field.
@@ -901,21 +1048,21 @@ If the field is not a store holder then an exception is thrown.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_field_value(self, form_cq: str, field_name: str, value: Union[dict, int, str]):
+<pre><code class="python">def set_field_value(self, form_cq: str, name: str, value: Union[dict, int, str]):
     &#34;&#34;&#34;Sets the value for a field.
 
     If the field can be typed into by a user, and the value is typeable, then that is the approach taken.
 
     Args:
         form_cq (str): The component query that identifies the form panel in which to look for the field.
-        field_name (str): The name of the field.
+        name (str): The name of the field.
         value (Union[dict, int, str]): The value for the field.
                                        Supports being specified as a dictionary that can contain:
                                            - value (Union[int, str]): The value to set.
                                            - data (dict): A dictionary containing the data to find in the fields store.
                                                           If the field is not a store holder then an exception is thrown.
     &#34;&#34;&#34;
-    field_xtype = self.get_field_xtype(form_cq, field_name)
+    field_xtype = self.get_field_xtype(form_cq, name)
 
     if field_xtype:
         # Field found!
@@ -925,14 +1072,14 @@ If the field is not a store holder then an exception is thrown.</dd>
 
         # Now need to set it&#39;s value
         if (field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)):
-            is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, field_name)
+            is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, name)
             is_value_a_dict = isinstance(field_value, dict)
 
             if is_combo_remote:
                 if not is_value_a_dict:
                     # We want to type into the combobox, to filter it, and wait for it to load.
                     # Once loaded we expect to have a single value that will end up selected.
-                    field = self.find_field_input_element(form_cq, field_name)
+                    field = self.find_field_input_element(form_cq, name)
                     self._input_helper.type_into_element(field, field_value)
 
                     # This reset has to be here it seems, rather than before typing.
@@ -941,7 +1088,7 @@ If the field is not a store holder then an exception is thrown.</dd>
 
                     # Anyway, remote combos will take longer to load than this statement does.
                     # If not, then I guess that&#39;s a nice problem to have :-)
-                    combobox_cq = self.get_field_component_query(form_cq, field_name)
+                    combobox_cq = self.get_field_component_query(form_cq, name)
                     self._store_helper.reset_store_load_count(combobox_cq)
                     self._store_helper.wait_for_store_loaded(combobox_cq)
 
@@ -956,20 +1103,22 @@ If the field is not a store holder then an exception is thrown.</dd>
             else:
                 if not is_value_a_dict:
                     # We can just type into the combobox
-                    field = self.find_field_input_element(form_cq, field_name)
+                    field = self.find_field_input_element(form_cq, name)
                     self._input_helper.type_into_element(field, field_value, delay, tab_off)
 
                     # Seems we need to tab off or sometimes the value will not stick?!
                     self._input_helper.type_tab()
                 else:
-                    # FIXME: Implement!
-                    raise NotImplementedError()
+                    was_value_selected = self.select_combobox_value(form_cq, name, field_value)
+
+                    if not was_value_selected:
+                        raise FieldHelper.RecordNotFoundException(form_cq, name, field_value)
 
         elif (field_xtype.endswith(&#39;textfield&#39;) or
             field_xtype.endswith(&#39;number&#39;) or
             field_xtype.endswith(&#39;datefield&#39;)):
             # Field can be typed into
-            field = self.find_field_input_element(form_cq, field_name)
+            field = self.find_field_input_element(form_cq, name)
             self._input_helper.type_into_element(field, field_value, delay, tab_off)
 
         elif (field_xtype.endswith(&#39;checkbox&#39;) or
@@ -982,18 +1131,18 @@ If the field is not a store holder then an exception is thrown.</dd>
             # .....: so could click on children if wanted!
 
             # Directly set the value on the field
-            self.set_field_value_directly(form_cq, field_name, field_value)
+            self.set_field_value_directly(form_cq, name, field_value)
 
             if delay:
                 time.sleep(delay)
         else:
-            raise FieldHelper.UnsupportedFieldXTypeException(form_cq, field_name, field_xtype)
+            raise FieldHelper.UnsupportedFieldXTypeException(form_cq, name, field_xtype)
     else:
-        raise FieldHelper.FieldNotFoundException(form_cq, field_name)</code></pre>
+        raise FieldHelper.FieldNotFoundException(form_cq, name)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.set_field_value_directly"><code class="name flex">
-<span>def <span class="ident">set_field_value_directly</span></span>(<span>self, form_cq: str, field_name: str, value: Union[int, str])</span>
+<span>def <span class="ident">set_field_value_directly</span></span>(<span>self, form_cq: str, name: str, value: Union[int, str])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Sets the value for a field using Ext's setValue method.</p>
@@ -1010,7 +1159,7 @@ If the field is not a store holder then an exception is thrown.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_field_value_directly(self, form_cq: str, field_name: str, value: Union[int, str]):
+<pre><code class="python">def set_field_value_directly(self, form_cq: str, name: str, value: Union[int, str]):
     &#34;&#34;&#34;Sets the value for a field using Ext&#39;s setValue method.
 
     Args:
@@ -1026,7 +1175,7 @@ If the field is not a store holder then an exception is thrown.</dd>
     if isinstance(value, bool):
         value = str(value).lower()
 
-    script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=field_name, value=value)
+    script = self._SET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name, value=value)
     self.ensure_javascript_loaded()
     self._driver.execute_script(script)</code></pre>
 </details>
@@ -1063,6 +1212,7 @@ If the field is not a store holder then an exception is thrown.</dd>
 <h4><code><a title="pyseext.field_helper.FieldHelper" href="#pyseext.field_helper.FieldHelper">FieldHelper</a></code></h4>
 <ul class="">
 <li><code><a title="pyseext.field_helper.FieldHelper.FieldNotFoundException" href="#pyseext.field_helper.FieldHelper.FieldNotFoundException">FieldNotFoundException</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.RecordNotFoundException" href="#pyseext.field_helper.FieldHelper.RecordNotFoundException">RecordNotFoundException</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.UnsupportedFieldXTypeException" href="#pyseext.field_helper.FieldHelper.UnsupportedFieldXTypeException">UnsupportedFieldXTypeException</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.check_field_value" href="#pyseext.field_helper.FieldHelper.check_field_value">check_field_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.find_field_input_element" href="#pyseext.field_helper.FieldHelper.find_field_input_element">find_field_input_element</a></code></li>
@@ -1070,6 +1220,7 @@ If the field is not a store holder then an exception is thrown.</dd>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_component_query" href="#pyseext.field_helper.FieldHelper.get_field_component_query">get_field_component_query</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_value" href="#pyseext.field_helper.FieldHelper.get_field_value">get_field_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_xtype" href="#pyseext.field_helper.FieldHelper.get_field_xtype">get_field_xtype</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.select_combobox_value" href="#pyseext.field_helper.FieldHelper.select_combobox_value">select_combobox_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.set_field_value" href="#pyseext.field_helper.FieldHelper.set_field_value">set_field_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.set_field_value_directly" href="#pyseext.field_helper.FieldHelper.set_field_value_directly">set_field_value_directly</a></code></li>
 </ul>
