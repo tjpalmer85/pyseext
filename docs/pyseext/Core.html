@@ -156,7 +156,28 @@ class Core(HasReferencedJavaScript):
                 time.sleep(self._recheck_time_if_false)
                 is_call_in_progress = Core(driver).is_ajax_request_in_progress()
 
-            return not is_call_in_progress</code></pre>
+            return not is_call_in_progress
+
+    class ArgumentException(Exception):
+        &#34;&#34;&#34;Exception class thrown when we have an argument exception.
+        &#34;&#34;&#34;
+
+        def __init__(self, name: str, message: str = &#34;The argument with name &#39;{name}&#39; is invalid.&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                name (str): The name of the argument
+                message (str, optional): The exception message. Defaults to &#34;The argument with name &#39;{name}&#39; is invalid.&#34;.
+            &#34;&#34;&#34;
+            self.message = message
+            self._name = name
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception
+            &#34;&#34;&#34;
+            return self.message.format(name=self._name)</code></pre>
 </details>
 </section>
 <section>
@@ -302,7 +323,28 @@ class Core(HasReferencedJavaScript):
                 time.sleep(self._recheck_time_if_false)
                 is_call_in_progress = Core(driver).is_ajax_request_in_progress()
 
-            return not is_call_in_progress</code></pre>
+            return not is_call_in_progress
+
+    class ArgumentException(Exception):
+        &#34;&#34;&#34;Exception class thrown when we have an argument exception.
+        &#34;&#34;&#34;
+
+        def __init__(self, name: str, message: str = &#34;The argument with name &#39;{name}&#39; is invalid.&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                name (str): The name of the argument
+                message (str, optional): The exception message. Defaults to &#34;The argument with name &#39;{name}&#39; is invalid.&#34;.
+            &#34;&#34;&#34;
+            self.message = message
+            self._name = name
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception
+            &#34;&#34;&#34;
+            return self.message.format(name=self._name)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -310,6 +352,10 @@ class Core(HasReferencedJavaScript):
 </ul>
 <h3>Class variables</h3>
 <dl>
+<dt id="pyseext.core.Core.ArgumentException"><code class="name">var <span class="ident">ArgumentException</span></code></dt>
+<dd>
+<div class="desc"><p>Exception class thrown when we have an argument exception.</p></div>
+</dd>
 <dt id="pyseext.core.Core.IsDomReadyExpectation"><code class="name">var <span class="ident">IsDomReadyExpectation</span></code></dt>
 <dd>
 <div class="desc"><p>An expectation for checking Ext.isDomReady</p></div>
@@ -487,6 +533,7 @@ Calls Ext.isDomReady.</p>
 <li>
 <h4><code><a title="pyseext.core.Core" href="#pyseext.core.Core">Core</a></code></h4>
 <ul class="">
+<li><code><a title="pyseext.core.Core.ArgumentException" href="#pyseext.core.Core.ArgumentException">ArgumentException</a></code></li>
 <li><code><a title="pyseext.core.Core.IsDomReadyExpectation" href="#pyseext.core.Core.IsDomReadyExpectation">IsDomReadyExpectation</a></code></li>
 <li><code><a title="pyseext.core.Core.IsNoAjaxCallInProgressExpectation" href="#pyseext.core.Core.IsNoAjaxCallInProgressExpectation">IsNoAjaxCallInProgressExpectation</a></code></li>
 <li><code><a title="pyseext.core.Core.is_ajax_request_in_progress" href="#pyseext.core.Core.is_ajax_request_in_progress">is_ajax_request_in_progress</a></code></li>

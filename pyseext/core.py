@@ -128,3 +128,24 @@ class Core(HasReferencedJavaScript):
                 is_call_in_progress = Core(driver).is_ajax_request_in_progress()
 
             return not is_call_in_progress
+
+    class ArgumentException(Exception):
+        """Exception class thrown when we have an argument exception.
+        """
+
+        def __init__(self, name: str, message: str = "The argument with name '{name}' is invalid."):
+            """Initialises an instance of this exception
+
+            Args:
+                name (str): The name of the argument
+                message (str, optional): The exception message. Defaults to "The argument with name '{name}' is invalid.".
+            """
+            self.message = message
+            self._name = name
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            """Returns a string representation of this exception
+            """
+            return self.message.format(name=self._name)

@@ -84,7 +84,7 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_field_value(self, form_cq: str, name: str, value: Union[dict, int, str]):
+    def set_field_value(self, form_cq: str, name: str, value: Union[dict, float, str]):
         """Sets the value for a field.
 
         If the field can be typed into by a user, and the value is typeable, then that is the approach taken.
@@ -92,19 +92,26 @@ class FieldHelper(HasReferencedJavaScript):
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field.
             name (str): The name of the field.
-            value (Union[dict, int, str]): The value for the field.
-                                           Supports being specified as a dictionary that can contain:
-                                               - value (Union[int, str]): The value to set.
-                                               - data (dict): A dictionary containing the data to find in the fields store.
-                                                              If the field is not a store holder then an exception is thrown.
+            value (Union[dict, float, str]): The value for the field.
+
+                                             If the value is a number or string then it is typed into the field where possible,
+                                             otherwise the value is set directly.
+
+                                             If the value is a dictionary then either it, or it's value member is taken to be model
+                                             data to select in a combobox.
+
+                                             If the combobox is remotely filtered then it is expected that both a value member and
+                                             a filterText member is specified, where the filterText is typed into the combobox, then
+                                             the value selected.
+
+                                             If the value is supplied as a dictionary and the field is not a store holder then
+                                             an exception is thrown.
         """
         field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
             # Field found!
             field_value = self._core.try_get_object_member(value, 'value', value)
-            delay = self._core.try_get_object_member(value, 'delay')
-            tab_off = self._core.try_get_object_member(value, 'tab_off', False)
 
             # Now need to set it's value
             if (field_xtype.endswith('combo') or field_xtype.endswith('combobox')):
@@ -134,13 +141,35 @@ class FieldHelper(HasReferencedJavaScript):
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
                     else:
-                        # FIXME: Implement!
-                        raise NotImplementedError()
+                        # We are expecting some filter text
+                        filter_text = self._core.try_get_object_member(value, 'filterText')
+
+                        if not filter_text:
+                            raise Core.ArgumentException("value", "We were expecting the argument '{name}' to have a 'filterText' member, but it is missing.")
+
+                        # We want to type into the combobox, to filter it, and wait for it to load.
+                        field = self.find_field_input_element(form_cq, name)
+                        self._input_helper.type_into_element(field, filter_text)
+
+                        # This reset has to be here it seems, rather than before typing.
+                        # I suspect that the load count gets incremented a few times as the box
+                        # is typed into or something?
+
+                        # Anyway, remote combos will take longer to load than this statement does.
+                        # If not, then I guess that's a nice problem to have :-)
+                        combobox_cq = self.get_field_component_query(form_cq, name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+                        self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                        was_value_selected = self.select_combobox_value(form_cq, name, field_value)
+
+                        if not was_value_selected:
+                            raise FieldHelper.RecordNotFoundException(form_cq, name, field_value)
                 else:
                     if not is_value_a_dict:
                         # We can just type into the combobox
                         field = self.find_field_input_element(form_cq, name)
-                        self._input_helper.type_into_element(field, field_value, delay, tab_off)
+                        self._input_helper.type_into_element(field, field_value)
 
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
@@ -155,7 +184,7 @@ class FieldHelper(HasReferencedJavaScript):
                 field_xtype.endswith('datefield')):
                 # Field can be typed into
                 field = self.find_field_input_element(form_cq, name)
-                self._input_helper.type_into_element(field, field_value, delay, tab_off)
+                self._input_helper.type_into_element(field, field_value)
 
             elif (field_xtype.endswith('checkbox') or
                 field_xtype.endswith('radiogroup') or
@@ -168,9 +197,6 @@ class FieldHelper(HasReferencedJavaScript):
 
                 # Directly set the value on the field
                 self.set_field_value_directly(form_cq, name, field_value)
-
-                if delay:
-                    time.sleep(delay)
             else:
                 raise FieldHelper.UnsupportedFieldXTypeException(form_cq, name, field_xtype)
         else:
@@ -332,14 +358,14 @@ class FieldHelper(HasReferencedJavaScript):
         """Exception class thrown when we failed to find the specified record in the a combobox
         """
 
-        def __init__(self, form_cq: str, name: str, data: dict, message: str = "Failed to find record with data '{data}' in combobox named '{name}' on form with CQ '{form_cq}'."):
+        def __init__(self, form_cq: str, name: str, data: dict, message: str = "Failed to find record with data {data} in combobox named '{name}' on form with CQ '{form_cq}'."):
             """Initialises an instance of this exception
 
             Args:
                 form_cq (str): The CQ used to find the form
                 name (str): The name of the combobox
                 data (dict): The data for the record we were looking for.
-                message (str, optional): The exception message. Defaults to "Failed to find record with data '{data}' in combobox named '{name}' on form with CQ '{form_cq}'.".
+                message (str, optional): The exception message. Defaults to "Failed to find record with data {data} in combobox named '{name}' on form with CQ '{form_cq}'.".
             """
             self.message = message
             self._form_cq = form_cq
