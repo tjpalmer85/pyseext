@@ -2,7 +2,6 @@
 Module that contains our HasReferencedJavaScript class.
 """
 from pathlib import Path
-import pkg_resources
 
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -36,19 +35,19 @@ class HasReferencedJavaScript:
 
         # If our JavaScript has not been loaded then load it now
         if not self._driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
+            # FIXME: When get pkg_resources working, perhaps try this?
+            # stream = pkg_resources.resource_stream(__package__, f'js/PySeExt.{class_name}.js')
+            # self._driver.execute_script(stream.read())
 
-            stream = pkg_resources.resource_stream(__name__, f'js/PySeExt.{class_name}.js')
-            self._driver.execute_script(stream.read())
+            js_path = f'./js/PySeExt.{class_name}.js'
+            self._logger.debug(f'Loading script: {js_path}')
 
-            # js_path = f'./js/PySeExt.{class_name}.js'
-            # self._logger.debug(f'Loading script: {js_path}')
+            source_path = Path(__file__).resolve()
+            source_dir = source_path.parent
 
-            # source_path = Path(__file__).resolve()
-            # source_dir = source_path.parent
+            js_path = source_dir.joinpath(js_path)
 
-            # js_path = source_dir.joinpath(js_path)
-
-            # self._driver.execute_script(open(js_path, encoding = "utf-8").read())
+            self._driver.execute_script(open(js_path, encoding = "utf-8").read())
 
             # Wait for it to the loaded
             WebDriverWait(self._driver,
