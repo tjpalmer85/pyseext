@@ -22,5 +22,5 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
     include_package_data=True,
-    package_data={'pyseext': ['js/*.js']}
+    package_data={'pyseext': ['pyseext/js/*.js']}
 )
