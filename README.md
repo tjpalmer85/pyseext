@@ -8,9 +8,22 @@ I had the idea of trying to inject JavaScript into the DOM to help, and use that
 that it was indeed possible, I started pulling this together.
 
 ---
-## Documentation
+## How to Use
+It seems that GitHub does not allow publishing to PyPi yet, and it's not looking like it's coming [soon](https://github.community/t/pypi-compatible-github-package-registry/14615), since the roadmap looks empty.
 
-You can find the documentation for the library [here](https://gitcdn.link/cdn/westy/pyseext/master/docs/pyseext/index.html) (linked using [GitCDN](https://gitcdn.link)).
+You can direct pip at GitHub though. Simply run `pip install git+https://github.com/westy/pyseext`
+
+Alternatively, add this to your `requirements.txt`:
+```
+pyseext @ git+https://github.com/westy/pyseext
+```
+
+And then run `pip install -r requirements.txt`
+
+---
+## Generated Documentation
+
+You can find the generated documentation for the library [here](https://gitcdn.link/cdn/westy/pyseext/master/docs/pyseext/index.html) (linked using [GitCDN](https://gitcdn.link)).
 
 ---
 ## Naming Standards
