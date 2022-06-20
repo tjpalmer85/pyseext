@@ -5,11 +5,11 @@
 from setuptools import setup, find_packages
 
 
-with open('README.md') as f:
+with open('README.md', encoding = 'utf-8') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
-    license = f.read()
+with open('LICENSE', encoding = 'utf-8') as f:
+    license_text = f.read()
 
 setup(
     name='pyseext',
@@ -19,8 +19,7 @@ setup(
     author='Martyn West',
     author_email='657393+westy@users.noreply.github.com',
     url='https://github.com/westy/pyseext',
-    license=license,
+    license=license_text,
     packages=find_packages(exclude=('tests', 'docs')),
-    include_package_data=True,
     package_data={'pyseext': ['js/*.js']}
 )

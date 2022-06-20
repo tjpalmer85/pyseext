@@ -2,7 +2,6 @@
 Module that contains our HasReferencedJavaScript class.
 """
 from logging import Logger
-from pathlib import Path
 import pkg_resources
 
 from selenium.webdriver.remote.webdriver import WebDriver
