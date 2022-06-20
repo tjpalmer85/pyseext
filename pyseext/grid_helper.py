@@ -6,6 +6,7 @@ from typing import Union
 
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
@@ -25,7 +26,7 @@ class GridHelper(HasReferencedJavaScript):
     _CLEAR_SELECTION_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
     _GET_ROW_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

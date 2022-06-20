@@ -5,6 +5,8 @@ import logging
 from typing import Any
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
+from selenium.webdriver.remote.webdriver import WebDriver
+
 class LocalStorageHelper(HasReferencedJavaScript):
     """A class to help with using local storage, through Ext's interfaces.
     """
@@ -14,7 +16,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
     _CLEAR_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.clearValue('{key}')"
     _GET_STORED_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.getStoredValue('{key}')"
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

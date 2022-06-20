@@ -7,6 +7,7 @@ from typing import Union
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 class InputHelper():
@@ -16,7 +17,7 @@ class InputHelper():
     TYPING_SLEEP_MINIMUM: float = 0.0001
     TYPING_SLEEP_MAXIMUM: float = 0.002
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

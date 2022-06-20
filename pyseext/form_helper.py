@@ -4,6 +4,8 @@ Module that contains our FormHelper class.
 import logging
 from typing import Union
 
+from selenium.webdriver.remote.webdriver import WebDriver
+
 from pyseext.field_helper import FieldHelper
 from pyseext.button_helper import ButtonHelper
 from pyseext.input_helper import InputHelper
@@ -12,7 +14,7 @@ class FormHelper:
     """A class to help with interacting with Ext form panels and forms
     """
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

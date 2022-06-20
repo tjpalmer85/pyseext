@@ -5,6 +5,7 @@ import logging
 from typing import Union
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
@@ -26,7 +27,7 @@ class TreeHelper(HasReferencedJavaScript):
     _RELOAD_NODE_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.reloadNodeByText('{tree_cq}', '{node_text}')"
     _RELOAD_NODE_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.reloadNodeByData('{tree_cq}', {node_data})"
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

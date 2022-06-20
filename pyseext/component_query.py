@@ -4,6 +4,7 @@ Module that contains our ComponentQuery class.
 import logging
 from typing import Union
 
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -18,7 +19,7 @@ class ComponentQuery(HasReferencedJavaScript):
     _QUERY_TEMPLATE: str = "return globalThis.PySeExt.ComponentQuery.query('{cq}')"
     _QUERY_TEMPLATE_WITH_ROOT: str = "return globalThis.PySeExt.ComponentQuery.query('{cq}', '{root_id}')"
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

@@ -5,6 +5,7 @@ import logging
 import time
 from typing import Union, Any
 
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
@@ -22,7 +23,7 @@ class Core(HasReferencedJavaScript):
 
     # FIXME: Another thought is to inject a means to show field names on forms, xtype on components, etc?
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class.
 
         Args:

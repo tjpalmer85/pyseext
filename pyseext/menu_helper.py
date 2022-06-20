@@ -5,6 +5,7 @@ import logging
 from typing import Union
 
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 
 from pyseext.component_query import ComponentQuery
 
@@ -16,7 +17,7 @@ class MenuHelper:
     _ENABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=false]'
     _DISABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=true]'
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

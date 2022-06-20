@@ -4,6 +4,8 @@ Module that contains our ObservableHelper class.
 import logging
 from typing import Union
 
+from selenium.webdriver.remote.webdriver import WebDriver
+
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class ObservableHelper(HasReferencedJavaScript):
@@ -12,7 +14,7 @@ class ObservableHelper(HasReferencedJavaScript):
 
     _WAIT_FOR_EVENT_TEMPLATE: str = "return globalThis.PySeExt.ObservableHelper.waitForEvent('{component_cq}', '{event_name}', {timeout}, {member_accessor}, callback)"
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class.
 
         Args:

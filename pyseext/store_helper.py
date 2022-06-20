@@ -2,6 +2,9 @@
 Module that contains our StoreHelper class.
 """
 import logging
+
+from selenium.webdriver.remote.webdriver import WebDriver
+
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class StoreHelper(HasReferencedJavaScript):
@@ -13,7 +16,7 @@ class StoreHelper(HasReferencedJavaScript):
     _WAIT_FOR_STORE_LOADED_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.waitForStoreLoaded('{store_holder_cq}', callback)"
     _RELOAD_STORE_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.reload('{store_holder_cq}')"
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:

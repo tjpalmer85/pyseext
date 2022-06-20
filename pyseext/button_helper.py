@@ -6,6 +6,7 @@ import logging
 from typing import Union
 
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 
 from pyseext.component_query import ComponentQuery
 
@@ -18,7 +19,7 @@ class ButtonHelper:
     _DISABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=true]'
     _MESSAGEBOX_BUTTON_TEMPLATE: str = 'messagebox{{isVisible(true)}} button[text="{text}"]'
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
         Args:
