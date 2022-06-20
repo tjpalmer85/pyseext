@@ -2,6 +2,7 @@
 Module that contains our HasReferencedJavaScript class.
 """
 from logging import Logger
+from os import path
 import pkg_resources
 
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -38,7 +39,9 @@ class HasReferencedJavaScript:
         # If our JavaScript has not been loaded then load it now
         if not self._driver.execute_script(self._SCRIPT_LOADED_TEST_TEMPLATE.format(class_name=class_name)):
             # Read JavaScript from package resources
-            stream = pkg_resources.resource_stream(__package__, f'js/PySeExt.{class_name}.js')
+            stream = pkg_resources.resource_stream(__package__, path.join('js', f'PySeExt.{class_name}.js'))
+
+            self._logger.debug("Loading JavaScript from '%s'", stream.name)
             self._driver.execute_script(str(stream.read(), encoding = "utf-8"))
 
             # Wait for it to the loaded
