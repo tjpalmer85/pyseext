@@ -74,9 +74,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root_id (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
 
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found
@@ -100,9 +99,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root (str, optional): The id of the container within which to perform the query.
+                                  If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -117,9 +115,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root (str, optional): The id of the container within which to perform the query.
+                                  If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -138,9 +135,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root (str, optional): The id of the container within which to perform the query.
+                                  If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -250,9 +246,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root_id (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
 
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found
@@ -276,9 +271,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root (str, optional): The id of the container within which to perform the query.
+                                  If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -293,9 +287,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root (str, optional): The id of the container within which to perform the query.
+                                  If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -314,9 +307,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional):
-                The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            root (str, optional): The id of the container within which to perform the query.
+                                  If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -392,10 +384,10 @@ class ComponentQuery(HasReferencedJavaScript):
 <dl>
 <dt><strong><code>cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The query to execute</dd>
+<dt><strong><code>root_id</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The id of the container within which to perform the query.
+If omitted, all components within the document are included in the search.</dd>
 </dl>
-<p>root_id (str, optional):
-The id of the container within which to perform the query.
-If omitted, all components within the document are included in the search.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>list[WebElement]</code></dt>
@@ -410,9 +402,8 @@ If omitted, all components within the document are included in the search.</p>
 
     Args:
         cq (str): The query to execute
-        root_id (str, optional):
-            The id of the container within which to perform the query.
-            If omitted, all components within the document are included in the search.
+        root_id (str, optional): The id of the container within which to perform the query.
+                                 If omitted, all components within the document are included in the search.
 
     Returns:
         list[WebElement]: An array of DOM elements that match the query or an empty array if not found
@@ -441,9 +432,9 @@ If omitted, all components within the document are included in the search.</p>
 <dl>
 <dt><strong><code>cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The query to execute</dd>
-<dt>root (str, optional):</dt>
-<dt>The id of the container within which to perform the query.</dt>
-<dt>If omitted, all components within the document are included in the search.</dt>
+<dt><strong><code>root</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The id of the container within which to perform the query.
+If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
 <dd>Number of seconds before timing out (default 10)</dd>
 </dl>
@@ -461,9 +452,8 @@ If omitted, all components within the document are included in the search.</p>
 
     Args:
         cq (str): The query to execute
-        root (str, optional):
-            The id of the container within which to perform the query.
-            If omitted, all components within the document are included in the search.
+        root (str, optional): The id of the container within which to perform the query.
+                              If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
 
     Returns:
@@ -483,9 +473,9 @@ If there are multiple matches then an error is thrown.</p>
 <dl>
 <dt><strong><code>cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The query to execute</dd>
-<dt>root (str, optional):</dt>
-<dt>The id of the container within which to perform the query.</dt>
-<dt>If omitted, all components within the document are included in the search.</dt>
+<dt><strong><code>root</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The id of the container within which to perform the query.
+If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
 <dd>Number of seconds before timing out (default 10)</dd>
 </dl>
@@ -504,9 +494,8 @@ If there are multiple matches then an error is thrown.</p>
 
     Args:
         cq (str): The query to execute
-        root (str, optional):
-            The id of the container within which to perform the query.
-            If omitted, all components within the document are included in the search.
+        root (str, optional): The id of the container within which to perform the query.
+                              If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
 
     Returns:
@@ -530,9 +519,9 @@ If there are multiple matches then an error is thrown.</p>
 <dl>
 <dt><strong><code>cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The query to execute</dd>
-<dt>root (str, optional):</dt>
-<dt>The id of the container within which to perform the query.</dt>
-<dt>If omitted, all components within the document are included in the search.</dt>
+<dt><strong><code>root</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The id of the container within which to perform the query.
+If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
 <dd>Number of seconds before timing out (default 10)</dd>
 </dl>
@@ -551,9 +540,8 @@ If there are multiple matches then an error is thrown.</p>
 
     Args:
         cq (str): The query to execute
-        root (str, optional):
-            The id of the container within which to perform the query.
-            If omitted, all components within the document are included in the search.
+        root (str, optional): The id of the container within which to perform the query.
+                              If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
 
     Returns:
