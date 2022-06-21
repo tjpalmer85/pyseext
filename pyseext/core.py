@@ -122,11 +122,12 @@ class Core(HasReferencedJavaScript):
         def __call__(self, driver):
             """Method that determines whether Ext.isDomReady
             """
-            is_call_in_progress = Core(driver).is_ajax_request_in_progress()
+            core = Core(driver)
+            is_call_in_progress = core.is_ajax_request_in_progress()
 
             if not is_call_in_progress and self._recheck_time_if_false:
                 time.sleep(self._recheck_time_if_false)
-                is_call_in_progress = Core(driver).is_ajax_request_in_progress()
+                is_call_in_progress = core.is_ajax_request_in_progress()
 
             return not is_call_in_progress
 

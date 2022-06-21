@@ -2,6 +2,7 @@
 Module that contains our TreeHelper class.
 """
 import logging
+import time
 from typing import Union
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -57,15 +58,21 @@ class TreeHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def wait_until_tree_not_loading(self, tree_cq: str, timeout: float = 30):
+    def wait_until_tree_not_loading(self,
+                                    tree_cq: str,
+                                    timeout: float = 30,
+                                    poll_frequecy: float = 0.2,
+                                    recheck_time_if_false: float = 0.2):
         """Waits until the tree identified by the component query is not loading,
         or the timeout is hit
 
         Args:
             tree_cq (str): The component query for the tree.
-            timeout (int, optional): The number of seconds to wait before erroring. Defaults to 30.
+            timeout (float, optional): The number of seconds to wait before erroring. Defaults to 30.
+            poll_frequency (float, optional): Number of seconds to poll. Defaults to 0.2.
+            recheck_time_if_false (float, optional): If we get a result such that no Ajax calls are in progress, this is the amount of time to wait to check again. Defaults to 0.2.
         """
-        WebDriverWait(self._driver, timeout).until(TreeHelper.TreeNotLoadingExpectation(tree_cq))
+        WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(TreeHelper.TreeNotLoadingExpectation(tree_cq, recheck_time_if_false))
 
     def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -> WebElement:
         """Finds a node by text or data, then the child HTML element that holds it's icon.
@@ -238,17 +245,29 @@ class TreeHelper(HasReferencedJavaScript):
         """ An expectation for checking that a tree is not loading.
         """
 
-        def __init__(self, tree_cq: str):
+        def __init__(self, tree_cq: str, recheck_time_if_false: Union[float, None] = None):
             """Initialises an instance of this class.
+
+            Args:
+                tree_cq (str): The CQ used to find the tree
+                recheck_time_if_false (float, optional): If we get a value of false (so there is not a call in progress),
+                                                         this is the amount of time to wait to check again. Defaults to None.
             """
             self._tree_cq = tree_cq
+            self._recheck_time_if_false = recheck_time_if_false
 
         def __call__(self, driver):
             """Method that determines whether the tree is loading.
             """
             tree_helper = TreeHelper(driver)
 
-            return not tree_helper.is_tree_loading(self._tree_cq)
+            is_tree_loading = tree_helper.is_tree_loading(self._tree_cq)
+
+            if not is_tree_loading and self._recheck_time_if_false:
+                time.sleep(self._recheck_time_if_false)
+                is_tree_loading = tree_helper.is_tree_loading(self._tree_cq)
+
+            return not is_tree_loading
 
     class NodeFoundExpectation():
         """ An expectation for checking that a node has been found
