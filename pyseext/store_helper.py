@@ -20,7 +20,7 @@ class StoreHelper(HasReferencedJavaScript):
     """The script template to use to call the asynchronous JavaScript method PySeExt.StoreHelper.waitForStoreLoaded
     Requires the inserts: {store_holder_cq}
 
-    Use the `get_async_script_content` method call it."""
+    Use our base classes `get_async_script_content` method call it."""
 
     _RELOAD_STORE_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.reload('{store_holder_cq}')"
     """The script template to use to call the JavaScript method PySeExt.StoreHelper.reload
