@@ -21,7 +21,8 @@ class HasReferencedJavaScript:
     """The script loading timeout to use. Defaults to 10 seconds."""
 
     _ASYNC_SCRIPT_TEMPLATE: str = "var {callback_parameter_name} = arguments[arguments.length - 1]; {script}"
-    """The script template to use to call some Asynchronous JavaScript, that has a callback for its last parameter."""
+    """The script template to use to call some Asynchronous JavaScript, that has a callback for its last parameter.
+    Requires the inserts: {callback_parameter_name}, {script}"""
 
     def __init__(self, driver: WebDriver, logger: Logger):
         """Initialises an instance of this class

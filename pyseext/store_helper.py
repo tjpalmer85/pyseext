@@ -13,13 +13,18 @@ class StoreHelper(HasReferencedJavaScript):
 
     # Class variables
     _RESET_STORE_LOAD_COUNT_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.resetStoreLoadCount('{store_holder_cq}')"
-    """The script template to use to call the JavaScript method PySeExt.StoreHelper.resetStoreLoadCount"""
+    """The script template to use to call the JavaScript method PySeExt.StoreHelper.resetStoreLoadCount
+    Requires the inserts: {store_holder_cq}"""
 
     _WAIT_FOR_STORE_LOADED_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.waitForStoreLoaded('{store_holder_cq}', callback)"
-    """The script template to use to call the asynchronous JavaScript method PySeExt.StoreHelper.waitForStoreLoaded"""
+    """The script template to use to call the asynchronous JavaScript method PySeExt.StoreHelper.waitForStoreLoaded
+    Requires the inserts: {store_holder_cq}
+
+    Use the `get_async_script_content` method call it."""
 
     _RELOAD_STORE_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.reload('{store_holder_cq}')"
-    """The script template to use to call the JavaScript method PySeExt.StoreHelper.reload"""
+    """The script template to use to call the JavaScript method PySeExt.StoreHelper.reload
+    Requires the inserts: {store_holder_cq}"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class

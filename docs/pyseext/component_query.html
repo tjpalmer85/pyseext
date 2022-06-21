@@ -46,10 +46,12 @@ class ComponentQuery(HasReferencedJavaScript):
 
     # Class variables
     _QUERY_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to execute a component query&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query.
+    Requires the inserts: {cq}&#34;&#34;&#34;
 
     _QUERY_TEMPLATE_WITH_ROOT: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to execute a component query under a specified root&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query under a specified root.
+    Requires the inserts: {cq}, {root_id}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -220,10 +222,12 @@ class ComponentQuery(HasReferencedJavaScript):
 
     # Class variables
     _QUERY_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to execute a component query&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query.
+    Requires the inserts: {cq}&#34;&#34;&#34;
 
     _QUERY_TEMPLATE_WITH_ROOT: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to execute a component query under a specified root&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query under a specified root.
+    Requires the inserts: {cq}, {root_id}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class

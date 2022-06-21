@@ -15,10 +15,12 @@ class MenuHelper:
 
     # Class variables
     _ENABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=false]'
-    """The component query template to use to find an enabled menu item"""
+    """The component query template to use to find an enabled menu item.
+    Requires the inserts: {text}"""
 
     _DISABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=true]'
-    """The component query template to use to find a disbled menu item"""
+    """The component query template to use to find a disbled menu item.
+    Requires the inserts: {text}"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class

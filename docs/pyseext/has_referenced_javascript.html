@@ -50,7 +50,8 @@ class HasReferencedJavaScript:
     &#34;&#34;&#34;The script loading timeout to use. Defaults to 10 seconds.&#34;&#34;&#34;
 
     _ASYNC_SCRIPT_TEMPLATE: str = &#34;var {callback_parameter_name} = arguments[arguments.length - 1]; {script}&#34;
-    &#34;&#34;&#34;The script template to use to call some Asynchronous JavaScript, that has a callback for its last parameter.&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call some Asynchronous JavaScript, that has a callback for its last parameter.
+    Requires the inserts: {callback_parameter_name}, {script}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver, logger: Logger):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -162,7 +163,8 @@ class HasReferencedJavaScript:
     &#34;&#34;&#34;The script loading timeout to use. Defaults to 10 seconds.&#34;&#34;&#34;
 
     _ASYNC_SCRIPT_TEMPLATE: str = &#34;var {callback_parameter_name} = arguments[arguments.length - 1]; {script}&#34;
-    &#34;&#34;&#34;The script template to use to call some Asynchronous JavaScript, that has a callback for its last parameter.&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call some Asynchronous JavaScript, that has a callback for its last parameter.
+    Requires the inserts: {callback_parameter_name}, {script}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver, logger: Logger):
         &#34;&#34;&#34;Initialises an instance of this class

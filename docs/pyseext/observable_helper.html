@@ -42,7 +42,10 @@ class ObservableHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     _WAIT_FOR_EVENT_TEMPLATE: str = &#34;return globalThis.PySeExt.ObservableHelper.waitForEvent(&#39;{component_cq}&#39;, &#39;{event_name}&#39;, {timeout}, {member_accessor}, callback)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.ObservableHelper.waitForEvent&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the asynchronous JavaScript method PySeExt.ObservableHelper.waitForEvent
+    Requires the inserts: {component_cq}, {event_name}, {timeout}, {member_accessor}
+
+    Use our base classes `get_async_script_content` method call it..&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class.
@@ -167,7 +170,10 @@ class ObservableHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;
 
     _WAIT_FOR_EVENT_TEMPLATE: str = &#34;return globalThis.PySeExt.ObservableHelper.waitForEvent(&#39;{component_cq}&#39;, &#39;{event_name}&#39;, {timeout}, {member_accessor}, callback)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.ObservableHelper.waitForEvent&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the asynchronous JavaScript method PySeExt.ObservableHelper.waitForEvent
+    Requires the inserts: {component_cq}, {event_name}, {timeout}, {member_accessor}
+
+    Use our base classes `get_async_script_content` method call it..&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class.

@@ -45,13 +45,16 @@ class ButtonHelper:
 
     # Class variables
     _ENABLED_BUTTON_TEMPLATE: str = &#39;button[text=&#34;{text}&#34;][disabled=false]&#39;
-    &#34;&#34;&#34;The component query template to use to find an enabled button&#34;&#34;&#34;
+    &#34;&#34;&#34;The component query template to use to find an enabled button.
+    Requires the inserts: {text}&#34;&#34;&#34;
 
     _DISABLED_BUTTON_TEMPLATE: str = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
-    &#34;&#34;&#34;The component query template to use to find a disabled button&#34;&#34;&#34;
+    &#34;&#34;&#34;The component query template to use to find a disabled button.
+    Requires the inserts: {text}&#34;&#34;&#34;
 
     _MESSAGEBOX_BUTTON_TEMPLATE: str = &#39;messagebox{{isVisible(true)}} button[text=&#34;{text}&#34;]&#39;
-    &#34;&#34;&#34;The component query template to use to find a button on a visible message box&#34;&#34;&#34;
+    &#34;&#34;&#34;The component query template to use to find a button on a visible message box.
+    Requires the inserts: {text}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -158,13 +161,16 @@ class ButtonHelper:
 
     # Class variables
     _ENABLED_BUTTON_TEMPLATE: str = &#39;button[text=&#34;{text}&#34;][disabled=false]&#39;
-    &#34;&#34;&#34;The component query template to use to find an enabled button&#34;&#34;&#34;
+    &#34;&#34;&#34;The component query template to use to find an enabled button.
+    Requires the inserts: {text}&#34;&#34;&#34;
 
     _DISABLED_BUTTON_TEMPLATE: str = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
-    &#34;&#34;&#34;The component query template to use to find a disabled button&#34;&#34;&#34;
+    &#34;&#34;&#34;The component query template to use to find a disabled button.
+    Requires the inserts: {text}&#34;&#34;&#34;
 
     _MESSAGEBOX_BUTTON_TEMPLATE: str = &#39;messagebox{{isVisible(true)}} button[text=&#34;{text}&#34;]&#39;
-    &#34;&#34;&#34;The component query template to use to find a button on a visible message box&#34;&#34;&#34;
+    &#34;&#34;&#34;The component query template to use to find a button on a visible message box.
+    Requires the inserts: {text}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class

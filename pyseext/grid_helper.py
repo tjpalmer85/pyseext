@@ -23,16 +23,20 @@ class GridHelper(HasReferencedJavaScript):
 
     # Private class variables
     _GET_COLUMN_HEADER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_data_index}')"
-    """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeader"""
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeader
+    Requires the inserts: {grid_cq}, {column_text_or_data_index}"""
 
     _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_data_index}')"
-    """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeaderTrigger"""
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeaderTrigger
+    Requires the inserts: {grid_cq}, {column_text_or_data_index}"""
 
     _CLEAR_SELECTION_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
-    """The script template to use to call the JavaScript method PySeExt.GridHelper.clearSelection"""
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.clearSelection
+    Requires the inserts: {grid_cq}"""
 
     _GET_ROW_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
-    """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow"""
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow
+    Requires the inserts: {grid_cq}, {row_data}"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class

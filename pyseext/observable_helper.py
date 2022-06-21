@@ -13,7 +13,10 @@ class ObservableHelper(HasReferencedJavaScript):
     """
 
     _WAIT_FOR_EVENT_TEMPLATE: str = "return globalThis.PySeExt.ObservableHelper.waitForEvent('{component_cq}', '{event_name}', {timeout}, {member_accessor}, callback)"
-    """The script template to use to call the JavaScript method PySeExt.ObservableHelper.waitForEvent"""
+    """The script template to use to call the asynchronous JavaScript method PySeExt.ObservableHelper.waitForEvent
+    Requires the inserts: {component_cq}, {event_name}, {timeout}, {member_accessor}
+
+    Use our base classes `get_async_script_content` method call it.."""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class.

@@ -16,13 +16,16 @@ class ButtonHelper:
 
     # Class variables
     _ENABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=false]'
-    """The component query template to use to find an enabled button"""
+    """The component query template to use to find an enabled button.
+    Requires the inserts: {text}"""
 
     _DISABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=true]'
-    """The component query template to use to find a disabled button"""
+    """The component query template to use to find a disabled button.
+    Requires the inserts: {text}"""
 
     _MESSAGEBOX_BUTTON_TEMPLATE: str = 'messagebox{{isVisible(true)}} button[text="{text}"]'
-    """The component query template to use to find a button on a visible message box"""
+    """The component query template to use to find a button on a visible message box.
+    Requires the inserts: {text}"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class

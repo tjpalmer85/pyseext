@@ -42,13 +42,16 @@ class LocalStorageHelper(HasReferencedJavaScript):
 
     # Class variables
     _STORE_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.storeValue(&#39;{key}&#39;, {value})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.storeValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.storeValue
+    Requires the inserts: {key}, {value}&#34;&#34;&#34;
 
     _CLEAR_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.clearValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.clearValue
+    Requires the inserts: {key}&#34;&#34;&#34;
 
     _GET_STORED_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.getStoredValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.getStoredValue
+    Requires the inserts: {key}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -140,13 +143,16 @@ class LocalStorageHelper(HasReferencedJavaScript):
 
     # Class variables
     _STORE_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.storeValue(&#39;{key}&#39;, {value})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.storeValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.storeValue
+    Requires the inserts: {key}, {value}&#34;&#34;&#34;
 
     _CLEAR_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.clearValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.clearValue
+    Requires the inserts: {key}&#34;&#34;&#34;
 
     _GET_STORED_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.getStoredValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.getStoredValue
+    Requires the inserts: {key}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class

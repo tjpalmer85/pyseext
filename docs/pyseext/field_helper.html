@@ -48,25 +48,32 @@ class FieldHelper(HasReferencedJavaScript):
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.findFieldInputElement&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.findFieldInputElement
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _GET_FIELD_XTYPE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.getFieldXType(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldXType&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldXType
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _GET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.getFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _SET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.setFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue
+    Requires the inserts: {form_cq}, {name}, {value}&#34;&#34;&#34;
 
     _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.isRemotelyFilteredComboBox&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.isRemotelyFilteredComboBox
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _FOCUS_FIELD_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.focusField(&#39;{form_cq}&#39;, {index_or_name})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField
+    Requires the inserts: {form_cq}, {index_or_name}&#34;&#34;&#34;
 
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue
+    Requires the inserts: {form_cq}, {name}, {data}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -464,25 +471,32 @@ class FieldHelper(HasReferencedJavaScript):
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.findFieldInputElement&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.findFieldInputElement
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _GET_FIELD_XTYPE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.getFieldXType(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldXType&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldXType
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _GET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.getFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _SET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.setFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue
+    Requires the inserts: {form_cq}, {name}, {value}&#34;&#34;&#34;
 
     _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.isRemotelyFilteredComboBox&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.isRemotelyFilteredComboBox
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
     _FOCUS_FIELD_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.focusField(&#39;{form_cq}&#39;, {index_or_name})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField
+    Requires the inserts: {form_cq}, {index_or_name}&#34;&#34;&#34;
 
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
-    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue&#34;&#34;&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue
+    Requires the inserts: {form_cq}, {name}, {data}&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class

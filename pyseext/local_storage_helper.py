@@ -13,13 +13,16 @@ class LocalStorageHelper(HasReferencedJavaScript):
 
     # Class variables
     _STORE_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.storeValue('{key}', {value})"
-    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.storeValue"""
+    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.storeValue
+    Requires the inserts: {key}, {value}"""
 
     _CLEAR_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.clearValue('{key}')"
-    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.clearValue"""
+    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.clearValue
+    Requires the inserts: {key}"""
 
     _GET_STORED_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.getStoredValue('{key}')"
-    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.getStoredValue"""
+    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.getStoredValue
+    Requires the inserts: {key}"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class

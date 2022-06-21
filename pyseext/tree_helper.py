@@ -18,34 +18,44 @@ class TreeHelper(HasReferencedJavaScript):
 
     # Class variables
     _IS_TREE_LOADING_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.isTreeLoading('{tree_cq}')"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.isTreeLoading"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.isTreeLoading
+    Requires the inserts: {tree_cq}"""
 
     _GET_NODE_EXPANDER_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeExpanderByText('{tree_cq}', '{node_text}')"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeExpanderByText"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeExpanderByText
+    Requires the inserts: {tree_cq}, {node_text}"""
 
     _GET_NODE_ICON_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeIconByText('{tree_cq}', '{node_text}')"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeIconByText"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeIconByText
+    Requires the inserts: {tree_cq}, {node_text}"""
 
     _GET_NODE_TEXT_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeTextByText('{tree_cq}', '{node_text}')"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeTextByText"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeTextByText
+    Requires the inserts: {tree_cq}, {node_text}"""
 
     _GET_NODE_EXPANDER_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeExpanderByData('{tree_cq}', {node_data})"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeExpanderByData"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeExpanderByData
+    Requires the inserts: {tree_cq}, {node_data}"""
 
     _GET_NODE_ICON_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeIconByData('{tree_cq}', {node_data})"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeIconByData"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeIconByData
+    Requires the inserts: {tree_cq}, {node_data}"""
 
     _GET_NODE_TEXT_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeTextByData('{tree_cq}', {node_data})"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeTextByData"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeTextByData
+    Requires the inserts: {tree_cq}, {node_data}"""
 
     _GET_NODE_ELEMENT_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeElementByData('{tree_cq}', {node_data}, '{css_query}')"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElementByData"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElementByData
+    Requires the inserts: {tree_cq}, {node_data}. {css_query}"""
 
     _RELOAD_NODE_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.reloadNodeByText('{tree_cq}', '{node_text}')"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNodeByText"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNodeByText
+    Requires the inserts: {tree_cq}, {node_text}"""
 
     _RELOAD_NODE_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.reloadNodeByData('{tree_cq}', {node_data})"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNodeByData"""
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNodeByData
+    Requires the inserts: {tree_cq}, {node_data}"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
