@@ -50,25 +50,25 @@ class FieldHelper(HasReferencedJavaScript):
         """Initialises an instance of this class
 
         Args:
-            driver (selenium.webdriver): The webdriver to use
+            driver (WebDriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
-        """The Logger instance for this class"""
+        """The Logger instance for this class instance"""
 
         self._driver = driver
-        """The WebDriver instance for this class"""
+        """The WebDriver instance for this class instance"""
 
         self._action_chains = ActionChains(driver)
-        """The ActionChains instance for this class"""
+        """The ActionChains instance for this class instance"""
 
         self._core = Core(driver)
-        """The `Core` instance for this class"""
+        """The `Core` instance for this class instance"""
 
         self._input_helper = InputHelper(driver)
-        """The `InputHelper` instance for this class"""
+        """The `InputHelper` instance for this class instance"""
 
         self._store_helper = StoreHelper(driver)
-        """The `StoreHelper` instance for this class"""
+        """The `StoreHelper` instance for this class instance"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

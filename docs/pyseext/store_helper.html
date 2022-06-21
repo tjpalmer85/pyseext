@@ -49,7 +49,7 @@ class StoreHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the asynchronous JavaScript method PySeExt.StoreHelper.waitForStoreLoaded
     Requires the inserts: {store_holder_cq}
 
-    Use the `get_async_script_content` method call it.&#34;&#34;&#34;
+    Use our base classes `get_async_script_content` method call it.&#34;&#34;&#34;
 
     _RELOAD_STORE_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.StoreHelper.reload
@@ -59,13 +59,13 @@ class StoreHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
-            driver (selenium.webdriver): The webdriver to use
+            driver (WebDriver): The webdriver to use
         &#34;&#34;&#34;
         self._logger = logging.getLogger(__name__)
-        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+        &#34;&#34;&#34;The Logger instance for this class instance&#34;&#34;&#34;
 
         self._driver = driver
-        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
+        &#34;&#34;&#34;The WebDriver instance for this class instance&#34;&#34;&#34;
 
         # Initialise our base class
         super().__init__(driver, self._logger)
@@ -156,7 +156,7 @@ class StoreHelper(HasReferencedJavaScript):
 <p>Initialises an instance of this class</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>driver</code></strong> :&ensp;<code>selenium.webdriver</code></dt>
+<dt><strong><code>driver</code></strong> :&ensp;<code>WebDriver</code></dt>
 <dd>The webdriver to use</dd>
 </dl></div>
 <details class="source">
@@ -176,7 +176,7 @@ class StoreHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the asynchronous JavaScript method PySeExt.StoreHelper.waitForStoreLoaded
     Requires the inserts: {store_holder_cq}
 
-    Use the `get_async_script_content` method call it.&#34;&#34;&#34;
+    Use our base classes `get_async_script_content` method call it.&#34;&#34;&#34;
 
     _RELOAD_STORE_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.StoreHelper.reload
@@ -186,13 +186,13 @@ class StoreHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
-            driver (selenium.webdriver): The webdriver to use
+            driver (WebDriver): The webdriver to use
         &#34;&#34;&#34;
         self._logger = logging.getLogger(__name__)
-        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+        &#34;&#34;&#34;The Logger instance for this class instance&#34;&#34;&#34;
 
         self._driver = driver
-        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
+        &#34;&#34;&#34;The WebDriver instance for this class instance&#34;&#34;&#34;
 
         # Initialise our base class
         super().__init__(driver, self._logger)

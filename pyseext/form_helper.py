@@ -18,22 +18,22 @@ class FormHelper:
         """Initialises an instance of this class
 
         Args:
-            driver (selenium.webdriver): The webdriver to use
+            driver (WebDriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
-        """The Logger instance for this class"""
+        """The Logger instance for this class instance"""
 
         self._driver = driver
-        """The WebDriver instance for this class"""
+        """The WebDriver instance for this class instance"""
 
         self._button_helper = ButtonHelper(driver)
-        """The `ButtonHelper` instance for this class"""
+        """The `ButtonHelper` instance for this class instance"""
 
         self._field_helper = FieldHelper(driver)
-        """The `FieldHelper` instance for this class"""
+        """The `FieldHelper` instance for this class instance"""
 
         self._input_helper = InputHelper(driver)
-        """The `InputHelper` instance for this class"""
+        """The `InputHelper` instance for this class instance"""
 
     def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
         """Sets the values on the specified form panel.

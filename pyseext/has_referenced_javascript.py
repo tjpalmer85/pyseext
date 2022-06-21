@@ -28,14 +28,14 @@ class HasReferencedJavaScript:
         """Initialises an instance of this class
 
         Args:
-            driver (selenium.webdriver): The webdriver to use
+            driver (WebDriver): The webdriver to use
             logger (logging.Logger): The logger to use
         """
         self._driver = driver
-        """The WebDriver instance for this class"""
+        """The WebDriver instance for this class instance"""
 
         self._logger = logger
-        """The Logger instance for this class"""
+        """The Logger instance for this class instance"""
 
         self.ensure_javascript_loaded()
 

@@ -30,13 +30,13 @@ class StoreHelper(HasReferencedJavaScript):
         """Initialises an instance of this class
 
         Args:
-            driver (selenium.webdriver): The webdriver to use
+            driver (WebDriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
-        """The Logger instance for this class"""
+        """The Logger instance for this class instance"""
 
         self._driver = driver
-        """The WebDriver instance for this class"""
+        """The WebDriver instance for this class instance"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

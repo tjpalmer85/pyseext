@@ -31,17 +31,17 @@ class ButtonHelper:
         """Initialises an instance of this class
 
         Args:
-            driver (selenium.webdriver): The webdriver to use
+            driver (WebDriver): The webdriver to use
         """
         # Instance variables
         self._logger = logging.getLogger(__name__)
-        """The Logger instance for this class"""
+        """The Logger instance for this class instance"""
 
         self._cq = ComponentQuery(driver)
-        """The `ComponentQuery` instance for this class"""
+        """The `ComponentQuery` instance for this class instance"""
 
         self._action_chains = ActionChains(driver)
-        """The ActionChains instance for this class"""
+        """The ActionChains instance for this class instance"""
 
     def click_button(self, cq: str, root_id: Union[str, None] = None):
         """Finds a button using the supplied component query and clicks it.
