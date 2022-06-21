@@ -15,8 +15,13 @@ class HasReferencedJavaScript:
     # Class variables
     _SCRIPT_LOADED_TEST_TEMPLATE: str = \
         "return globalThis.Ext && globalThis.Ext.isDefined && globalThis.Ext.isDefined(globalThis.PySeExt && globalThis.PySeExt.{class_name})"
+    """The script template to use to determine whether the JavaScript for a class has been loaded"""
+
     _SCRIPT_LOAD_TIMEOUT: float = 10
+    """The script loading timeout to use. Defaults to 10 seconds."""
+
     _ASYNC_SCRIPT_TEMPLATE: str = "var {callback_parameter_name} = arguments[arguments.length - 1]; {script}"
+    """The script template to use to call some Asynchronous JavaScript, that has a callback for its last parameter."""
 
     def __init__(self, driver: WebDriver, logger: Logger):
         """Initialises an instance of this class
@@ -26,7 +31,11 @@ class HasReferencedJavaScript:
             logger (logging.Logger): The logger to use
         """
         self._driver = driver
+        """The WebDriver instance for this class"""
+
         self._logger = logger
+        """The Logger instance for this class"""
+
         self.ensure_javascript_loaded()
 
     def ensure_javascript_loaded(self):

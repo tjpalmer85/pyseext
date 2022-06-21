@@ -16,7 +16,10 @@ class Core(HasReferencedJavaScript):
 
     # Class variables
     _IS_DOM_READY: str = "return !!(globalThis.Ext && globalThis.Ext.isDomReady)"
+    """The script to use to access the JavaScript property 'Ext.IsDomReady'"""
+
     _IS_AJAX_REQUEST_IN_PROGRESS: str = "return globalThis.PySeExt.Core.isAjaxRequestInProgress()"
+    """The script to use to call the JavaScript method PySeExt.Core.isAjaxRequestInProgress"""
 
     # FIXME: Could use a means of injecting event sniffing perhaps?
     # .....: Using Ext.mixin.Observable.capture
@@ -32,7 +35,10 @@ class Core(HasReferencedJavaScript):
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

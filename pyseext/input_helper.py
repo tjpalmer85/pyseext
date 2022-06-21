@@ -15,7 +15,10 @@ class InputHelper():
     """
 
     TYPING_SLEEP_MINIMUM: float = 0.0001
+    """The minimum amount of time in seconds to wait between key presses when typing. Defaults to 0.0001 seconds."""
+
     TYPING_SLEEP_MAXIMUM: float = 0.002
+    """The maximum amount of time in seconds to wait between key presses when typing. Defaults to 0.002 seconds."""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -24,8 +27,13 @@ class InputHelper():
             driver (selenium.webdriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
+
         self._action_chains = ActionChains(driver)
+        """The ActionChains instance for this class"""
 
     def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False):
         """Types into an input element in a realistic manner.

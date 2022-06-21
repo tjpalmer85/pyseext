@@ -16,8 +16,13 @@ class ButtonHelper:
 
     # Class variables
     _ENABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=false]'
+    """The component query template to use to find an enabled button"""
+
     _DISABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=true]'
+    """The component query template to use to find a disabled button"""
+
     _MESSAGEBOX_BUTTON_TEMPLATE: str = 'messagebox{{isVisible(true)}} button[text="{text}"]'
+    """The component query template to use to find a button on a visible message box"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -27,8 +32,13 @@ class ButtonHelper:
         """
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._cq = ComponentQuery(driver)
+        """The `ComponentQuery` instance for this class"""
+
         self._action_chains = ActionChains(driver)
+        """The ActionChains instance for this class"""
 
     def click_button(self, cq: str, root_id: Union[str, None] = None):
         """Finds a button using the supplied component query and clicks it.

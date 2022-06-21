@@ -18,15 +18,34 @@ class TreeHelper(HasReferencedJavaScript):
 
     # Class variables
     _IS_TREE_LOADING_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.isTreeLoading('{tree_cq}')"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.isTreeLoading"""
+
     _GET_NODE_EXPANDER_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeExpanderByText('{tree_cq}', '{node_text}')"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeExpanderByText"""
+
     _GET_NODE_ICON_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeIconByText('{tree_cq}', '{node_text}')"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeIconByText"""
+
     _GET_NODE_TEXT_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeTextByText('{tree_cq}', '{node_text}')"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeTextByText"""
+
     _GET_NODE_EXPANDER_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeExpanderByData('{tree_cq}', {node_data})"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeExpanderByData"""
+
     _GET_NODE_ICON_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeIconByData('{tree_cq}', {node_data})"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeIconByData"""
+
     _GET_NODE_TEXT_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeTextByData('{tree_cq}', {node_data})"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeTextByData"""
+
     _GET_NODE_ELEMENT_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeElementByData('{tree_cq}', {node_data}, '{css_query}')"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElementByData"""
+
     _RELOAD_NODE_BY_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.reloadNodeByText('{tree_cq}', '{node_text}')"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNodeByText"""
+
     _RELOAD_NODE_BY_DATA_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.reloadNodeByData('{tree_cq}', {node_data})"
+    """The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNodeByData"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -35,9 +54,16 @@ class TreeHelper(HasReferencedJavaScript):
             driver (selenium.webdriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
+
         self._action_chains = ActionChains(driver)
+        """The ActionChains instance for this class"""
+
         self._core = Core(driver)
+        """The `Core` instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

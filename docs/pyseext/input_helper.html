@@ -44,7 +44,10 @@ class InputHelper():
     &#34;&#34;&#34;
 
     TYPING_SLEEP_MINIMUM: float = 0.0001
+    &#34;&#34;&#34;The minimum amount of time in seconds to wait between key presses when typing. Defaults to 0.0001 seconds.&#34;&#34;&#34;
+
     TYPING_SLEEP_MAXIMUM: float = 0.002
+    &#34;&#34;&#34;The maximum amount of time in seconds to wait between key presses when typing. Defaults to 0.002 seconds.&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -53,8 +56,13 @@ class InputHelper():
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._driver = driver
+        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
+
         self._action_chains = ActionChains(driver)
+        &#34;&#34;&#34;The ActionChains instance for this class&#34;&#34;&#34;
 
     def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False):
         &#34;&#34;&#34;Types into an input element in a realistic manner.
@@ -135,7 +143,10 @@ class InputHelper():
     &#34;&#34;&#34;
 
     TYPING_SLEEP_MINIMUM: float = 0.0001
+    &#34;&#34;&#34;The minimum amount of time in seconds to wait between key presses when typing. Defaults to 0.0001 seconds.&#34;&#34;&#34;
+
     TYPING_SLEEP_MAXIMUM: float = 0.002
+    &#34;&#34;&#34;The maximum amount of time in seconds to wait between key presses when typing. Defaults to 0.002 seconds.&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -144,8 +155,13 @@ class InputHelper():
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._driver = driver
+        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
+
         self._action_chains = ActionChains(driver)
+        &#34;&#34;&#34;The ActionChains instance for this class&#34;&#34;&#34;
 
     def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False):
         &#34;&#34;&#34;Types into an input element in a realistic manner.
@@ -199,11 +215,11 @@ class InputHelper():
 <dl>
 <dt id="pyseext.input_helper.InputHelper.TYPING_SLEEP_MAXIMUM"><code class="name">var <span class="ident">TYPING_SLEEP_MAXIMUM</span> : float</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The maximum amount of time in seconds to wait between key presses when typing. Defaults to 0.002 seconds.</p></div>
 </dd>
 <dt id="pyseext.input_helper.InputHelper.TYPING_SLEEP_MINIMUM"><code class="name">var <span class="ident">TYPING_SLEEP_MINIMUM</span> : float</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The minimum amount of time in seconds to wait between key presses when typing. Defaults to 0.0001 seconds.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>

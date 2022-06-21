@@ -13,8 +13,13 @@ class LocalStorageHelper(HasReferencedJavaScript):
 
     # Class variables
     _STORE_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.storeValue('{key}', {value})"
+    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.storeValue"""
+
     _CLEAR_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.clearValue('{key}')"
+    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.clearValue"""
+
     _GET_STORED_VALUE_TEMPLATE: str = "return globalThis.PySeExt.LocalStorageHelper.getStoredValue('{key}')"
+    """The script template to use to call the JavaScript method PySeExt.LocalStorageHelper.getStoredValue"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -23,7 +28,10 @@ class LocalStorageHelper(HasReferencedJavaScript):
             driver (selenium.webdriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

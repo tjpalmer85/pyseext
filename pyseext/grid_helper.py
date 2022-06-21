@@ -19,12 +19,20 @@ class GridHelper(HasReferencedJavaScript):
 
     # Public class properties
     GRID_CQ: str = "gridpanel"
+    """The component query to use to find a grid panel"""
 
     # Private class variables
     _GET_COLUMN_HEADER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_data_index}')"
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeader"""
+
     _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_data_index}')"
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeaderTrigger"""
+
     _CLEAR_SELECTION_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.clearSelection"""
+
     _GET_ROW_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -35,9 +43,16 @@ class GridHelper(HasReferencedJavaScript):
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
+
         self._cq = ComponentQuery(driver)
+        """The `ComponentQuery` instance for this class"""
+
         self._action_chains = ActionChains(driver)
+        """The ActionChains instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

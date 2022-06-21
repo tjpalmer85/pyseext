@@ -45,7 +45,10 @@ class Core(HasReferencedJavaScript):
 
     # Class variables
     _IS_DOM_READY: str = &#34;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#34;
+    &#34;&#34;&#34;The script to use to access the JavaScript property &#39;Ext.IsDomReady&#39;&#34;&#34;&#34;
+
     _IS_AJAX_REQUEST_IN_PROGRESS: str = &#34;return globalThis.PySeExt.Core.isAjaxRequestInProgress()&#34;
+    &#34;&#34;&#34;The script to use to call the JavaScript method PySeExt.Core.isAjaxRequestInProgress&#34;&#34;&#34;
 
     # FIXME: Could use a means of injecting event sniffing perhaps?
     # .....: Using Ext.mixin.Observable.capture
@@ -61,7 +64,10 @@ class Core(HasReferencedJavaScript):
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._driver = driver
+        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
 
         # Initialise our base class
         super().__init__(driver, self._logger)
@@ -213,7 +219,10 @@ class Core(HasReferencedJavaScript):
 
     # Class variables
     _IS_DOM_READY: str = &#34;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#34;
+    &#34;&#34;&#34;The script to use to access the JavaScript property &#39;Ext.IsDomReady&#39;&#34;&#34;&#34;
+
     _IS_AJAX_REQUEST_IN_PROGRESS: str = &#34;return globalThis.PySeExt.Core.isAjaxRequestInProgress()&#34;
+    &#34;&#34;&#34;The script to use to call the JavaScript method PySeExt.Core.isAjaxRequestInProgress&#34;&#34;&#34;
 
     # FIXME: Could use a means of injecting event sniffing perhaps?
     # .....: Using Ext.mixin.Observable.capture
@@ -229,7 +238,10 @@ class Core(HasReferencedJavaScript):
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._driver = driver
+        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
 
         # Initialise our base class
         super().__init__(driver, self._logger)

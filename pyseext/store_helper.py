@@ -13,8 +13,13 @@ class StoreHelper(HasReferencedJavaScript):
 
     # Class variables
     _RESET_STORE_LOAD_COUNT_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.resetStoreLoadCount('{store_holder_cq}')"
+    """The script template to use to call the JavaScript method PySeExt.StoreHelper.resetStoreLoadCount"""
+
     _WAIT_FOR_STORE_LOADED_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.waitForStoreLoaded('{store_holder_cq}', callback)"
+    """The script template to use to call the asynchronous JavaScript method PySeExt.StoreHelper.waitForStoreLoaded"""
+
     _RELOAD_STORE_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.reload('{store_holder_cq}')"
+    """The script template to use to call the JavaScript method PySeExt.StoreHelper.reload"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -23,7 +28,10 @@ class StoreHelper(HasReferencedJavaScript):
             driver (selenium.webdriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

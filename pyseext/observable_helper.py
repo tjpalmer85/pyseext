@@ -13,6 +13,7 @@ class ObservableHelper(HasReferencedJavaScript):
     """
 
     _WAIT_FOR_EVENT_TEMPLATE: str = "return globalThis.PySeExt.ObservableHelper.waitForEvent('{component_cq}', '{event_name}', {timeout}, {member_accessor}, callback)"
+    """The script template to use to call the JavaScript method PySeExt.ObservableHelper.waitForEvent"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class.
@@ -23,7 +24,10 @@ class ObservableHelper(HasReferencedJavaScript):
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

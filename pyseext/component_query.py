@@ -17,7 +17,10 @@ class ComponentQuery(HasReferencedJavaScript):
 
     # Class variables
     _QUERY_TEMPLATE: str = "return globalThis.PySeExt.ComponentQuery.query('{cq}')"
+    """The script template to use to execute a component query"""
+
     _QUERY_TEMPLATE_WITH_ROOT: str = "return globalThis.PySeExt.ComponentQuery.query('{cq}', '{root_id}')"
+    """The script template to use to execute a component query under a specified root"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -27,7 +30,10 @@ class ComponentQuery(HasReferencedJavaScript):
         """
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        """The logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

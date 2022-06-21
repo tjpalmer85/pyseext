@@ -50,10 +50,19 @@ class FormHelper:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._driver = driver
+        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
+
         self._button_helper = ButtonHelper(driver)
+        &#34;&#34;&#34;The `ButtonHelper` instance for this class&#34;&#34;&#34;
+
         self._field_helper = FieldHelper(driver)
+        &#34;&#34;&#34;The `FieldHelper` instance for this class&#34;&#34;&#34;
+
         self._input_helper = InputHelper(driver)
+        &#34;&#34;&#34;The `InputHelper` instance for this class&#34;&#34;&#34;
 
     def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
         &#34;&#34;&#34;Sets the values on the specified form panel.
@@ -138,10 +147,19 @@ class FormHelper:
             driver (selenium.webdriver): The webdriver to use
         &#34;&#34;&#34;
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._driver = driver
+        &#34;&#34;&#34;The WebDriver instance for this class&#34;&#34;&#34;
+
         self._button_helper = ButtonHelper(driver)
+        &#34;&#34;&#34;The `ButtonHelper` instance for this class&#34;&#34;&#34;
+
         self._field_helper = FieldHelper(driver)
+        &#34;&#34;&#34;The `FieldHelper` instance for this class&#34;&#34;&#34;
+
         self._input_helper = InputHelper(driver)
+        &#34;&#34;&#34;The `InputHelper` instance for this class&#34;&#34;&#34;
 
     def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
         &#34;&#34;&#34;Sets the values on the specified form panel.

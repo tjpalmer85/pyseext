@@ -44,7 +44,10 @@ class MenuHelper:
 
     # Class variables
     _ENABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=false]&#39;
+    &#34;&#34;&#34;The component query template to use to find an enabled menu item&#34;&#34;&#34;
+
     _DISABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=true]&#39;
+    &#34;&#34;&#34;The component query template to use to find a disbled menu item&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -55,8 +58,13 @@ class MenuHelper:
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._cq = ComponentQuery(driver)
+        &#34;&#34;&#34;The `ComponentQuery` instance for this class&#34;&#34;&#34;
+
         self._action_chains = ActionChains(driver)
+        &#34;&#34;&#34;The ActionChains instance for this class&#34;&#34;&#34;
 
     def click_menu_item(self, cq: str, root_id: Union[str, None] = None):
         &#34;&#34;&#34;Finds a menu item using the supplied component query and clicks it.
@@ -144,7 +152,10 @@ class MenuHelper:
 
     # Class variables
     _ENABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=false]&#39;
+    &#34;&#34;&#34;The component query template to use to find an enabled menu item&#34;&#34;&#34;
+
     _DISABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=true]&#39;
+    &#34;&#34;&#34;The component query template to use to find a disbled menu item&#34;&#34;&#34;
 
     def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
@@ -155,8 +166,13 @@ class MenuHelper:
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        &#34;&#34;&#34;The Logger instance for this class&#34;&#34;&#34;
+
         self._cq = ComponentQuery(driver)
+        &#34;&#34;&#34;The `ComponentQuery` instance for this class&#34;&#34;&#34;
+
         self._action_chains = ActionChains(driver)
+        &#34;&#34;&#34;The ActionChains instance for this class&#34;&#34;&#34;
 
     def click_menu_item(self, cq: str, root_id: Union[str, None] = None):
         &#34;&#34;&#34;Finds a menu item using the supplied component query and clicks it.

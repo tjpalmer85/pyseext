@@ -19,12 +19,25 @@ class FieldHelper(HasReferencedJavaScript):
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.findFieldInputElement('{form_cq}', '{name}')"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.findFieldInputElement"""
+
     _GET_FIELD_XTYPE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.getFieldXType('{form_cq}', '{name}')"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldXType"""
+
     _GET_FIELD_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.getFieldValue('{form_cq}', '{name}')"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue"""
+
     _SET_FIELD_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.setFieldValue('{form_cq}', '{name}', {value})"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue"""
+
     _IS_REMOTELY_FILTERED_COMBOBOX_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.isRemotelyFilteredComboBox('{form_cq}', '{name}')"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.isRemotelyFilteredComboBox"""
+
     _FOCUS_FIELD_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.focusField('{form_cq}', {index_or_name})"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField"""
+
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.selectComboBoxValue('{form_cq}', '{name}', {data})"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -33,11 +46,22 @@ class FieldHelper(HasReferencedJavaScript):
             driver (selenium.webdriver): The webdriver to use
         """
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._driver = driver
+        """The WebDriver instance for this class"""
+
         self._action_chains = ActionChains(driver)
+        """The ActionChains instance for this class"""
+
         self._core = Core(driver)
+        """The `Core` instance for this class"""
+
         self._input_helper = InputHelper(driver)
+        """The `InputHelper` instance for this class"""
+
         self._store_helper = StoreHelper(driver)
+        """The `StoreHelper` instance for this class"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)

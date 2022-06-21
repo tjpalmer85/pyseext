@@ -15,7 +15,10 @@ class MenuHelper:
 
     # Class variables
     _ENABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=false]'
+    """The component query template to use to find an enabled menu item"""
+
     _DISABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=true]'
+    """The component query template to use to find a disbled menu item"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -26,8 +29,13 @@ class MenuHelper:
 
         # Instance variables
         self._logger = logging.getLogger(__name__)
+        """The Logger instance for this class"""
+
         self._cq = ComponentQuery(driver)
+        """The `ComponentQuery` instance for this class"""
+
         self._action_chains = ActionChains(driver)
+        """The ActionChains instance for this class"""
 
     def click_menu_item(self, cq: str, root_id: Union[str, None] = None):
         """Finds a menu item using the supplied component query and clicks it.
