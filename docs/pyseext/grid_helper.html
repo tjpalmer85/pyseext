@@ -35,6 +35,7 @@ from typing import Union
 
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
@@ -54,7 +55,7 @@ class GridHelper(HasReferencedJavaScript):
     _CLEAR_SELECTION_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.clearSelection(&#39;{grid_cq}&#39;)&#34;
     _GET_ROW_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getRow(&#39;{grid_cq}&#39;, {row_data})&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -403,7 +404,7 @@ class GridHelper(HasReferencedJavaScript):
 <dl>
 <dt id="pyseext.grid_helper.GridHelper"><code class="flex name class">
 <span>class <span class="ident">GridHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with interacting with Ext grid panels</p>
@@ -430,7 +431,7 @@ class GridHelper(HasReferencedJavaScript):
     _CLEAR_SELECTION_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.clearSelection(&#39;{grid_cq}&#39;)&#34;
     _GET_ROW_TEMPLATE: str = &#34;return globalThis.PySeExt.GridHelper.getRow(&#39;{grid_cq}&#39;, {row_data})&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:

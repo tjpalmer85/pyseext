@@ -35,6 +35,7 @@ import logging
 from typing import Union
 
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 
 from pyseext.component_query import ComponentQuery
 
@@ -47,7 +48,7 @@ class ButtonHelper:
     _DISABLED_BUTTON_TEMPLATE: str = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
     _MESSAGEBOX_BUTTON_TEMPLATE: str = &#39;messagebox{{isVisible(true)}} button[text=&#34;{text}&#34;]&#39;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -127,7 +128,7 @@ class ButtonHelper:
 <dl>
 <dt id="pyseext.button_helper.ButtonHelper"><code class="flex name class">
 <span>class <span class="ident">ButtonHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with interacting with Ext buttons</p>
@@ -150,7 +151,7 @@ class ButtonHelper:
     _DISABLED_BUTTON_TEMPLATE: str = &#39;button[text=&#34;{text}&#34;][disabled=true]&#39;
     _MESSAGEBOX_BUTTON_TEMPLATE: str = &#39;messagebox{{isVisible(true)}} button[text=&#34;{text}&#34;]&#39;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:

@@ -31,6 +31,9 @@
 Module that contains our StoreHelper class.
 &#34;&#34;&#34;
 import logging
+
+from selenium.webdriver.remote.webdriver import WebDriver
+
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class StoreHelper(HasReferencedJavaScript):
@@ -42,7 +45,7 @@ class StoreHelper(HasReferencedJavaScript):
     _WAIT_FOR_STORE_LOADED_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.waitForStoreLoaded(&#39;{store_holder_cq}&#39;, callback)&#34;
     _RELOAD_STORE_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -133,7 +136,7 @@ class StoreHelper(HasReferencedJavaScript):
 <dl>
 <dt id="pyseext.store_helper.StoreHelper"><code class="flex name class">
 <span>class <span class="ident">StoreHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with using stores, through Ext's interfaces.</p>
@@ -156,7 +159,7 @@ class StoreHelper(HasReferencedJavaScript):
     _WAIT_FOR_STORE_LOADED_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.waitForStoreLoaded(&#39;{store_holder_cq}&#39;, callback)&#34;
     _RELOAD_STORE_TEMPLATE: str = &#34;return globalThis.PySeExt.StoreHelper.reload(&#39;{store_holder_cq}&#39;)&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:

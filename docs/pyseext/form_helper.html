@@ -33,6 +33,8 @@ Module that contains our FormHelper class.
 import logging
 from typing import Union
 
+from selenium.webdriver.remote.webdriver import WebDriver
+
 from pyseext.field_helper import FieldHelper
 from pyseext.button_helper import ButtonHelper
 from pyseext.input_helper import InputHelper
@@ -41,7 +43,7 @@ class FormHelper:
     &#34;&#34;&#34;A class to help with interacting with Ext form panels and forms
     &#34;&#34;&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -111,7 +113,7 @@ class FormHelper:
 <dl>
 <dt id="pyseext.form_helper.FormHelper"><code class="flex name class">
 <span>class <span class="ident">FormHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with interacting with Ext form panels and forms</p>
@@ -129,7 +131,7 @@ class FormHelper:
     &#34;&#34;&#34;A class to help with interacting with Ext form panels and forms
     &#34;&#34;&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:

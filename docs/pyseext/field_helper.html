@@ -31,10 +31,10 @@
 Module that contains our FieldHelper class.
 &#34;&#34;&#34;
 import logging
-import time
 from typing import Union, Any
 
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
@@ -55,7 +55,7 @@ class FieldHelper(HasReferencedJavaScript):
     _FOCUS_FIELD_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.focusField(&#39;{form_cq}&#39;, {index_or_name})&#34;
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -420,7 +420,7 @@ class FieldHelper(HasReferencedJavaScript):
 <dl>
 <dt id="pyseext.field_helper.FieldHelper"><code class="flex name class">
 <span>class <span class="ident">FieldHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with interacting with Ext fields</p>
@@ -447,7 +447,7 @@ class FieldHelper(HasReferencedJavaScript):
     _FOCUS_FIELD_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.focusField(&#39;{form_cq}&#39;, {index_or_name})&#34;
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:

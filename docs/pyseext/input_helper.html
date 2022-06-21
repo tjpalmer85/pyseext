@@ -36,6 +36,7 @@ from typing import Union
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 class InputHelper():
@@ -45,7 +46,7 @@ class InputHelper():
     TYPING_SLEEP_MINIMUM: float = 0.0001
     TYPING_SLEEP_MAXIMUM: float = 0.002
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -115,7 +116,7 @@ class InputHelper():
 <dl>
 <dt id="pyseext.input_helper.InputHelper"><code class="flex name class">
 <span>class <span class="ident">InputHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with user input.</p>
@@ -136,7 +137,7 @@ class InputHelper():
     TYPING_SLEEP_MINIMUM: float = 0.0001
     TYPING_SLEEP_MAXIMUM: float = 0.002
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:

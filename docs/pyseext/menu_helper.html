@@ -34,6 +34,7 @@ import logging
 from typing import Union
 
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webdriver import WebDriver
 
 from pyseext.component_query import ComponentQuery
 
@@ -45,7 +46,7 @@ class MenuHelper:
     _ENABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=false]&#39;
     _DISABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=true]&#39;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -123,7 +124,7 @@ class MenuHelper:
 <dl>
 <dt id="pyseext.menu_helper.MenuHelper"><code class="flex name class">
 <span>class <span class="ident">MenuHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with interacting with Ext menus and menu items</p>
@@ -145,7 +146,7 @@ class MenuHelper:
     _ENABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=false]&#39;
     _DISABLED_MENU_ITEM_TEMPLATE: str = &#39;menuitem[text=&#34;{text}&#34;][disabled=true]&#39;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:

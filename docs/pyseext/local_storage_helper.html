@@ -34,6 +34,8 @@ import logging
 from typing import Any
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
+from selenium.webdriver.remote.webdriver import WebDriver
+
 class LocalStorageHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with using local storage, through Ext&#39;s interfaces.
     &#34;&#34;&#34;
@@ -43,7 +45,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
     _CLEAR_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
     _GET_STORED_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
@@ -110,7 +112,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
 <dl>
 <dt id="pyseext.local_storage_helper.LocalStorageHelper"><code class="flex name class">
 <span>class <span class="ident">LocalStorageHelper</span></span>
-<span>(</span><span>driver)</span>
+<span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A class to help with using local storage, through Ext's interfaces.</p>
@@ -133,7 +135,7 @@ class LocalStorageHelper(HasReferencedJavaScript):
     _CLEAR_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.clearValue(&#39;{key}&#39;)&#34;
     _GET_STORED_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.LocalStorageHelper.getStoredValue(&#39;{key}&#39;)&#34;
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         &#34;&#34;&#34;Initialises an instance of this class
 
         Args:
