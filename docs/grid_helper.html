@@ -26,7 +26,6 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L1-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Module that contains our GridHelper class.
@@ -437,7 +436,6 @@ class GridHelper(HasReferencedJavaScript):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L16-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class GridHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with interacting with Ext grid panels
@@ -851,7 +849,6 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L133-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check_columns_are_hidden(self, grid_cq: str, column_texts_or_data_indexes: list[str]) -&gt; list[WebElement]:
     &#34;&#34;&#34;Checks that the specified columns are all hidden on the specified grid.
@@ -892,7 +889,6 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L113-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check_columns_are_visible(self, grid_cq: str, column_text_or_data_indexes: list[str]) -&gt; list[WebElement]:
     &#34;&#34;&#34;Checks that the specified columns are all visible on the specified grid.
@@ -930,7 +926,6 @@ This will only work if the grid supports deselection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L211-L227" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clear_selection(self, grid_cq: str):
     &#34;&#34;&#34; Clears the current selection.
@@ -967,7 +962,6 @@ The column must be visible.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L153-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def click_column_header(self, grid_cq: str, column_text_or_data_index: str):
     &#34;&#34;&#34;Clicks on the specified column header.
@@ -1001,7 +995,6 @@ The column must be visible.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L192-L209" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def click_column_header_trigger(self, grid_cq: str, column_text_or_data_index: str):
     &#34;&#34;&#34;Clicks on the specified column header&#39;s trigger
@@ -1039,7 +1032,6 @@ The column must be visible.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L255-L271" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def click_row(self, grid_cq: str, row_data: Union[int, dict]):
     &#34;&#34;&#34; Clicks the row with the specified data or index in the grid.
@@ -1080,7 +1072,6 @@ The column must be visible.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L64-L85" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_column_header(self, grid_cq: str, column_text_or_data_index: str) -&gt; WebElement:
     &#34;&#34;&#34;Gets the element for the specified column header
@@ -1126,7 +1117,6 @@ The column must be visible.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L169-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_column_header_trigger(self, grid_cq: str, column_text_or_data_index: str) -&gt; WebElement:
     &#34;&#34;&#34;Gets the element for the specified column header&#39;s trigger
@@ -1176,7 +1166,6 @@ if the row is not found. Defaults to True.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L229-L253" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -&gt; WebElement:
     &#34;&#34;&#34; Gets the element for the row with the specified data or index in the grid.
@@ -1223,7 +1212,6 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L100-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def is_column_hidden(self, grid_cq: str, column_text_or_data_index: str) -&gt; bool:
     &#34;&#34;&#34;Determines whether the specified column is hidden.
@@ -1257,7 +1245,6 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L87-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def is_column_visible(self, grid_cq: str, column_text_or_data_index: str) -&gt; bool:
     &#34;&#34;&#34;Determines whether the specified column is visible,
@@ -1296,7 +1283,6 @@ it is found, or until the timeout is hit.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L273-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60) -&gt; WebElement:
     &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until
@@ -1333,7 +1319,6 @@ Once we have found the row it is clicked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/grid_helper.py#L288-L299" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60):
     &#34;&#34;&#34;Waits for the specified row to appear in the grid, reloading the store until

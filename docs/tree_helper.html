@@ -26,7 +26,6 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L1-L341" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Module that contains our TreeHelper class.
@@ -395,7 +394,6 @@ class TreeHelper(HasReferencedJavaScript):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L15-L341" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TreeHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with using trees, through Ext&#39;s interfaces.
@@ -774,7 +772,6 @@ This is in case need to click on another part of the node's row.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L173-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_element(self, tree_cq: str, node_data: dict, css_query: str) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by data, then a child element by CSS query.
@@ -820,7 +817,6 @@ This is in case need to click on another part of the node's row.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L153-L171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s expander UI element.
@@ -863,7 +859,6 @@ This is in case need to click on another part of the node's row.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L113-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s icon.
@@ -906,7 +901,6 @@ This is in case need to click on another part of the node's row.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L133-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s text.
@@ -949,7 +943,6 @@ since we cannot pass things back in callbacks!</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L81-L95" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def is_tree_loading(self, tree_cq: str):
     &#34;&#34;&#34;Determine whether the tree (any part of it) is currently loading.
@@ -983,7 +976,6 @@ since we cannot pass things back in callbacks!</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L196-L212" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def open_node_context_menu(self, tree_cq: str, node_text_or_data: Union[str, dict]):
     &#34;&#34;&#34;Finds a node&#39;s text element by text or data, then right clicks on it.
@@ -1019,7 +1011,6 @@ since we cannot pass things back in callbacks!</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L235-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reload_node(self, tree_cq: str, node_text_or_data: Union[str, dict]):
     &#34;&#34;&#34;Finds a node by text or data, and triggers a reload on it, and its children.
@@ -1067,7 +1058,6 @@ for refreshing purposes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L214-L233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_for_tree_node(self,
                        tree_cq: str,
@@ -1111,7 +1101,6 @@ or the timeout is hit</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L97-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_until_tree_not_loading(self,
                                 tree_cq: str,

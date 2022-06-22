@@ -26,7 +26,6 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/component_query.py#L1-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Module that contains our ComponentQuery class.
@@ -212,7 +211,6 @@ class ComponentQuery(HasReferencedJavaScript):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/component_query.py#L14-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class ComponentQuery(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with using Ext.ComponentQuery
@@ -398,7 +396,6 @@ If omitted, all components within the document are included in the search.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/component_query.py#L43-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def query(self, cq: str, root_id: Union[str, None] = None) -&gt; list[WebElement]:
     &#34;&#34;&#34;Executes a ComponentQuery and returns the result
@@ -449,7 +446,6 @@ If omitted, all components within the document are included in the search.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/component_query.py#L68-L81" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; list[WebElement]:
     &#34;&#34;&#34;Method that waits for the specified CQ to match something
@@ -491,7 +487,6 @@ If omitted, all components within the document are included in the search.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/component_query.py#L83-L101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
     &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
@@ -538,7 +533,6 @@ If omitted, all components within the document are included in the search.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/component_query.py#L103-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
     &#34;&#34;&#34;Method that waits for the specified CQ to match a single visible result.
