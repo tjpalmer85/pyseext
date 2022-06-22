@@ -360,7 +360,7 @@
 </%def>
 
 ---
-layout: template
+layout: null
 title: API - ${module.name}
 permalink: /api/${module.name.replace("pyseext", "").replace(".", "/")}
 link_group: api
