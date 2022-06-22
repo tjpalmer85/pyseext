@@ -42,8 +42,8 @@ class FormHelper:
 
         Args:
             form_cq (str): The component query that identifies the form panel on which to set the values.
-            field_values (Union[dict, list[Union[str, float, int, None]]]):
-                Either a dictionary containing the 'name' and 'value' of the fields.
+            field_values (Union[dict, list[Union[str, float, int, None]]]): Either a dictionary containing
+                the 'name' and 'value' of the fields.
                     The values can be strings, numbers or an object containing:
                         - value (Any): The value for the field
                         - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)

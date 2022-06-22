@@ -71,8 +71,8 @@ class FormHelper:
 
         Args:
             form_cq (str): The component query that identifies the form panel on which to set the values.
-            field_values (Union[dict, list[Union[str, float, int, None]]]):
-                Either a dictionary containing the &#39;name&#39; and &#39;value&#39; of the fields.
+            field_values (Union[dict, list[Union[str, float, int, None]]]): Either a dictionary containing
+                the &#39;name&#39; and &#39;value&#39; of the fields.
                     The values can be strings, numbers or an object containing:
                         - value (Any): The value for the field
                         - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
@@ -167,8 +167,8 @@ class FormHelper:
 
         Args:
             form_cq (str): The component query that identifies the form panel on which to set the values.
-            field_values (Union[dict, list[Union[str, float, int, None]]]):
-                Either a dictionary containing the &#39;name&#39; and &#39;value&#39; of the fields.
+            field_values (Union[dict, list[Union[str, float, int, None]]]): Either a dictionary containing
+                the &#39;name&#39; and &#39;value&#39; of the fields.
                     The values can be strings, numbers or an object containing:
                         - value (Any): The value for the field
                         - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
@@ -218,16 +218,17 @@ it won't work as expected for checkboxes or radio buttons.</p>
 <dl>
 <dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query that identifies the form panel on which to set the values.</dd>
-</dl>
-<p>field_values (Union[dict, list[Union[str, float, int, None]]]):
-Either a dictionary containing the 'name' and 'value' of the fields.
+<dt><strong><code>field_values</code></strong> :&ensp;<code>Union[dict, list[Union[str, float, int, None]]]</code></dt>
+<dd>Either a dictionary containing
+the 'name' and 'value' of the fields.
 The values can be strings, numbers or an object containing:
 - value (Any): The value for the field
 - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
 - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
 and only works with fields that are being typed into.
 Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
-A value of None in the array means that no value should be entered.</p></div>
+A value of None in the array means that no value should be entered.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -240,8 +241,8 @@ A value of None in the array means that no value should be entered.</p></div>
 
     Args:
         form_cq (str): The component query that identifies the form panel on which to set the values.
-        field_values (Union[dict, list[Union[str, float, int, None]]]):
-            Either a dictionary containing the &#39;name&#39; and &#39;value&#39; of the fields.
+        field_values (Union[dict, list[Union[str, float, int, None]]]): Either a dictionary containing
+            the &#39;name&#39; and &#39;value&#39; of the fields.
                 The values can be strings, numbers or an object containing:
                     - value (Any): The value for the field
                     - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
