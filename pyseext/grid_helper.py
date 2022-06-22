@@ -14,8 +14,7 @@ from pyseext.component_query import ComponentQuery
 from pyseext.store_helper import StoreHelper
 
 class GridHelper(HasReferencedJavaScript):
-    """A class to help with interacting with Ext grid panels
-    """
+    """A class to help with interacting with Ext grid panels"""
 
     # Public class properties
     GRID_CQ: str = "gridpanel"
@@ -299,8 +298,7 @@ class GridHelper(HasReferencedJavaScript):
         self.click_row(grid_cq, row_data)
 
     class ColumnNotFoundException(Exception):
-        """Exception class thrown when we failed to find the specified column
-        """
+        """Exception class thrown when we failed to find the specified column"""
 
         def __init__(self,
                      grid_cq: str,
@@ -320,13 +318,11 @@ class GridHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             return self.message.format(column_text_or_data_index=self._column_text_or_data_index, grid_cq=self._grid_cq)
 
     class RowNotFoundException(Exception):
-        """Exception class thrown when we failed to find the specified row
-        """
+        """Exception class thrown when we failed to find the specified row"""
 
         def __init__(self,
                      grid_cq: str,
@@ -346,13 +342,11 @@ class GridHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             return self.message.format(row_data=self._row_data, grid_cq=self._grid_cq)
 
-    class RowFoundExpectation():
-        """ An expectation for checking that a row has been found
-        """
+    class RowFoundExpectation:
+        """ An expectation for checking that a row has been found"""
 
         def __init__(self, grid_cq: str, row_data: Union[int, dict]):
             """Initialises an instance of this class.

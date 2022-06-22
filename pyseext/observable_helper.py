@@ -9,8 +9,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class ObservableHelper(HasReferencedJavaScript):
-    """A class to help with observable objects in Ext.
-    """
+    """A class to help with observable objects in Ext."""
 
     _WAIT_FOR_EVENT_TEMPLATE: str = "return globalThis.PySeExt.ObservableHelper.waitForEvent('{component_cq}', '{event_name}', {timeout}, {member_accessor}, callback)"
     """The script template to use to call the asynchronous JavaScript method PySeExt.ObservableHelper.waitForEvent
@@ -73,8 +72,7 @@ class ObservableHelper(HasReferencedJavaScript):
             self._logger.debug("Event '%s' on '%s' received!", event_name, component_cq)
 
     class WaitForEventException(Exception):
-        """Exception class thrown when waiting for event returned an error.
-        """
+        """Exception class thrown when waiting for event returned an error."""
 
         def __init__(self, component_cq: str, event_name: str, member_accessor: str, error: str):
             """Initialises an instance of this exception
@@ -98,8 +96,7 @@ class ObservableHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             if self._member_accessor:
                 return self.message.format(event_name = self._event_name,
                                            component_cq = self._component_cq,

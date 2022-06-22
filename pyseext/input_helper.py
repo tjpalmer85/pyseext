@@ -10,9 +10,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
-class InputHelper():
-    """A class to help with user input.
-    """
+class InputHelper:
+    """A class to help with user input."""
 
     TYPING_SLEEP_MINIMUM: float = 0.0001
     """The minimum amount of time in seconds to wait between key presses when typing. Defaults to 0.0001 seconds."""
@@ -77,8 +76,7 @@ class InputHelper():
             self._action_chains.perform()
 
     def type_tab(self):
-        """Type a tab character into the currently focused element.
-        """
+        """Type a tab character into the currently focused element."""
         self._action_chains.send_keys(Keys.TAB)
         self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
         self._action_chains.perform()

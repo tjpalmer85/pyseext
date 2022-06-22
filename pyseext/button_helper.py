@@ -11,8 +11,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from pyseext.component_query import ComponentQuery
 
 class ButtonHelper:
-    """A class to help with interacting with Ext buttons
-    """
+    """A class to help with interacting with Ext buttons"""
 
     # Class variables
     _ENABLED_BUTTON_TEMPLATE: str = 'button[text="{text}"][disabled=false]'

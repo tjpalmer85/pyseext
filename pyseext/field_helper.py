@@ -14,8 +14,7 @@ from pyseext.input_helper import InputHelper
 from pyseext.store_helper import StoreHelper
 
 class FieldHelper(HasReferencedJavaScript):
-    """A class to help with interacting with Ext fields
-    """
+    """A class to help with interacting with Ext fields"""
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.findFieldInputElement('{form_cq}', '{name}')"
@@ -332,8 +331,7 @@ class FieldHelper(HasReferencedJavaScript):
         return self._driver.execute_script(script)
 
     class FieldNotFoundException(Exception):
-        """Exception class thrown when we failed to find the specified field
-        """
+        """Exception class thrown when we failed to find the specified field"""
 
         def __init__(self, form_cq: str, name: str, message: str = "Failed to find field named '{name}' on form with CQ '{form_cq}'."):
             """Initialises an instance of this exception
@@ -350,8 +348,7 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             return self.message.format(name=self._name, form_cq=self._form_cq)
 
     class UnsupportedFieldXTypeException(Exception):
@@ -381,13 +378,11 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             return self.message.format(name=self._name, form_cq=self._form_cq, xtype=self._xtype)
 
     class RecordNotFoundException(Exception):
-        """Exception class thrown when we failed to find the specified record in the a combobox
-        """
+        """Exception class thrown when we failed to find the specified record in the a combobox"""
 
         def __init__(self, form_cq: str, name: str, data: dict, message: str = "Failed to find record with data {data} in combobox named '{name}' on form with CQ '{form_cq}'."):
             """Initialises an instance of this exception
@@ -406,6 +401,5 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             return self.message.format(data=self._data, name=self._name, form_cq=self._form_cq)

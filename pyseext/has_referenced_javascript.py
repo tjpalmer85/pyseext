@@ -9,8 +9,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 
 class HasReferencedJavaScript:
-    """Base class to be used by our test classes that have JavaScript that they need to load
-    """
+    """Base class to be used by our test classes that have JavaScript that they need to load"""
 
     # Class variables
     _SCRIPT_LOADED_TEST_TEMPLATE: str = \
@@ -74,9 +73,8 @@ class HasReferencedJavaScript:
         """
         return self._ASYNC_SCRIPT_TEMPLATE.format(callback_parameter_name=callback_parameter_name, script=script)
 
-    class JavaScriptLoadedExpectation():
-        """ An expectation for checking that our JavaScript has loaded
-        """
+    class JavaScriptLoadedExpectation:
+        """ An expectation for checking that our JavaScript has loaded"""
 
         def __init__(self, class_name: str, test_template: str):
             """Initialises an instance of this class
@@ -89,6 +87,5 @@ class HasReferencedJavaScript:
             self._test_template = test_template
 
         def __call__(self, driver):
-            """Method that determines whether our JavaScript is present
-            """
+            """Method that determines whether our JavaScript is present"""
             return driver.execute_script(self._test_template.format(class_name=self._class_name))

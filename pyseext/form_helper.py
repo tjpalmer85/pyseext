@@ -11,8 +11,7 @@ from pyseext.button_helper import ButtonHelper
 from pyseext.input_helper import InputHelper
 
 class FormHelper:
-    """A class to help with interacting with Ext form panels and forms
-    """
+    """A class to help with interacting with Ext form panels and forms"""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class

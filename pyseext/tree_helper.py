@@ -13,8 +13,7 @@ from pyseext.has_referenced_javascript import HasReferencedJavaScript
 from pyseext.core import Core
 
 class TreeHelper(HasReferencedJavaScript):
-    """A class to help with using trees, through Ext's interfaces.
-    """
+    """A class to help with using trees, through Ext's interfaces."""
 
     # Class variables
     _IS_TREE_LOADING_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.isTreeLoading('{tree_cq}')"
@@ -252,8 +251,7 @@ class TreeHelper(HasReferencedJavaScript):
         self._driver.execute_script(script)
 
     class NodeNotFoundException(Exception):
-        """Exception class thrown when we failed to find the specified node
-        """
+        """Exception class thrown when we failed to find the specified node"""
 
         def __init__(self,
                      tree_cq: str,
@@ -273,13 +271,11 @@ class TreeHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
 
-    class TreeNotLoadingExpectation():
-        """ An expectation for checking that a tree is not loading.
-        """
+    class TreeNotLoadingExpectation:
+        """ An expectation for checking that a tree is not loading."""
 
         def __init__(self, tree_cq: str, recheck_time_if_false: Union[float, None] = None):
             """Initialises an instance of this class.
@@ -293,8 +289,7 @@ class TreeHelper(HasReferencedJavaScript):
             self._recheck_time_if_false = recheck_time_if_false
 
         def __call__(self, driver):
-            """Method that determines whether the tree is loading.
-            """
+            """Method that determines whether the tree is loading."""
             tree_helper = TreeHelper(driver)
 
             is_tree_loading = tree_helper.is_tree_loading(self._tree_cq)
@@ -305,9 +300,8 @@ class TreeHelper(HasReferencedJavaScript):
 
             return not is_tree_loading
 
-    class NodeFoundExpectation():
-        """ An expectation for checking that a node has been found
-        """
+    class NodeFoundExpectation:
+        """ An expectation for checking that a node has been found"""
 
         def __init__(self,
                      tree_cq: str,

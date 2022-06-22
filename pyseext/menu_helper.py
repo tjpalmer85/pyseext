@@ -10,8 +10,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from pyseext.component_query import ComponentQuery
 
 class MenuHelper:
-    """A class to help with interacting with Ext menus and menu items
-    """
+    """A class to help with interacting with Ext menus and menu items"""
 
     # Class variables
     _ENABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=false]'

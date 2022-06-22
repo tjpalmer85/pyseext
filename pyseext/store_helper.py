@@ -8,8 +8,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class StoreHelper(HasReferencedJavaScript):
-    """A class to help with using stores, through Ext's interfaces.
-    """
+    """A class to help with using stores, through Ext's interfaces."""
 
     # Class variables
     _RESET_STORE_LOAD_COUNT_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.resetStoreLoadCount('{store_holder_cq}')"

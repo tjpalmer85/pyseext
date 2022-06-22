@@ -12,8 +12,7 @@ from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 
 class ComponentQuery(HasReferencedJavaScript):
-    """A class to help with using Ext.ComponentQuery
-    """
+    """A class to help with using Ext.ComponentQuery"""
 
     # Class variables
     _QUERY_TEMPLATE: str = "return globalThis.PySeExt.ComponentQuery.query('{cq}')"
@@ -118,9 +117,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return self.wait_for_single_query(cq, root_id, timeout)
 
-    class ComponentQueryFoundExpectation():
-        """ An expectation for checking that an Ext.ComponentQuery is found
-        """
+    class ComponentQueryFoundExpectation:
+        """ An expectation for checking that an Ext.ComponentQuery is found"""
 
         def __init__(self, cq: str):
             """Initialises an instance of this class.
@@ -134,8 +132,7 @@ class ComponentQuery(HasReferencedJavaScript):
             return results is not None and len(results) > 0
 
     class QueryMatchedMultipleElementsException(Exception):
-        """Exception class thrown when expecting a single component query match and get multiple
-        """
+        """Exception class thrown when expecting a single component query match and get multiple"""
 
         def __init__(self, cq: str, count: int, message: str = "Expected a single match from ComponentQuery '{cq}' but got {count}."):
             """Initialises an instance of this exception
@@ -153,6 +150,5 @@ class ComponentQuery(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            """Returns a string representation of this exception
-            """
+            """Returns a string representation of this exception"""
             return self.message.format(cq=self._cq, count=self._count)
