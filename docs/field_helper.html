@@ -43,8 +43,7 @@ from pyseext.input_helper import InputHelper
 from pyseext.store_helper import StoreHelper
 
 class FieldHelper(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with interacting with Ext fields
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with interacting with Ext fields&#34;&#34;&#34;
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
@@ -361,8 +360,7 @@ class FieldHelper(HasReferencedJavaScript):
         return self._driver.execute_script(script)
 
     class FieldNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified field&#34;&#34;&#34;
 
         def __init__(self, form_cq: str, name: str, message: str = &#34;Failed to find field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -379,8 +377,7 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(name=self._name, form_cq=self._form_cq)
 
     class UnsupportedFieldXTypeException(Exception):
@@ -410,13 +407,11 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(name=self._name, form_cq=self._form_cq, xtype=self._xtype)
 
     class RecordNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified record in the a combobox
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified record in the a combobox&#34;&#34;&#34;
 
         def __init__(self, form_cq: str, name: str, data: dict, message: str = &#34;Failed to find record with data {data} in combobox named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -435,8 +430,7 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(data=self._data, name=self._name, form_cq=self._form_cq)</code></pre>
 </details>
 </section>
@@ -466,8 +460,7 @@ class FieldHelper(HasReferencedJavaScript):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class FieldHelper(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with interacting with Ext fields
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with interacting with Ext fields&#34;&#34;&#34;
 
     # Class variables
     _FIND_FIELD_INPUT_ELEMENT_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.findFieldInputElement(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
@@ -784,8 +777,7 @@ class FieldHelper(HasReferencedJavaScript):
         return self._driver.execute_script(script)
 
     class FieldNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified field
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified field&#34;&#34;&#34;
 
         def __init__(self, form_cq: str, name: str, message: str = &#34;Failed to find field named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -802,8 +794,7 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(name=self._name, form_cq=self._form_cq)
 
     class UnsupportedFieldXTypeException(Exception):
@@ -833,13 +824,11 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(name=self._name, form_cq=self._form_cq, xtype=self._xtype)
 
     class RecordNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified record in the a combobox
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified record in the a combobox&#34;&#34;&#34;
 
         def __init__(self, form_cq: str, name: str, data: dict, message: str = &#34;Failed to find record with data {data} in combobox named &#39;{name}&#39; on form with CQ &#39;{form_cq}&#39;.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -858,8 +847,7 @@ class FieldHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(data=self._data, name=self._name, form_cq=self._form_cq)</code></pre>
 </details>
 <h3>Ancestors</h3>

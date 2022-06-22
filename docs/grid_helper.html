@@ -43,8 +43,7 @@ from pyseext.component_query import ComponentQuery
 from pyseext.store_helper import StoreHelper
 
 class GridHelper(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with interacting with Ext grid panels
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with interacting with Ext grid panels&#34;&#34;&#34;
 
     # Public class properties
     GRID_CQ: str = &#34;gridpanel&#34;
@@ -328,8 +327,7 @@ class GridHelper(HasReferencedJavaScript):
         self.click_row(grid_cq, row_data)
 
     class ColumnNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified column
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified column&#34;&#34;&#34;
 
         def __init__(self,
                      grid_cq: str,
@@ -349,13 +347,11 @@ class GridHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(column_text_or_data_index=self._column_text_or_data_index, grid_cq=self._grid_cq)
 
     class RowNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified row
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified row&#34;&#34;&#34;
 
         def __init__(self,
                      grid_cq: str,
@@ -375,13 +371,11 @@ class GridHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(row_data=self._row_data, grid_cq=self._grid_cq)
 
-    class RowFoundExpectation():
-        &#34;&#34;&#34; An expectation for checking that a row has been found
-        &#34;&#34;&#34;
+    class RowFoundExpectation:
+        &#34;&#34;&#34; An expectation for checking that a row has been found&#34;&#34;&#34;
 
         def __init__(self, grid_cq: str, row_data: Union[int, dict]):
             &#34;&#34;&#34;Initialises an instance of this class.
@@ -438,8 +432,7 @@ class GridHelper(HasReferencedJavaScript):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class GridHelper(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with interacting with Ext grid panels
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with interacting with Ext grid panels&#34;&#34;&#34;
 
     # Public class properties
     GRID_CQ: str = &#34;gridpanel&#34;
@@ -723,8 +716,7 @@ class GridHelper(HasReferencedJavaScript):
         self.click_row(grid_cq, row_data)
 
     class ColumnNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified column
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified column&#34;&#34;&#34;
 
         def __init__(self,
                      grid_cq: str,
@@ -744,13 +736,11 @@ class GridHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(column_text_or_data_index=self._column_text_or_data_index, grid_cq=self._grid_cq)
 
     class RowNotFoundException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we failed to find the specified row
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we failed to find the specified row&#34;&#34;&#34;
 
         def __init__(self,
                      grid_cq: str,
@@ -770,13 +760,11 @@ class GridHelper(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(row_data=self._row_data, grid_cq=self._grid_cq)
 
-    class RowFoundExpectation():
-        &#34;&#34;&#34; An expectation for checking that a row has been found
-        &#34;&#34;&#34;
+    class RowFoundExpectation:
+        &#34;&#34;&#34; An expectation for checking that a row has been found&#34;&#34;&#34;
 
         def __init__(self, grid_cq: str, row_data: Union[int, dict]):
             &#34;&#34;&#34;Initialises an instance of this class.

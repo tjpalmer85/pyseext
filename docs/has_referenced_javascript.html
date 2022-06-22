@@ -38,8 +38,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 
 class HasReferencedJavaScript:
-    &#34;&#34;&#34;Base class to be used by our test classes that have JavaScript that they need to load
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Base class to be used by our test classes that have JavaScript that they need to load&#34;&#34;&#34;
 
     # Class variables
     _SCRIPT_LOADED_TEST_TEMPLATE: str = \
@@ -103,9 +102,8 @@ class HasReferencedJavaScript:
         &#34;&#34;&#34;
         return self._ASYNC_SCRIPT_TEMPLATE.format(callback_parameter_name=callback_parameter_name, script=script)
 
-    class JavaScriptLoadedExpectation():
-        &#34;&#34;&#34; An expectation for checking that our JavaScript has loaded
-        &#34;&#34;&#34;
+    class JavaScriptLoadedExpectation:
+        &#34;&#34;&#34; An expectation for checking that our JavaScript has loaded&#34;&#34;&#34;
 
         def __init__(self, class_name: str, test_template: str):
             &#34;&#34;&#34;Initialises an instance of this class
@@ -118,8 +116,7 @@ class HasReferencedJavaScript:
             self._test_template = test_template
 
         def __call__(self, driver):
-            &#34;&#34;&#34;Method that determines whether our JavaScript is present
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Method that determines whether our JavaScript is present&#34;&#34;&#34;
             return driver.execute_script(self._test_template.format(class_name=self._class_name))</code></pre>
 </details>
 </section>
@@ -151,8 +148,7 @@ class HasReferencedJavaScript:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class HasReferencedJavaScript:
-    &#34;&#34;&#34;Base class to be used by our test classes that have JavaScript that they need to load
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Base class to be used by our test classes that have JavaScript that they need to load&#34;&#34;&#34;
 
     # Class variables
     _SCRIPT_LOADED_TEST_TEMPLATE: str = \
@@ -216,9 +212,8 @@ class HasReferencedJavaScript:
         &#34;&#34;&#34;
         return self._ASYNC_SCRIPT_TEMPLATE.format(callback_parameter_name=callback_parameter_name, script=script)
 
-    class JavaScriptLoadedExpectation():
-        &#34;&#34;&#34; An expectation for checking that our JavaScript has loaded
-        &#34;&#34;&#34;
+    class JavaScriptLoadedExpectation:
+        &#34;&#34;&#34; An expectation for checking that our JavaScript has loaded&#34;&#34;&#34;
 
         def __init__(self, class_name: str, test_template: str):
             &#34;&#34;&#34;Initialises an instance of this class
@@ -231,8 +226,7 @@ class HasReferencedJavaScript:
             self._test_template = test_template
 
         def __call__(self, driver):
-            &#34;&#34;&#34;Method that determines whether our JavaScript is present
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Method that determines whether our JavaScript is present&#34;&#34;&#34;
             return driver.execute_script(self._test_template.format(class_name=self._class_name))</code></pre>
 </details>
 <h3>Subclasses</h3>

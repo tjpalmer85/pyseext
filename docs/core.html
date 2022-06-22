@@ -40,8 +40,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 class Core(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with core testing functionality.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with core testing functionality.&#34;&#34;&#34;
 
     # Class variables
     _IS_DOM_READY: str = &#34;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#34;
@@ -128,22 +127,18 @@ class Core(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(Core.IsNoAjaxCallInProgressExpectation(recheck_time_if_false))
 
-    class IsDomReadyExpectation():
-        &#34;&#34;&#34; An expectation for checking Ext.isDomReady
-        &#34;&#34;&#34;
+    class IsDomReadyExpectation:
+        &#34;&#34;&#34;An expectation for checking Ext.isDomReady&#34;&#34;&#34;
 
         def __init__(self):
-            &#34;&#34;&#34;Initialises an instance of this class.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Initialises an instance of this class.&#34;&#34;&#34;
 
         def __call__(self, driver):
-            &#34;&#34;&#34;Method that determines whether Ext.isDomReady
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Method that determines whether Ext.isDomReady&#34;&#34;&#34;
             return driver.execute_script(Core._IS_DOM_READY)
 
-    class IsNoAjaxCallInProgressExpectation():
-        &#34;&#34;&#34; An expectation for checking whether there is an Ajax call in progress.
-        &#34;&#34;&#34;
+    class IsNoAjaxCallInProgressExpectation:
+        &#34;&#34;&#34;An expectation for checking whether there is an Ajax call in progress.&#34;&#34;&#34;
 
         def __init__(self, recheck_time_if_false: Union[float, None] = None):
             &#34;&#34;&#34;Initialises an instance of this class.
@@ -155,8 +150,7 @@ class Core(HasReferencedJavaScript):
             self._recheck_time_if_false = recheck_time_if_false
 
         def __call__(self, driver):
-            &#34;&#34;&#34;Method that determines whether Ext.isDomReady
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Method that determines whether Ext.isDomReady&#34;&#34;&#34;
             core = Core(driver)
             is_call_in_progress = core.is_ajax_request_in_progress()
 
@@ -167,8 +161,7 @@ class Core(HasReferencedJavaScript):
             return not is_call_in_progress
 
     class ArgumentException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we have an argument exception.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we have an argument exception.&#34;&#34;&#34;
 
         def __init__(self, name: str, message: str = &#34;The argument with name &#39;{name}&#39; is invalid.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -183,8 +176,7 @@ class Core(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(name=self._name)</code></pre>
 </details>
 </section>
@@ -214,8 +206,7 @@ class Core(HasReferencedJavaScript):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Core(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with core testing functionality.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with core testing functionality.&#34;&#34;&#34;
 
     # Class variables
     _IS_DOM_READY: str = &#34;return !!(globalThis.Ext &amp;&amp; globalThis.Ext.isDomReady)&#34;
@@ -302,22 +293,18 @@ class Core(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(Core.IsNoAjaxCallInProgressExpectation(recheck_time_if_false))
 
-    class IsDomReadyExpectation():
-        &#34;&#34;&#34; An expectation for checking Ext.isDomReady
-        &#34;&#34;&#34;
+    class IsDomReadyExpectation:
+        &#34;&#34;&#34;An expectation for checking Ext.isDomReady&#34;&#34;&#34;
 
         def __init__(self):
-            &#34;&#34;&#34;Initialises an instance of this class.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Initialises an instance of this class.&#34;&#34;&#34;
 
         def __call__(self, driver):
-            &#34;&#34;&#34;Method that determines whether Ext.isDomReady
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Method that determines whether Ext.isDomReady&#34;&#34;&#34;
             return driver.execute_script(Core._IS_DOM_READY)
 
-    class IsNoAjaxCallInProgressExpectation():
-        &#34;&#34;&#34; An expectation for checking whether there is an Ajax call in progress.
-        &#34;&#34;&#34;
+    class IsNoAjaxCallInProgressExpectation:
+        &#34;&#34;&#34;An expectation for checking whether there is an Ajax call in progress.&#34;&#34;&#34;
 
         def __init__(self, recheck_time_if_false: Union[float, None] = None):
             &#34;&#34;&#34;Initialises an instance of this class.
@@ -329,8 +316,7 @@ class Core(HasReferencedJavaScript):
             self._recheck_time_if_false = recheck_time_if_false
 
         def __call__(self, driver):
-            &#34;&#34;&#34;Method that determines whether Ext.isDomReady
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Method that determines whether Ext.isDomReady&#34;&#34;&#34;
             core = Core(driver)
             is_call_in_progress = core.is_ajax_request_in_progress()
 
@@ -341,8 +327,7 @@ class Core(HasReferencedJavaScript):
             return not is_call_in_progress
 
     class ArgumentException(Exception):
-        &#34;&#34;&#34;Exception class thrown when we have an argument exception.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when we have an argument exception.&#34;&#34;&#34;
 
         def __init__(self, name: str, message: str = &#34;The argument with name &#39;{name}&#39; is invalid.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -357,8 +342,7 @@ class Core(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(name=self._name)</code></pre>
 </details>
 <h3>Ancestors</h3>

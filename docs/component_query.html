@@ -41,8 +41,7 @@ from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
 
 class ComponentQuery(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with using Ext.ComponentQuery
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with using Ext.ComponentQuery&#34;&#34;&#34;
 
     # Class variables
     _QUERY_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
@@ -147,9 +146,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return self.wait_for_single_query(cq, root_id, timeout)
 
-    class ComponentQueryFoundExpectation():
-        &#34;&#34;&#34; An expectation for checking that an Ext.ComponentQuery is found
-        &#34;&#34;&#34;
+    class ComponentQueryFoundExpectation:
+        &#34;&#34;&#34; An expectation for checking that an Ext.ComponentQuery is found&#34;&#34;&#34;
 
         def __init__(self, cq: str):
             &#34;&#34;&#34;Initialises an instance of this class.
@@ -163,8 +161,7 @@ class ComponentQuery(HasReferencedJavaScript):
             return results is not None and len(results) &gt; 0
 
     class QueryMatchedMultipleElementsException(Exception):
-        &#34;&#34;&#34;Exception class thrown when expecting a single component query match and get multiple
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when expecting a single component query match and get multiple&#34;&#34;&#34;
 
         def __init__(self, cq: str, count: int, message: str = &#34;Expected a single match from ComponentQuery &#39;{cq}&#39; but got {count}.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -182,8 +179,7 @@ class ComponentQuery(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(cq=self._cq, count=self._count)</code></pre>
 </details>
 </section>
@@ -213,8 +209,7 @@ class ComponentQuery(HasReferencedJavaScript):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ComponentQuery(HasReferencedJavaScript):
-    &#34;&#34;&#34;A class to help with using Ext.ComponentQuery
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;A class to help with using Ext.ComponentQuery&#34;&#34;&#34;
 
     # Class variables
     _QUERY_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;)&#34;
@@ -319,9 +314,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return self.wait_for_single_query(cq, root_id, timeout)
 
-    class ComponentQueryFoundExpectation():
-        &#34;&#34;&#34; An expectation for checking that an Ext.ComponentQuery is found
-        &#34;&#34;&#34;
+    class ComponentQueryFoundExpectation:
+        &#34;&#34;&#34; An expectation for checking that an Ext.ComponentQuery is found&#34;&#34;&#34;
 
         def __init__(self, cq: str):
             &#34;&#34;&#34;Initialises an instance of this class.
@@ -335,8 +329,7 @@ class ComponentQuery(HasReferencedJavaScript):
             return results is not None and len(results) &gt; 0
 
     class QueryMatchedMultipleElementsException(Exception):
-        &#34;&#34;&#34;Exception class thrown when expecting a single component query match and get multiple
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Exception class thrown when expecting a single component query match and get multiple&#34;&#34;&#34;
 
         def __init__(self, cq: str, count: int, message: str = &#34;Expected a single match from ComponentQuery &#39;{cq}&#39; but got {count}.&#34;):
             &#34;&#34;&#34;Initialises an instance of this exception
@@ -354,8 +347,7 @@ class ComponentQuery(HasReferencedJavaScript):
             super().__init__(self.message)
 
         def __str__(self):
-            &#34;&#34;&#34;Returns a string representation of this exception
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
             return self.message.format(cq=self._cq, count=self._count)</code></pre>
 </details>
 <h3>Ancestors</h3>
