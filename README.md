@@ -23,7 +23,7 @@ And then run `pip install -r requirements.txt`
 ---
 ## Generated Documentation
 
-You can find the generated documentation for the library [here](https://gitcdn.link/cdn/westy/pyseext/master/docs/pyseext/index.html) (linked using [GitCDN](https://gitcdn.link)).
+You can find the generated documentation for the library [here](https://westy.github.io/pyseext/).
 
 ---
 ## Naming Standards
