@@ -1,3 +1,3 @@
-pdoc --force --html -o . ../pyseext
+pdoc --force -o . ../pyseext
 mv pyseext/* .
 rm -R pyseext
