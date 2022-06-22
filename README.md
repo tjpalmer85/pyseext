@@ -25,7 +25,7 @@ And then run `pip install -r requirements.txt`
 
 You can find the generated documentation for the library [here](https://westy.github.io/pyseext/).
 
-[![pages-build-deployment](https://github.com/westy/pyseext/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/westy/pyseext/actions/workflows/pages/pages-build-deployment)
+Workflow Status: [![pages-build-deployment](https://github.com/westy/pyseext/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/westy/pyseext/actions/workflows/pages/pages-build-deployment)
 
 ---
 ## Naming Standards
