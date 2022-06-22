@@ -1,43 +1,22 @@
----
-layout: template
-title: API - pyseext.tree_helper
-permalink: /api//tree_helper
-link_group: api
----
-<nav id="sidebar">
-<h1>Index</h1>
-<div class="toc">
-<ul></ul>
-</div>
-<ul id="index">
-<li><h3>Super-module</h3>
-<ul>
-<li><code><a title="pyseext" href="index.html">pyseext</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="pyseext.tree_helper.TreeHelper" href="#pyseext.tree_helper.TreeHelper">TreeHelper</a></code></h4>
-<ul class="">
-<li><code><a title="pyseext.tree_helper.TreeHelper.NodeFoundExpectation" href="#pyseext.tree_helper.TreeHelper.NodeFoundExpectation">NodeFoundExpectation</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.NodeNotFoundException" href="#pyseext.tree_helper.TreeHelper.NodeNotFoundException">NodeNotFoundException</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation" href="#pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation">TreeNotLoadingExpectation</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_element" href="#pyseext.tree_helper.TreeHelper.get_node_element">get_node_element</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_expander_element" href="#pyseext.tree_helper.TreeHelper.get_node_expander_element">get_node_expander_element</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_icon_element" href="#pyseext.tree_helper.TreeHelper.get_node_icon_element">get_node_icon_element</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_text_element" href="#pyseext.tree_helper.TreeHelper.get_node_text_element">get_node_text_element</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.is_tree_loading" href="#pyseext.tree_helper.TreeHelper.is_tree_loading">is_tree_loading</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.open_node_context_menu" href="#pyseext.tree_helper.TreeHelper.open_node_context_menu">open_node_context_menu</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.reload_node" href="#pyseext.tree_helper.TreeHelper.reload_node">reload_node</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.wait_for_tree_node" href="#pyseext.tree_helper.TreeHelper.wait_for_tree_node">wait_for_tree_node</a></code></li>
-<li><code><a title="pyseext.tree_helper.TreeHelper.wait_until_tree_not_loading" href="#pyseext.tree_helper.TreeHelper.wait_until_tree_not_loading">wait_until_tree_not_loading</a></code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</nav>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>pyseext.tree_helper API documentation</title>
+<meta name="description" content="Module that contains our TreeHelper class." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
 <article id="content">
 <header>
 <h1 class="title">Module <code>pyseext.tree_helper</code></h1>
@@ -47,7 +26,7 @@ link_group: api
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L1-L341" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L1-L341" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Module that contains our TreeHelper class.
@@ -406,17 +385,17 @@ class TreeHelper(HasReferencedJavaScript):
 <span>(</span><span>driver: selenium.webdriver.remote.webdriver.WebDriver)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>A class to help with using trees, through Ext's interfaces.</p>
+<div class="desc"><p>A class to help with using trees, through Ext's interfaces.</p>
 <p>Initialises an instance of this class</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>driver</code></strong> :&ensp;<code>WebDriver</code></dt>
 <dd>The webdriver to use</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L15-L341" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L15-L341" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TreeHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;A class to help with using trees, through Ext&#39;s interfaces.
@@ -754,26 +733,24 @@ class TreeHelper(HasReferencedJavaScript):
 <dl>
 <dt id="pyseext.tree_helper.TreeHelper.NodeFoundExpectation"><code class="name">var <span class="ident">NodeFoundExpectation</span></code></dt>
 <dd>
-<section class="desc"><p>An expectation for checking that a node has been found</p></section>
+<div class="desc"><p>An expectation for checking that a node has been found</p></div>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.NodeNotFoundException"><code class="name">var <span class="ident">NodeNotFoundException</span></code></dt>
 <dd>
-<section class="desc"><p>Exception class thrown when we failed to find the specified node</p></section>
+<div class="desc"><p>Exception class thrown when we failed to find the specified node</p></div>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation"><code class="name">var <span class="ident">TreeNotLoadingExpectation</span></code></dt>
 <dd>
-<section class="desc"><p>An expectation for checking that a tree is not loading.</p></section>
+<div class="desc"><p>An expectation for checking that a tree is not loading.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="pyseext.tree_helper.TreeHelper.get_node_element">
-<code class="name flex">
-<span>def <span class="ident">get_node_element</span></span>(<span>self, tree_cq: str, node_data: dict, css_query: str) -> selenium.webdriver.remote.webelement.WebElement</span>
-</code>
-</dt>
+<dt id="pyseext.tree_helper.TreeHelper.get_node_element"><code class="name flex">
+<span>def <span class="ident">get_node_element</span></span>(<span>self, tree_cq: str, node_data: dict, css_query: str) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+</code></dt>
 <dd>
-<section class="desc"><p>Finds a node by data, then a child element by CSS query.</p>
+<div class="desc"><p>Finds a node by data, then a child element by CSS query.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -793,11 +770,11 @@ This is in case need to click on another part of the node's row.</dd>
 <dl>
 <dt><code>WebElement</code></dt>
 <dd>The DOM element for the node's expander.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L173-L194" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L173-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_element(self, tree_cq: str, node_data: dict, css_query: str) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by data, then a child element by CSS query.
@@ -823,13 +800,11 @@ This is in case need to click on another part of the node's row.</dd>
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.get_node_expander_element">
-<code class="name flex">
-<span>def <span class="ident">get_node_expander_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) -> selenium.webdriver.remote.webelement.WebElement</span>
-</code>
-</dt>
+<dt id="pyseext.tree_helper.TreeHelper.get_node_expander_element"><code class="name flex">
+<span>def <span class="ident">get_node_expander_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+</code></dt>
 <dd>
-<section class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's expander UI element.</p>
+<div class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's expander UI element.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -841,11 +816,11 @@ This is in case need to click on another part of the node's row.</dd>
 <dl>
 <dt><code>WebElement</code></dt>
 <dd>The DOM element for the node's expander.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L153-L171" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L153-L171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s expander UI element.
@@ -868,13 +843,11 @@ This is in case need to click on another part of the node's row.</dd>
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.get_node_icon_element">
-<code class="name flex">
-<span>def <span class="ident">get_node_icon_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) -> selenium.webdriver.remote.webelement.WebElement</span>
-</code>
-</dt>
+<dt id="pyseext.tree_helper.TreeHelper.get_node_icon_element"><code class="name flex">
+<span>def <span class="ident">get_node_icon_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+</code></dt>
 <dd>
-<section class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's icon.</p>
+<div class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's icon.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -886,11 +859,11 @@ This is in case need to click on another part of the node's row.</dd>
 <dl>
 <dt><code>WebElement</code></dt>
 <dd>The DOM element for the node icon.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L113-L131" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L113-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s icon.
@@ -913,13 +886,11 @@ This is in case need to click on another part of the node's row.</dd>
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.get_node_text_element">
-<code class="name flex">
-<span>def <span class="ident">get_node_text_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) -> selenium.webdriver.remote.webelement.WebElement</span>
-</code>
-</dt>
+<dt id="pyseext.tree_helper.TreeHelper.get_node_text_element"><code class="name flex">
+<span>def <span class="ident">get_node_text_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+</code></dt>
 <dd>
-<section class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's text.</p>
+<div class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's text.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
@@ -931,11 +902,11 @@ This is in case need to click on another part of the node's row.</dd>
 <dl>
 <dt><code>WebElement</code></dt>
 <dd>The DOM element for the node text.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L133-L151" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L133-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s text.
@@ -958,13 +929,11 @@ This is in case need to click on another part of the node's row.</dd>
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.is_tree_loading">
-<code class="name flex">
+<dt id="pyseext.tree_helper.TreeHelper.is_tree_loading"><code class="name flex">
 <span>def <span class="ident">is_tree_loading</span></span>(<span>self, tree_cq: str)</span>
-</code>
-</dt>
+</code></dt>
 <dd>
-<section class="desc"><p>Determine whether the tree (any part of it) is currently loading.</p>
+<div class="desc"><p>Determine whether the tree (any part of it) is currently loading.</p>
 <p>You should call this before calling any tree interaction methods,
 since we cannot pass things back in callbacks!</p>
 <h2 id="args">Args</h2>
@@ -976,11 +945,11 @@ since we cannot pass things back in callbacks!</p>
 <dl>
 <dt><code>bool</code></dt>
 <dd>True if the tree is loaded, False otherwise.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L81-L95" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L81-L95" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def is_tree_loading(self, tree_cq: str):
     &#34;&#34;&#34;Determine whether the tree (any part of it) is currently loading.
@@ -999,24 +968,22 @@ since we cannot pass things back in callbacks!</p>
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.open_node_context_menu">
-<code class="name flex">
+<dt id="pyseext.tree_helper.TreeHelper.open_node_context_menu"><code class="name flex">
 <span>def <span class="ident">open_node_context_menu</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict])</span>
-</code>
-</dt>
+</code></dt>
 <dd>
-<section class="desc"><p>Finds a node's text element by text or data, then right clicks on it.</p>
+<div class="desc"><p>Finds a node's text element by text or data, then right clicks on it.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query to use to find the tree.</dd>
 <dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
 <dd>The node text or data to find.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L196-L212" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L196-L212" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def open_node_context_menu(self, tree_cq: str, node_text_or_data: Union[str, dict]):
     &#34;&#34;&#34;Finds a node&#39;s text element by text or data, then right clicks on it.
@@ -1037,24 +1004,22 @@ since we cannot pass things back in callbacks!</p>
         raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.reload_node">
-<code class="name flex">
+<dt id="pyseext.tree_helper.TreeHelper.reload_node"><code class="name flex">
 <span>def <span class="ident">reload_node</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict])</span>
-</code>
-</dt>
+</code></dt>
 <dd>
-<section class="desc"><p>Finds a node by text or data, and triggers a reload on it, and its children.</p>
+<div class="desc"><p>Finds a node by text or data, and triggers a reload on it, and its children.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query to use to find the tree.</dd>
 <dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
 <dd>The node text or data to find.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L235-L252" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L235-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reload_node(self, tree_cq: str, node_text_or_data: Union[str, dict]):
     &#34;&#34;&#34;Finds a node by text or data, and triggers a reload on it, and its children.
@@ -1076,13 +1041,11 @@ since we cannot pass things back in callbacks!</p>
     self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.wait_for_tree_node">
-<code class="name flex">
-<span>def <span class="ident">wait_for_tree_node</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], parent_node_text_or_data: Union[str, dict], timeout: float = 60) -> selenium.webdriver.remote.webelement.WebElement</span>
-</code>
-</dt>
+<dt id="pyseext.tree_helper.TreeHelper.wait_for_tree_node"><code class="name flex">
+<span>def <span class="ident">wait_for_tree_node</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], parent_node_text_or_data: Union[str, dict], timeout: float = 60) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+</code></dt>
 <dd>
-<section class="desc"><p>Method that waits until a tree node is available, refreshing the parent until it's
+<div class="desc"><p>Method that waits until a tree node is available, refreshing the parent until it's
 found or the timeout is hit.</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1100,11 +1063,11 @@ for refreshing purposes.</dd>
 <dl>
 <dt><code>WebElement</code></dt>
 <dd>The DOM element for the node icon.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L214-L233" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L214-L233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_for_tree_node(self,
                        tree_cq: str,
@@ -1128,13 +1091,11 @@ for refreshing purposes.</dd>
     return self.get_node_icon_element(tree_cq, node_text_or_data)</code></pre>
 </details>
 </dd>
-<dt id="pyseext.tree_helper.TreeHelper.wait_until_tree_not_loading">
-<code class="name flex">
+<dt id="pyseext.tree_helper.TreeHelper.wait_until_tree_not_loading"><code class="name flex">
 <span>def <span class="ident">wait_until_tree_not_loading</span></span>(<span>self, tree_cq: str, timeout: float = 30, poll_frequecy: float = 0.2, recheck_time_if_false: float = 0.2)</span>
-</code>
-</dt>
+</code></dt>
 <dd>
-<section class="desc"><p>Waits until the tree identified by the component query is not loading,
+<div class="desc"><p>Waits until the tree identified by the component query is not loading,
 or the timeout is hit</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1146,11 +1107,11 @@ or the timeout is hit</p>
 <dd>Number of seconds to poll. Defaults to 0.2.</dd>
 <dt><strong><code>recheck_time_if_false</code></strong> :&ensp;<code>float</code>, optional</dt>
 <dd>If we get a result such that no Ajax calls are in progress, this is the amount of time to wait to check again. Defaults to 0.2.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L97-L111" class="git-link">View at GitHub</a>
+<a href="https://github.com/westy/pyseext/blob/master/pyseext/tree_helper.py#L97-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wait_until_tree_not_loading(self,
                                 tree_cq: str,
@@ -1184,6 +1145,43 @@ or the timeout is hit</p>
 </dl>
 </section>
 </article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pyseext" href="index.html">pyseext</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pyseext.tree_helper.TreeHelper" href="#pyseext.tree_helper.TreeHelper">TreeHelper</a></code></h4>
+<ul class="">
+<li><code><a title="pyseext.tree_helper.TreeHelper.NodeFoundExpectation" href="#pyseext.tree_helper.TreeHelper.NodeFoundExpectation">NodeFoundExpectation</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.NodeNotFoundException" href="#pyseext.tree_helper.TreeHelper.NodeNotFoundException">NodeNotFoundException</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation" href="#pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation">TreeNotLoadingExpectation</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_element" href="#pyseext.tree_helper.TreeHelper.get_node_element">get_node_element</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_expander_element" href="#pyseext.tree_helper.TreeHelper.get_node_expander_element">get_node_expander_element</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_icon_element" href="#pyseext.tree_helper.TreeHelper.get_node_icon_element">get_node_icon_element</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.get_node_text_element" href="#pyseext.tree_helper.TreeHelper.get_node_text_element">get_node_text_element</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.is_tree_loading" href="#pyseext.tree_helper.TreeHelper.is_tree_loading">is_tree_loading</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.open_node_context_menu" href="#pyseext.tree_helper.TreeHelper.open_node_context_menu">open_node_context_menu</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.reload_node" href="#pyseext.tree_helper.TreeHelper.reload_node">reload_node</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.wait_for_tree_node" href="#pyseext.tree_helper.TreeHelper.wait_for_tree_node">wait_for_tree_node</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.wait_until_tree_not_loading" href="#pyseext.tree_helper.TreeHelper.wait_until_tree_not_loading">wait_until_tree_not_loading</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
+</body>
+</html>
