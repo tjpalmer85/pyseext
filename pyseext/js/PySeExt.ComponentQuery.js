@@ -26,10 +26,10 @@ globalThis.PySeExt.ComponentQuery = {
 
         // Get component for our root if specified
         if (rootId) {
-            root = Ext.getCmp(rootId);
+            root = globalThis.Ext.getCmp(rootId);
         }
 
-        components = Ext.ComponentQuery.query(selector, root);
+        components = globalThis.Ext.ComponentQuery.query(selector, root);
         len = components && components.length;
 
         if (len) {
