@@ -84,6 +84,26 @@ globalThis.PySeExt.FieldHelper = {
     },
 
     /**
+     * Determines whether the specified field has focus or not.
+     *
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String|Integer} indexOrName The zero-based index or name of the field to focus.
+     * @returns {Boolean} True if the field has focus, false otherwise.
+     */
+    doesFieldHaveFocus: function(formCQ, indexOrName) {
+        var me = this,
+            field;
+
+        if (globalThis.Ext.isString(indexOrName)) {
+            field = me.__getField(formCQ, indexOrName, true);
+        } else {
+            field = me.__getFieldAtIndex(formCQ, indexOrName);
+        }
+
+        return field.hasFocus;
+    },
+
+    /**
      * Selects a value on a combobox field by finding a record with the specified data.
      *
      * Ensures that the select event is fired if the record is found and selected.

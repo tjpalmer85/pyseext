@@ -41,6 +41,10 @@ class FieldHelper(HasReferencedJavaScript):
     """The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField
     Requires the inserts: {form_cq}, {index_or_name}"""
 
+    _DOES_FIELD_HAVE_FOCUS_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.doesFieldHaveFocus('{form_cq}', {index_or_name})"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.doesFieldHaveFocus
+    Requires the inserts: {form_cq}, {index_or_name}"""
+
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.selectComboBoxValue('{form_cq}', '{name}', {data})"
     """The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue
     Requires the inserts: {form_cq}, {name}, {data}"""
@@ -252,12 +256,13 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def focus_field(self, form_cq: str, index_or_name: Union[int, str]):
+    def focus_field(self, form_cq: str, index_or_name: Union[int, str], check_has_focus_after: bool = True):
         """Method to focus on a field on a form by (zero-based) index or name.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
-            index_or_name: (Union[int, str]): The zero-based index or name of the field to focus.
+            index_or_name (Union[int, str]): The zero-based index or name of the field to focus.
+            check_has_focus_after (bool): Indicates whether to check that the field is focused afterwards. Defaults to True.
         """
         # If value is a string then we want to quote it in our script
         if isinstance(index_or_name, str):
@@ -265,7 +270,38 @@ class FieldHelper(HasReferencedJavaScript):
 
         script = self._FOCUS_FIELD_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
         self.ensure_javascript_loaded()
+
+        self._logger.info("Focusing field %s on form '%s'", index_or_name, form_cq)
         self._driver.execute_script(script)
+
+        if check_has_focus_after:
+            has_focus = self.does_field_have_focus(form_cq, index_or_name)
+
+            if not has_focus:
+                self._logger.debug("Field %s on form '%s' does not have focus!", index_or_name, form_cq)
+                # Try again (can't hurt)
+                self._driver.execute_script(script)
+
+            else:
+                self._logger.debug("Field %s on form '%s' has focus!", index_or_name, form_cq)
+
+    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+        """Determines whether focus is on a field on a form by (zero-based) index or name.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            index_or_name (Union[int, str]): The zero-based index or name of the field.
+
+        Returns:
+            bool: True if the field has focus, False otherwise.
+        """
+        # If value is a string then we want to quote it in our script
+        if isinstance(index_or_name, str):
+            index_or_name = f"'{index_or_name}'"
+
+        script = self._DOES_FIELD_HAVE_FOCUS_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
     def get_field_component_query(self, form_cq: str, name: str):
         """Builds the component query for a field on a form.

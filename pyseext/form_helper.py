@@ -60,6 +60,8 @@ class FormHelper:
                 self._field_helper.set_field_value(form_cq, field_name, field_values[field_name])
 
         elif isinstance(field_values, list):
+            self._logger.info("Populating form '%s' with values: %s", form_cq, field_values)
+
             self._field_helper.focus_field(form_cq, 0)
 
             for field_value in field_values:
