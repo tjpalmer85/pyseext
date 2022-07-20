@@ -34,14 +34,15 @@ class InputHelper:
         self._action_chains = ActionChains(driver)
         """The ActionChains instance for this class instance"""
 
-    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False):
-        """Types into an input element in a realistic manner.
+    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False):
+        """Types into an input element in a realistic manner, unless web driver is remote.
 
         Args:
             element (WebElement): The element to type into.
             text (str): The text to type.
             delay (float, optional): The number of seconds to delay after typing. Defaults to None.
             tab_off (bool, optional): Indicates whether to tab off the field after typing, and delay. Defaults to False.
+            disable_realistic_typing (bool, optional): Indicates whether to disable typing in a 'realistic' manner when not remote. Defaults to False.
         """
         # Ensure text really is a string
         text = str(text)
@@ -55,7 +56,7 @@ class InputHelper:
         self._action_chains.perform()
 
         # Now type each character
-        self.type(text)
+        self.type(text, disable_realistic_typing)
 
         if delay:
             self._action_chains.pause(delay)
@@ -64,16 +65,17 @@ class InputHelper:
         if tab_off:
             self.type_tab()
 
-    def type(self, text: str):
+    def type(self, text: str, disable_realistic_typing: bool = False):
         """Types into the currently focused element in a realistic manner, unless our webdriver is remote, then just sends the complete string.
 
         Args:
             text (str): The text to type.
+            disable_realistic_typing (bool, optional): Indicates whether to disable typing in a 'realistic' manner when not remote. Defaults to False.
         """
 
         # If we are remote, then typing a character at a time involves a roundtrip for every character.
         # This is not ideal, since slows down the test massively.
-        if not self._driver._is_remote: # pylint: disable=protected-access
+        if not disable_realistic_typing and not self._driver._is_remote: # pylint: disable=protected-access
             for character in text:
                 self._action_chains.send_keys(character)
                 self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
@@ -82,12 +84,19 @@ class InputHelper:
             self._action_chains.send_keys(text)
             self._action_chains.perform()
 
+    def type_tab(self, pause_time: float = None):
+        """Type a tab character into the currently focused element.
 
-    def type_tab(self):
-        """Type a tab character into the currently focused element."""
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting tab (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+        """
         self._action_chains.send_keys(Keys.TAB)
 
         if not self._driver._is_remote: # pylint: disable=protected-access
-            self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+            if pause_time is None:
+                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
 
         self._action_chains.perform()

@@ -62,13 +62,13 @@ class FormHelper:
         elif isinstance(field_values, list):
             self._logger.info("Populating form '%s' with values: %s", form_cq, field_values)
 
-            self._field_helper.focus_field(form_cq, 0)
+            self._field_helper.wait_until_field_has_focus(form_cq, 0)
 
             for field_value in field_values:
                 if field_value:
                     self._input_helper.type(str(field_value))
 
-                self._input_helper.type_tab()
+                self._input_helper.type_tab(0.1)
 
         else:
             raise TypeError(f"Parameter 'field_values' is not of type 'dict' or a 'list', but type '{type(field_values)}'.")

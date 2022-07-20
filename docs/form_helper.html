@@ -91,13 +91,13 @@ class FormHelper:
         elif isinstance(field_values, list):
             self._logger.info(&#34;Populating form &#39;%s&#39; with values: %s&#34;, form_cq, field_values)
 
-            self._field_helper.focus_field(form_cq, 0)
+            self._field_helper.wait_until_field_has_focus(form_cq, 0)
 
             for field_value in field_values:
                 if field_value:
                     self._input_helper.type(str(field_value))
 
-                self._input_helper.type_tab()
+                self._input_helper.type_tab(0.1)
 
         else:
             raise TypeError(f&#34;Parameter &#39;field_values&#39; is not of type &#39;dict&#39; or a &#39;list&#39;, but type &#39;{type(field_values)}&#39;.&#34;)
@@ -189,13 +189,13 @@ class FormHelper:
         elif isinstance(field_values, list):
             self._logger.info(&#34;Populating form &#39;%s&#39; with values: %s&#34;, form_cq, field_values)
 
-            self._field_helper.focus_field(form_cq, 0)
+            self._field_helper.wait_until_field_has_focus(form_cq, 0)
 
             for field_value in field_values:
                 if field_value:
                     self._input_helper.type(str(field_value))
 
-                self._input_helper.type_tab()
+                self._input_helper.type_tab(0.1)
 
         else:
             raise TypeError(f&#34;Parameter &#39;field_values&#39; is not of type &#39;dict&#39; or a &#39;list&#39;, but type &#39;{type(field_values)}&#39;.&#34;)
@@ -265,13 +265,13 @@ A value of None in the array means that no value should be entered.</dd>
     elif isinstance(field_values, list):
         self._logger.info(&#34;Populating form &#39;%s&#39; with values: %s&#34;, form_cq, field_values)
 
-        self._field_helper.focus_field(form_cq, 0)
+        self._field_helper.wait_until_field_has_focus(form_cq, 0)
 
         for field_value in field_values:
             if field_value:
                 self._input_helper.type(str(field_value))
 
-            self._input_helper.type_tab()
+            self._input_helper.type_tab(0.1)
 
     else:
         raise TypeError(f&#34;Parameter &#39;field_values&#39; is not of type &#39;dict&#39; or a &#39;list&#39;, but type &#39;{type(field_values)}&#39;.&#34;)</code></pre>

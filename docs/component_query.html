@@ -35,7 +35,7 @@ from typing import Union
 
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait, TimeoutException
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
@@ -98,15 +98,18 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional): The id of the container within which to perform the query.
-                                  If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found
         &#34;&#34;&#34;
-        WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-        return self.query(cq, root_id)
+        try:
+            WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
+            return self.query(cq, root_id)
+        except TimeoutException as exc:
+            raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
 
     def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
@@ -114,15 +117,14 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional): The id of the container within which to perform the query.
-                                  If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
             WebElement: The DOM element that matches the query
         &#34;&#34;&#34;
-        WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-        results = self.query(cq, root_id)
+        results = self.wait_for_query(cq, root_id, timeout)
         if len(results) &gt; 1:
             raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
@@ -134,8 +136,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional): The id of the container within which to perform the query.
-                                  If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -168,6 +170,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
             Args:
                 cq (str): The component query that has been executed
+                timeout (float): Number of seconds before timing out
                 count (int): The number of results that we got
                 message (str, optional): The message for the exception. Must contain a &#39;cq&#39; and &#39;count&#39; format inserts.
                                          Defaults to &#34;Expected a single match from ComponentQuery &#39;{cq}&#39; but got &#39;{count}&#39;&#34;.
@@ -180,7 +183,45 @@ class ComponentQuery(HasReferencedJavaScript):
 
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
-            return self.message.format(cq=self._cq, count=self._count)</code></pre>
+            return self.message.format(cq=self._cq, count=self._count)
+
+    class QueryNotFoundException(Exception):
+        &#34;&#34;&#34;Exception class thrown when a component query could not be found&#34;&#34;&#34;
+
+        def __init__(self,
+                     cq: str,
+                     timeout: float,
+                     root_id: Union[str, None] = None,
+                     message_without_root: str = &#34;Waiting for component query &#39;{cq}&#39; timed out after {timeout} seconds&#34;,
+                     message_with_root: str = &#34;Waiting for component query &#39;{cq}&#39; under root &#39;{root_id}&#39; timed out after {timeout} seconds&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                cq (str): The component query that has been executed
+                timeout (float): Number of seconds waited
+                root_id (str, optional): The id of the container within which the query was performed.
+                message_without_root (str, optional): The message for the exception when there is no root. Must contain a &#39;cq&#39; and &#39;timeout&#39; format inserts.
+                                                      Defaults to &#34;Waiting for component query &#39;{cq}&#39; timed out after {timeout} seconds&#34;.
+                message_with_root (str, optional): The message for the exception when there is a root. Must contain a &#39;cq&#39;, &#39;root_id&#39; and &#39;timeout&#39; format inserts.
+                                                   Defaults to &#34;Waiting for component query &#39;{cq}&#39; under root &#39;{root_id}&#39; timed out after {timeout} seconds&#34;.
+            &#34;&#34;&#34;
+            self._cq = cq
+            self._timeout = timeout
+            self._root_id = root_id
+
+            if root_id is None:
+                self.message = message_without_root
+            else:
+                self.message = message_with_root
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
+            if self._root_id is None:
+                return self.message.format(cq=self._cq, timeout=self._timeout)
+            else:
+                return self.message.format(cq=self._cq, timeout=self._timeout, root_id=self._root_id)</code></pre>
 </details>
 </section>
 <section>
@@ -266,15 +307,18 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional): The id of the container within which to perform the query.
-                                  If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found
         &#34;&#34;&#34;
-        WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-        return self.query(cq, root_id)
+        try:
+            WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
+            return self.query(cq, root_id)
+        except TimeoutException as exc:
+            raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
 
     def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
@@ -282,15 +326,14 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional): The id of the container within which to perform the query.
-                                  If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
             WebElement: The DOM element that matches the query
         &#34;&#34;&#34;
-        WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-        results = self.query(cq, root_id)
+        results = self.wait_for_query(cq, root_id, timeout)
         if len(results) &gt; 1:
             raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
@@ -302,8 +345,8 @@ class ComponentQuery(HasReferencedJavaScript):
 
         Args:
             cq (str): The query to execute
-            root (str, optional): The id of the container within which to perform the query.
-                                  If omitted, all components within the document are included in the search.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
 
         Returns:
@@ -336,6 +379,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
             Args:
                 cq (str): The component query that has been executed
+                timeout (float): Number of seconds before timing out
                 count (int): The number of results that we got
                 message (str, optional): The message for the exception. Must contain a &#39;cq&#39; and &#39;count&#39; format inserts.
                                          Defaults to &#34;Expected a single match from ComponentQuery &#39;{cq}&#39; but got &#39;{count}&#39;&#34;.
@@ -348,7 +392,45 @@ class ComponentQuery(HasReferencedJavaScript):
 
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
-            return self.message.format(cq=self._cq, count=self._count)</code></pre>
+            return self.message.format(cq=self._cq, count=self._count)
+
+    class QueryNotFoundException(Exception):
+        &#34;&#34;&#34;Exception class thrown when a component query could not be found&#34;&#34;&#34;
+
+        def __init__(self,
+                     cq: str,
+                     timeout: float,
+                     root_id: Union[str, None] = None,
+                     message_without_root: str = &#34;Waiting for component query &#39;{cq}&#39; timed out after {timeout} seconds&#34;,
+                     message_with_root: str = &#34;Waiting for component query &#39;{cq}&#39; under root &#39;{root_id}&#39; timed out after {timeout} seconds&#34;):
+            &#34;&#34;&#34;Initialises an instance of this exception
+
+            Args:
+                cq (str): The component query that has been executed
+                timeout (float): Number of seconds waited
+                root_id (str, optional): The id of the container within which the query was performed.
+                message_without_root (str, optional): The message for the exception when there is no root. Must contain a &#39;cq&#39; and &#39;timeout&#39; format inserts.
+                                                      Defaults to &#34;Waiting for component query &#39;{cq}&#39; timed out after {timeout} seconds&#34;.
+                message_with_root (str, optional): The message for the exception when there is a root. Must contain a &#39;cq&#39;, &#39;root_id&#39; and &#39;timeout&#39; format inserts.
+                                                   Defaults to &#34;Waiting for component query &#39;{cq}&#39; under root &#39;{root_id}&#39; timed out after {timeout} seconds&#34;.
+            &#34;&#34;&#34;
+            self._cq = cq
+            self._timeout = timeout
+            self._root_id = root_id
+
+            if root_id is None:
+                self.message = message_without_root
+            else:
+                self.message = message_with_root
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
+            if self._root_id is None:
+                return self.message.format(cq=self._cq, timeout=self._timeout)
+            else:
+                return self.message.format(cq=self._cq, timeout=self._timeout, root_id=self._root_id)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -363,6 +445,10 @@ class ComponentQuery(HasReferencedJavaScript):
 <dt id="pyseext.component_query.ComponentQuery.QueryMatchedMultipleElementsException"><code class="name">var <span class="ident">QueryMatchedMultipleElementsException</span></code></dt>
 <dd>
 <div class="desc"><p>Exception class thrown when expecting a single component query match and get multiple</p></div>
+</dd>
+<dt id="pyseext.component_query.ComponentQuery.QueryNotFoundException"><code class="name">var <span class="ident">QueryNotFoundException</span></code></dt>
+<dd>
+<div class="desc"><p>Exception class thrown when a component query could not be found</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -424,7 +510,7 @@ If omitted, all components within the document are included in the search.</dd>
 <dl>
 <dt><strong><code>cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The query to execute</dd>
-<dt><strong><code>root</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dt><strong><code>root_id</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>The id of the container within which to perform the query.
 If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
@@ -444,15 +530,18 @@ If omitted, all components within the document are included in the search.</dd>
 
     Args:
         cq (str): The query to execute
-        root (str, optional): The id of the container within which to perform the query.
-                              If omitted, all components within the document are included in the search.
+        root_id (str, optional): The id of the container within which to perform the query.
+                                 If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
 
     Returns:
         list[WebElement]: An array of DOM elements that match the query or an empty array if not found
     &#34;&#34;&#34;
-    WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-    return self.query(cq, root_id)</code></pre>
+    try:
+        WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
+        return self.query(cq, root_id)
+    except TimeoutException as exc:
+        raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc</code></pre>
 </details>
 </dd>
 <dt id="pyseext.component_query.ComponentQuery.wait_for_single_query"><code class="name flex">
@@ -465,7 +554,7 @@ If there are multiple matches then an error is thrown.</p>
 <dl>
 <dt><strong><code>cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The query to execute</dd>
-<dt><strong><code>root</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dt><strong><code>root_id</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>The id of the container within which to perform the query.
 If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
@@ -486,15 +575,14 @@ If omitted, all components within the document are included in the search.</dd>
 
     Args:
         cq (str): The query to execute
-        root (str, optional): The id of the container within which to perform the query.
-                              If omitted, all components within the document are included in the search.
+        root_id (str, optional): The id of the container within which to perform the query.
+                                 If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
 
     Returns:
         WebElement: The DOM element that matches the query
     &#34;&#34;&#34;
-    WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-    results = self.query(cq, root_id)
+    results = self.wait_for_query(cq, root_id, timeout)
     if len(results) &gt; 1:
         raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
@@ -511,7 +599,7 @@ If there are multiple matches then an error is thrown.</p>
 <dl>
 <dt><strong><code>cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The query to execute</dd>
-<dt><strong><code>root</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dt><strong><code>root_id</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>The id of the container within which to perform the query.
 If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
@@ -532,8 +620,8 @@ If omitted, all components within the document are included in the search.</dd>
 
     Args:
         cq (str): The query to execute
-        root (str, optional): The id of the container within which to perform the query.
-                              If omitted, all components within the document are included in the search.
+        root_id (str, optional): The id of the container within which to perform the query.
+                                 If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
 
     Returns:
@@ -578,6 +666,7 @@ If omitted, all components within the document are included in the search.</dd>
 <ul class="">
 <li><code><a title="pyseext.component_query.ComponentQuery.ComponentQueryFoundExpectation" href="#pyseext.component_query.ComponentQuery.ComponentQueryFoundExpectation">ComponentQueryFoundExpectation</a></code></li>
 <li><code><a title="pyseext.component_query.ComponentQuery.QueryMatchedMultipleElementsException" href="#pyseext.component_query.ComponentQuery.QueryMatchedMultipleElementsException">QueryMatchedMultipleElementsException</a></code></li>
+<li><code><a title="pyseext.component_query.ComponentQuery.QueryNotFoundException" href="#pyseext.component_query.ComponentQuery.QueryNotFoundException">QueryNotFoundException</a></code></li>
 <li><code><a title="pyseext.component_query.ComponentQuery.query" href="#pyseext.component_query.ComponentQuery.query">query</a></code></li>
 <li><code><a title="pyseext.component_query.ComponentQuery.wait_for_query" href="#pyseext.component_query.ComponentQuery.wait_for_query">wait_for_query</a></code></li>
 <li><code><a title="pyseext.component_query.ComponentQuery.wait_for_single_query" href="#pyseext.component_query.ComponentQuery.wait_for_single_query">wait_for_single_query</a></code></li>
