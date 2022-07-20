@@ -70,6 +70,10 @@ class FieldHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField
     Requires the inserts: {form_cq}, {index_or_name}&#34;&#34;&#34;
 
+    _DOES_FIELD_HAVE_FOCUS_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.doesFieldHaveFocus(&#39;{form_cq}&#39;, {index_or_name})&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.doesFieldHaveFocus
+    Requires the inserts: {form_cq}, {index_or_name}&#34;&#34;&#34;
+
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue
     Requires the inserts: {form_cq}, {name}, {data}&#34;&#34;&#34;
@@ -181,18 +185,22 @@ class FieldHelper(HasReferencedJavaScript):
                     if not is_value_a_dict:
                         # We want to type into the combobox, to filter it, and wait for it to load.
                         # Once loaded we expect to have a single value that will end up selected.
+
+                        # Reset the store load count
+                        combobox_cq = self.get_field_component_query(form_cq, name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+
+                        # Filter it
                         field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, field_value)
 
-                        # This reset has to be here it seems, rather than before typing.
-                        # I suspect that the load count gets incremented a few times as the box
-                        # is typed into or something?
-
-                        # Anyway, remote combos will take longer to load than this statement does.
-                        # If not, then I guess that&#39;s a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, name)
-                        self._store_helper.reset_store_load_count(combobox_cq)
+                        # Wait for the store to load
                         self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                        # Often (especially when local) the load count will be incremented several times
+                        # before the store load has actually triggered and completed.
+                        # To guard against this, wait for any pending Ajax calls to complete.
+                        self._core.wait_for_no_ajax_requests_in_progress()
 
                         # FIXME: Does the store have a count of one?
                         # .....: Do we really care? If multiple then the top one will be highlighted...
@@ -206,19 +214,21 @@ class FieldHelper(HasReferencedJavaScript):
                         if not filter_text:
                             raise Core.ArgumentException(&#34;value&#34;, &#34;We were expecting the argument &#39;{name}&#39; to have a &#39;filterText&#39; member, but it is missing.&#34;)
 
-                        # We want to type into the combobox, to filter it, and wait for it to load.
+                        # Reset the store load count
+                        combobox_cq = self.get_field_component_query(form_cq, name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+
+                        # Filter it
                         field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, filter_text)
 
-                        # This reset has to be here it seems, rather than before typing.
-                        # I suspect that the load count gets incremented a few times as the box
-                        # is typed into or something?
-
-                        # Anyway, remote combos will take longer to load than this statement does.
-                        # If not, then I guess that&#39;s a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, name)
-                        self._store_helper.reset_store_load_count(combobox_cq)
+                        # Wait for the store to load
                         self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                        # Often (especially when local) the load count will be incremented several times
+                        # before the store load has actually triggered and completed.
+                        # To guard against this, wait for any pending Ajax calls to complete.
+                        self._core.wait_for_no_ajax_requests_in_progress()
 
                         was_value_selected = self.select_combobox_value(form_cq, name, field_value)
 
@@ -281,12 +291,13 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def focus_field(self, form_cq: str, index_or_name: Union[int, str]):
+    def focus_field(self, form_cq: str, index_or_name: Union[int, str], check_has_focus_after: bool = True):
         &#34;&#34;&#34;Method to focus on a field on a form by (zero-based) index or name.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
-            index_or_name: (Union[int, str]): The zero-based index or name of the field to focus.
+            index_or_name (Union[int, str]): The zero-based index or name of the field to focus.
+            check_has_focus_after (bool): Indicates whether to check that the field is focused afterwards. Defaults to True.
         &#34;&#34;&#34;
         # If value is a string then we want to quote it in our script
         if isinstance(index_or_name, str):
@@ -294,7 +305,38 @@ class FieldHelper(HasReferencedJavaScript):
 
         script = self._FOCUS_FIELD_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
         self.ensure_javascript_loaded()
+
+        self._logger.info(&#34;Focusing field %s on form &#39;%s&#39;&#34;, index_or_name, form_cq)
         self._driver.execute_script(script)
+
+        if check_has_focus_after:
+            has_focus = self.does_field_have_focus(form_cq, index_or_name)
+
+            if not has_focus:
+                self._logger.debug(&#34;Field %s on form &#39;%s&#39; does not have focus!&#34;, index_or_name, form_cq)
+                # Try again (can&#39;t hurt)
+                self._driver.execute_script(script)
+
+            else:
+                self._logger.debug(&#34;Field %s on form &#39;%s&#39; has focus!&#34;, index_or_name, form_cq)
+
+    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+        &#34;&#34;&#34;Determines whether focus is on a field on a form by (zero-based) index or name.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            index_or_name (Union[int, str]): The zero-based index or name of the field.
+
+        Returns:
+            bool: True if the field has focus, False otherwise.
+        &#34;&#34;&#34;
+        # If value is a string then we want to quote it in our script
+        if isinstance(index_or_name, str):
+            index_or_name = f&#34;&#39;{index_or_name}&#39;&#34;
+
+        script = self._DOES_FIELD_HAVE_FOCUS_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
     def get_field_component_query(self, form_cq: str, name: str):
         &#34;&#34;&#34;Builds the component query for a field on a form.
@@ -487,6 +529,10 @@ class FieldHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.focusField
     Requires the inserts: {form_cq}, {index_or_name}&#34;&#34;&#34;
 
+    _DOES_FIELD_HAVE_FOCUS_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.doesFieldHaveFocus(&#39;{form_cq}&#39;, {index_or_name})&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.doesFieldHaveFocus
+    Requires the inserts: {form_cq}, {index_or_name}&#34;&#34;&#34;
+
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.selectComboBoxValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {data})&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue
     Requires the inserts: {form_cq}, {name}, {data}&#34;&#34;&#34;
@@ -598,18 +644,22 @@ class FieldHelper(HasReferencedJavaScript):
                     if not is_value_a_dict:
                         # We want to type into the combobox, to filter it, and wait for it to load.
                         # Once loaded we expect to have a single value that will end up selected.
+
+                        # Reset the store load count
+                        combobox_cq = self.get_field_component_query(form_cq, name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+
+                        # Filter it
                         field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, field_value)
 
-                        # This reset has to be here it seems, rather than before typing.
-                        # I suspect that the load count gets incremented a few times as the box
-                        # is typed into or something?
-
-                        # Anyway, remote combos will take longer to load than this statement does.
-                        # If not, then I guess that&#39;s a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, name)
-                        self._store_helper.reset_store_load_count(combobox_cq)
+                        # Wait for the store to load
                         self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                        # Often (especially when local) the load count will be incremented several times
+                        # before the store load has actually triggered and completed.
+                        # To guard against this, wait for any pending Ajax calls to complete.
+                        self._core.wait_for_no_ajax_requests_in_progress()
 
                         # FIXME: Does the store have a count of one?
                         # .....: Do we really care? If multiple then the top one will be highlighted...
@@ -623,19 +673,21 @@ class FieldHelper(HasReferencedJavaScript):
                         if not filter_text:
                             raise Core.ArgumentException(&#34;value&#34;, &#34;We were expecting the argument &#39;{name}&#39; to have a &#39;filterText&#39; member, but it is missing.&#34;)
 
-                        # We want to type into the combobox, to filter it, and wait for it to load.
+                        # Reset the store load count
+                        combobox_cq = self.get_field_component_query(form_cq, name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+
+                        # Filter it
                         field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, filter_text)
 
-                        # This reset has to be here it seems, rather than before typing.
-                        # I suspect that the load count gets incremented a few times as the box
-                        # is typed into or something?
-
-                        # Anyway, remote combos will take longer to load than this statement does.
-                        # If not, then I guess that&#39;s a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, name)
-                        self._store_helper.reset_store_load_count(combobox_cq)
+                        # Wait for the store to load
                         self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                        # Often (especially when local) the load count will be incremented several times
+                        # before the store load has actually triggered and completed.
+                        # To guard against this, wait for any pending Ajax calls to complete.
+                        self._core.wait_for_no_ajax_requests_in_progress()
 
                         was_value_selected = self.select_combobox_value(form_cq, name, field_value)
 
@@ -698,12 +750,13 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def focus_field(self, form_cq: str, index_or_name: Union[int, str]):
+    def focus_field(self, form_cq: str, index_or_name: Union[int, str], check_has_focus_after: bool = True):
         &#34;&#34;&#34;Method to focus on a field on a form by (zero-based) index or name.
 
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
-            index_or_name: (Union[int, str]): The zero-based index or name of the field to focus.
+            index_or_name (Union[int, str]): The zero-based index or name of the field to focus.
+            check_has_focus_after (bool): Indicates whether to check that the field is focused afterwards. Defaults to True.
         &#34;&#34;&#34;
         # If value is a string then we want to quote it in our script
         if isinstance(index_or_name, str):
@@ -711,7 +764,38 @@ class FieldHelper(HasReferencedJavaScript):
 
         script = self._FOCUS_FIELD_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
         self.ensure_javascript_loaded()
+
+        self._logger.info(&#34;Focusing field %s on form &#39;%s&#39;&#34;, index_or_name, form_cq)
         self._driver.execute_script(script)
+
+        if check_has_focus_after:
+            has_focus = self.does_field_have_focus(form_cq, index_or_name)
+
+            if not has_focus:
+                self._logger.debug(&#34;Field %s on form &#39;%s&#39; does not have focus!&#34;, index_or_name, form_cq)
+                # Try again (can&#39;t hurt)
+                self._driver.execute_script(script)
+
+            else:
+                self._logger.debug(&#34;Field %s on form &#39;%s&#39; has focus!&#34;, index_or_name, form_cq)
+
+    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+        &#34;&#34;&#34;Determines whether focus is on a field on a form by (zero-based) index or name.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            index_or_name (Union[int, str]): The zero-based index or name of the field.
+
+        Returns:
+            bool: True if the field has focus, False otherwise.
+        &#34;&#34;&#34;
+        # If value is a string then we want to quote it in our script
+        if isinstance(index_or_name, str):
+            index_or_name = f&#34;&#39;{index_or_name}&#39;&#34;
+
+        script = self._DOES_FIELD_HAVE_FOCUS_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
 
     def get_field_component_query(self, form_cq: str, name: str):
         &#34;&#34;&#34;Builds the component query for a field on a form.
@@ -911,6 +995,46 @@ supported for the given field xtype.</p></div>
     return field_value == value</code></pre>
 </details>
 </dd>
+<dt id="pyseext.field_helper.FieldHelper.does_field_have_focus"><code class="name flex">
+<span>def <span class="ident">does_field_have_focus</span></span>(<span>self, form_cq: str, index_or_name: Union[int, str])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determines whether focus is on a field on a form by (zero-based) index or name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>index_or_name</code></strong> :&ensp;<code>Union[int, str]</code></dt>
+<dd>The zero-based index or name of the field.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field has focus, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+    &#34;&#34;&#34;Determines whether focus is on a field on a form by (zero-based) index or name.
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        index_or_name (Union[int, str]): The zero-based index or name of the field.
+
+    Returns:
+        bool: True if the field has focus, False otherwise.
+    &#34;&#34;&#34;
+    # If value is a string then we want to quote it in our script
+    if isinstance(index_or_name, str):
+        index_or_name = f&#34;&#39;{index_or_name}&#39;&#34;
+
+    script = self._DOES_FIELD_HAVE_FOCUS_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
+    self.ensure_javascript_loaded()
+    return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
 <dt id="pyseext.field_helper.FieldHelper.find_field_input_element"><code class="name flex">
 <span>def <span class="ident">find_field_input_element</span></span>(<span>self, form_cq: str, name: str) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
@@ -948,7 +1072,7 @@ supported for the given field xtype.</p></div>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.focus_field"><code class="name flex">
-<span>def <span class="ident">focus_field</span></span>(<span>self, form_cq: str, index_or_name: Union[int, str])</span>
+<span>def <span class="ident">focus_field</span></span>(<span>self, form_cq: str, index_or_name: Union[int, str], check_has_focus_after: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method to focus on a field on a form by (zero-based) index or name.</p>
@@ -956,19 +1080,22 @@ supported for the given field xtype.</p></div>
 <dl>
 <dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query that identifies the form panel in which to look for the field</dd>
-<dt><strong><code>index_or_name</code></strong></dt>
-<dd>(Union[int, str]): The zero-based index or name of the field to focus.</dd>
+<dt><strong><code>index_or_name</code></strong> :&ensp;<code>Union[int, str]</code></dt>
+<dd>The zero-based index or name of the field to focus.</dd>
+<dt><strong><code>check_has_focus_after</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates whether to check that the field is focused afterwards. Defaults to True.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def focus_field(self, form_cq: str, index_or_name: Union[int, str]):
+<pre><code class="python">def focus_field(self, form_cq: str, index_or_name: Union[int, str], check_has_focus_after: bool = True):
     &#34;&#34;&#34;Method to focus on a field on a form by (zero-based) index or name.
 
     Args:
         form_cq (str): The component query that identifies the form panel in which to look for the field
-        index_or_name: (Union[int, str]): The zero-based index or name of the field to focus.
+        index_or_name (Union[int, str]): The zero-based index or name of the field to focus.
+        check_has_focus_after (bool): Indicates whether to check that the field is focused afterwards. Defaults to True.
     &#34;&#34;&#34;
     # If value is a string then we want to quote it in our script
     if isinstance(index_or_name, str):
@@ -976,7 +1103,20 @@ supported for the given field xtype.</p></div>
 
     script = self._FOCUS_FIELD_TEMPLATE.format(form_cq=form_cq, index_or_name=index_or_name)
     self.ensure_javascript_loaded()
-    self._driver.execute_script(script)</code></pre>
+
+    self._logger.info(&#34;Focusing field %s on form &#39;%s&#39;&#34;, index_or_name, form_cq)
+    self._driver.execute_script(script)
+
+    if check_has_focus_after:
+        has_focus = self.does_field_have_focus(form_cq, index_or_name)
+
+        if not has_focus:
+            self._logger.debug(&#34;Field %s on form &#39;%s&#39; does not have focus!&#34;, index_or_name, form_cq)
+            # Try again (can&#39;t hurt)
+            self._driver.execute_script(script)
+
+        else:
+            self._logger.debug(&#34;Field %s on form &#39;%s&#39; has focus!&#34;, index_or_name, form_cq)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.get_field_component_query"><code class="name flex">
@@ -1197,18 +1337,22 @@ event is fired on the combobox if the record is found.</p>
                 if not is_value_a_dict:
                     # We want to type into the combobox, to filter it, and wait for it to load.
                     # Once loaded we expect to have a single value that will end up selected.
+
+                    # Reset the store load count
+                    combobox_cq = self.get_field_component_query(form_cq, name)
+                    self._store_helper.reset_store_load_count(combobox_cq)
+
+                    # Filter it
                     field = self.find_field_input_element(form_cq, name)
                     self._input_helper.type_into_element(field, field_value)
 
-                    # This reset has to be here it seems, rather than before typing.
-                    # I suspect that the load count gets incremented a few times as the box
-                    # is typed into or something?
-
-                    # Anyway, remote combos will take longer to load than this statement does.
-                    # If not, then I guess that&#39;s a nice problem to have :-)
-                    combobox_cq = self.get_field_component_query(form_cq, name)
-                    self._store_helper.reset_store_load_count(combobox_cq)
+                    # Wait for the store to load
                     self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                    # Often (especially when local) the load count will be incremented several times
+                    # before the store load has actually triggered and completed.
+                    # To guard against this, wait for any pending Ajax calls to complete.
+                    self._core.wait_for_no_ajax_requests_in_progress()
 
                     # FIXME: Does the store have a count of one?
                     # .....: Do we really care? If multiple then the top one will be highlighted...
@@ -1222,19 +1366,21 @@ event is fired on the combobox if the record is found.</p>
                     if not filter_text:
                         raise Core.ArgumentException(&#34;value&#34;, &#34;We were expecting the argument &#39;{name}&#39; to have a &#39;filterText&#39; member, but it is missing.&#34;)
 
-                    # We want to type into the combobox, to filter it, and wait for it to load.
+                    # Reset the store load count
+                    combobox_cq = self.get_field_component_query(form_cq, name)
+                    self._store_helper.reset_store_load_count(combobox_cq)
+
+                    # Filter it
                     field = self.find_field_input_element(form_cq, name)
                     self._input_helper.type_into_element(field, filter_text)
 
-                    # This reset has to be here it seems, rather than before typing.
-                    # I suspect that the load count gets incremented a few times as the box
-                    # is typed into or something?
-
-                    # Anyway, remote combos will take longer to load than this statement does.
-                    # If not, then I guess that&#39;s a nice problem to have :-)
-                    combobox_cq = self.get_field_component_query(form_cq, name)
-                    self._store_helper.reset_store_load_count(combobox_cq)
+                    # Wait for the store to load
                     self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                    # Often (especially when local) the load count will be incremented several times
+                    # before the store load has actually triggered and completed.
+                    # To guard against this, wait for any pending Ajax calls to complete.
+                    self._core.wait_for_no_ajax_requests_in_progress()
 
                     was_value_selected = self.select_combobox_value(form_cq, name, field_value)
 
@@ -1352,6 +1498,7 @@ event is fired on the combobox if the record is found.</p>
 <li><code><a title="pyseext.field_helper.FieldHelper.RecordNotFoundException" href="#pyseext.field_helper.FieldHelper.RecordNotFoundException">RecordNotFoundException</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.UnsupportedFieldXTypeException" href="#pyseext.field_helper.FieldHelper.UnsupportedFieldXTypeException">UnsupportedFieldXTypeException</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.check_field_value" href="#pyseext.field_helper.FieldHelper.check_field_value">check_field_value</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.does_field_have_focus" href="#pyseext.field_helper.FieldHelper.does_field_have_focus">does_field_have_focus</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.find_field_input_element" href="#pyseext.field_helper.FieldHelper.find_field_input_element">find_field_input_element</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.focus_field" href="#pyseext.field_helper.FieldHelper.focus_field">focus_field</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_component_query" href="#pyseext.field_helper.FieldHelper.get_field_component_query">get_field_component_query</a></code></li>

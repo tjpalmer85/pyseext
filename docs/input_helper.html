@@ -94,20 +94,31 @@ class InputHelper:
             self.type_tab()
 
     def type(self, text: str):
-        &#34;&#34;&#34;Types into the currently focused element in a realistic manner.
+        &#34;&#34;&#34;Types into the currently focused element in a realistic manner, unless our webdriver is remote, then just sends the complete string.
 
         Args:
             text (str): The text to type.
         &#34;&#34;&#34;
-        for character in text:
-            self._action_chains.send_keys(character)
-            self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
+        # If we are remote, then typing a character at a time involves a roundtrip for every character.
+        # This is not ideal, since slows down the test massively.
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            for character in text:
+                self._action_chains.send_keys(character)
+                self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+                self._action_chains.perform()
+        else:
+            self._action_chains.send_keys(text)
             self._action_chains.perform()
+
 
     def type_tab(self):
         &#34;&#34;&#34;Type a tab character into the currently focused element.&#34;&#34;&#34;
         self._action_chains.send_keys(Keys.TAB)
-        self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
         self._action_chains.perform()</code></pre>
 </details>
 </section>
@@ -191,20 +202,31 @@ class InputHelper:
             self.type_tab()
 
     def type(self, text: str):
-        &#34;&#34;&#34;Types into the currently focused element in a realistic manner.
+        &#34;&#34;&#34;Types into the currently focused element in a realistic manner, unless our webdriver is remote, then just sends the complete string.
 
         Args:
             text (str): The text to type.
         &#34;&#34;&#34;
-        for character in text:
-            self._action_chains.send_keys(character)
-            self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
+        # If we are remote, then typing a character at a time involves a roundtrip for every character.
+        # This is not ideal, since slows down the test massively.
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            for character in text:
+                self._action_chains.send_keys(character)
+                self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+                self._action_chains.perform()
+        else:
+            self._action_chains.send_keys(text)
             self._action_chains.perform()
+
 
     def type_tab(self):
         &#34;&#34;&#34;Type a tab character into the currently focused element.&#34;&#34;&#34;
         self._action_chains.send_keys(Keys.TAB)
-        self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
         self._action_chains.perform()</code></pre>
 </details>
 <h3>Class variables</h3>
@@ -224,7 +246,7 @@ class InputHelper:
 <span>def <span class="ident">type</span></span>(<span>self, text: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Types into the currently focused element in a realistic manner.</p>
+<div class="desc"><p>Types into the currently focused element in a realistic manner, unless our webdriver is remote, then just sends the complete string.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
@@ -235,14 +257,21 @@ class InputHelper:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def type(self, text: str):
-    &#34;&#34;&#34;Types into the currently focused element in a realistic manner.
+    &#34;&#34;&#34;Types into the currently focused element in a realistic manner, unless our webdriver is remote, then just sends the complete string.
 
     Args:
         text (str): The text to type.
     &#34;&#34;&#34;
-    for character in text:
-        self._action_chains.send_keys(character)
-        self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
+    # If we are remote, then typing a character at a time involves a roundtrip for every character.
+    # This is not ideal, since slows down the test massively.
+    if not self._driver._is_remote: # pylint: disable=protected-access
+        for character in text:
+            self._action_chains.send_keys(character)
+            self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+            self._action_chains.perform()
+    else:
+        self._action_chains.send_keys(text)
         self._action_chains.perform()</code></pre>
 </details>
 </dd>
@@ -309,7 +338,10 @@ class InputHelper:
 <pre><code class="python">def type_tab(self):
     &#34;&#34;&#34;Type a tab character into the currently focused element.&#34;&#34;&#34;
     self._action_chains.send_keys(Keys.TAB)
-    self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
+    if not self._driver._is_remote: # pylint: disable=protected-access
+        self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+
     self._action_chains.perform()</code></pre>
 </details>
 </dd>

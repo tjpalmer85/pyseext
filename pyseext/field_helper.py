@@ -156,18 +156,22 @@ class FieldHelper(HasReferencedJavaScript):
                     if not is_value_a_dict:
                         # We want to type into the combobox, to filter it, and wait for it to load.
                         # Once loaded we expect to have a single value that will end up selected.
+
+                        # Reset the store load count
+                        combobox_cq = self.get_field_component_query(form_cq, name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+
+                        # Filter it
                         field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, field_value)
 
-                        # This reset has to be here it seems, rather than before typing.
-                        # I suspect that the load count gets incremented a few times as the box
-                        # is typed into or something?
-
-                        # Anyway, remote combos will take longer to load than this statement does.
-                        # If not, then I guess that's a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, name)
-                        self._store_helper.reset_store_load_count(combobox_cq)
+                        # Wait for the store to load
                         self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                        # Often (especially when local) the load count will be incremented several times
+                        # before the store load has actually triggered and completed.
+                        # To guard against this, wait for any pending Ajax calls to complete.
+                        self._core.wait_for_no_ajax_requests_in_progress()
 
                         # FIXME: Does the store have a count of one?
                         # .....: Do we really care? If multiple then the top one will be highlighted...
@@ -181,19 +185,21 @@ class FieldHelper(HasReferencedJavaScript):
                         if not filter_text:
                             raise Core.ArgumentException("value", "We were expecting the argument '{name}' to have a 'filterText' member, but it is missing.")
 
-                        # We want to type into the combobox, to filter it, and wait for it to load.
+                        # Reset the store load count
+                        combobox_cq = self.get_field_component_query(form_cq, name)
+                        self._store_helper.reset_store_load_count(combobox_cq)
+
+                        # Filter it
                         field = self.find_field_input_element(form_cq, name)
                         self._input_helper.type_into_element(field, filter_text)
 
-                        # This reset has to be here it seems, rather than before typing.
-                        # I suspect that the load count gets incremented a few times as the box
-                        # is typed into or something?
-
-                        # Anyway, remote combos will take longer to load than this statement does.
-                        # If not, then I guess that's a nice problem to have :-)
-                        combobox_cq = self.get_field_component_query(form_cq, name)
-                        self._store_helper.reset_store_load_count(combobox_cq)
+                        # Wait for the store to load
                         self._store_helper.wait_for_store_loaded(combobox_cq)
+
+                        # Often (especially when local) the load count will be incremented several times
+                        # before the store load has actually triggered and completed.
+                        # To guard against this, wait for any pending Ajax calls to complete.
+                        self._core.wait_for_no_ajax_requests_in_progress()
 
                         was_value_selected = self.select_combobox_value(form_cq, name, field_value)
 
