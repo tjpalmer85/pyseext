@@ -64,7 +64,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -> list[WebElement]:
+    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True) -> list[WebElement]:
         """Method that waits for the specified CQ to match something
 
         Args:
@@ -72,15 +72,19 @@ class ComponentQuery(HasReferencedJavaScript):
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
+            throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
 
         Returns:
-            list[WebElement]: An array of DOM elements that match the query or an empty array if not found
+            list[WebElement]: An array of DOM elements that match the query or Nonne if not found (and not configured to throw)
         """
         try:
             WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
             return self.query(cq, root_id)
         except TimeoutException as exc:
-            raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
+            if throw_if_not_found:
+                raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
+
+            return None
 
     def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -> WebElement:
         """Method that waits for the specified CQ to match a single result.

@@ -93,7 +93,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; list[WebElement]:
+    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True) -&gt; list[WebElement]:
         &#34;&#34;&#34;Method that waits for the specified CQ to match something
 
         Args:
@@ -101,15 +101,19 @@ class ComponentQuery(HasReferencedJavaScript):
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
+            throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
 
         Returns:
-            list[WebElement]: An array of DOM elements that match the query or an empty array if not found
+            list[WebElement]: An array of DOM elements that match the query or Nonne if not found (and not configured to throw)
         &#34;&#34;&#34;
         try:
             WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
             return self.query(cq, root_id)
         except TimeoutException as exc:
-            raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
+            if throw_if_not_found:
+                raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
+
+            return None
 
     def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
@@ -302,7 +306,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; list[WebElement]:
+    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True) -&gt; list[WebElement]:
         &#34;&#34;&#34;Method that waits for the specified CQ to match something
 
         Args:
@@ -310,15 +314,19 @@ class ComponentQuery(HasReferencedJavaScript):
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
+            throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
 
         Returns:
-            list[WebElement]: An array of DOM elements that match the query or an empty array if not found
+            list[WebElement]: An array of DOM elements that match the query or Nonne if not found (and not configured to throw)
         &#34;&#34;&#34;
         try:
             WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
             return self.query(cq, root_id)
         except TimeoutException as exc:
-            raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
+            if throw_if_not_found:
+                raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
+
+            return None
 
     def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
@@ -502,7 +510,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.component_query.ComponentQuery.wait_for_query"><code class="name flex">
-<span>def <span class="ident">wait_for_query</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
+<span>def <span class="ident">wait_for_query</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10, throw_if_not_found: bool = True) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method that waits for the specified CQ to match something</p>
@@ -515,17 +523,19 @@ If omitted, all components within the document are included in the search.</dd>
 If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
 <dd>Number of seconds before timing out (default 10)</dd>
+<dt><strong><code>throw_if_not_found</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates whether to throw an exception if not found (default True).</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>list[WebElement]</code></dt>
-<dd>An array of DOM elements that match the query or an empty array if not found</dd>
+<dd>An array of DOM elements that match the query or Nonne if not found (and not configured to throw)</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; list[WebElement]:
+<pre><code class="python">def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True) -&gt; list[WebElement]:
     &#34;&#34;&#34;Method that waits for the specified CQ to match something
 
     Args:
@@ -533,15 +543,19 @@ If omitted, all components within the document are included in the search.</dd>
         root_id (str, optional): The id of the container within which to perform the query.
                                  If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
+        throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
 
     Returns:
-        list[WebElement]: An array of DOM elements that match the query or an empty array if not found
+        list[WebElement]: An array of DOM elements that match the query or Nonne if not found (and not configured to throw)
     &#34;&#34;&#34;
     try:
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
         return self.query(cq, root_id)
     except TimeoutException as exc:
-        raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc</code></pre>
+        if throw_if_not_found:
+            raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
+
+        return None</code></pre>
 </details>
 </dd>
 <dt id="pyseext.component_query.ComponentQuery.wait_for_single_query"><code class="name flex">

@@ -55,6 +55,26 @@ class MenuHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
+    def try_get_menu_item_by_text(self, text: str, root_id: Union[str, None] = None):
+        """Finds a visible, enabled menu item with the specified text and returns it if found.
+
+        Args:
+            text (str): The text on the menu item
+            root_id (str, optional): The id of the container within which to perform the query.
+                If omitted, all components within the document are included in the search.
+
+        Returns:
+            WebElement: The DOM element for the menu item, if found.
+        """
+        cq = self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text)
+        results = self._cq.wait_for_query(cq=cq, root_id=root_id, timeout=1, throw_if_not_found=False)
+        if len(results) > 1:
+            raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
+        elif len(results) > 0:
+            return results[0]
+        else:
+            return None
+
     def click_menu_item_by_text(self, text: str, root_id: Union[str, None] = None):
         """Finds a visible, enabled menu item with the specified text and clicks it.
 
