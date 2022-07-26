@@ -68,7 +68,9 @@ class MenuHelper:
         """
         cq = self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text)
         results = self._cq.wait_for_query(cq=cq, root_id=root_id, timeout=1, throw_if_not_found=False)
-        if len(results) > 1:
+        if results is None:
+            return None
+        elif len(results) > 1:
             raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
         elif len(results) > 0:
             return results[0]
