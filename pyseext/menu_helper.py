@@ -13,11 +13,11 @@ class MenuHelper:
     """A class to help with interacting with Ext menus and menu items"""
 
     # Class variables
-    _ENABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=false]'
+    _ENABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=false]{{isVisible(true)}}'
     """The component query template to use to find an enabled menu item.
     Requires the inserts: {text}"""
 
-    _DISABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=true]'
+    _DISABLED_MENU_ITEM_TEMPLATE: str = 'menuitem[text="{text}"][disabled=true]{{isVisible(true)}}'
     """The component query template to use to find a disbled menu item.
     Requires the inserts: {text}"""
 
@@ -55,22 +55,21 @@ class MenuHelper:
         self._action_chains.click()
         self._action_chains.perform()
 
-    def try_get_menu_item_by_text(self, text: str, root_id: Union[str, None] = None):
+    def try_get_menu_item_by_text(self, text: str, root_id: Union[str, None] = None, timeout: float = 1):
         """Finds a visible, enabled menu item with the specified text and returns it if found.
 
         Args:
             text (str): The text on the menu item
             root_id (str, optional): The id of the container within which to perform the query.
                 If omitted, all components within the document are included in the search.
+            timeout (float): Number of seconds before timing out (default 1)
 
         Returns:
             WebElement: The DOM element for the menu item, if found.
         """
         cq = self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text)
-        results = self._cq.wait_for_query(cq=cq, root_id=root_id, timeout=1, throw_if_not_found=False)
-        if results is None:
-            return None
-        elif len(results) > 1:
+        results = self._cq.wait_for_query(cq=cq, root_id=root_id, timeout=timeout, throw_if_not_found=False)
+        if len(results) > 1:
             raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
         elif len(results) > 0:
             return results[0]

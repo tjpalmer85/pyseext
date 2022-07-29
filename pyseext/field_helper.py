@@ -2,13 +2,12 @@
 Module that contains our FieldHelper class.
 """
 import logging
-from operator import index
 from typing import Union, Any
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.wait import WebDriverWait, TimeoutException
+from selenium.webdriver.support.wait import WebDriverWait
 from pyseext.component_query import ComponentQuery
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript

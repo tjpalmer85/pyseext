@@ -4,9 +4,10 @@ Module that contains our ComponentQuery class.
 import logging
 from typing import Union
 
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.wait import WebDriverWait, TimeoutException
+from selenium.webdriver.support.wait import WebDriverWait
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 
@@ -75,7 +76,7 @@ class ComponentQuery(HasReferencedJavaScript):
             throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
 
         Returns:
-            list[WebElement]: An array of DOM elements that match the query or Nonne if not found (and not configured to throw)
+            list[WebElement]: An array of DOM elements that match the query or an empty array if not found (and not configured to throw)
         """
         try:
             WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
@@ -84,7 +85,7 @@ class ComponentQuery(HasReferencedJavaScript):
             if throw_if_not_found:
                 raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
 
-            return None
+            return []
 
     def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -> WebElement:
         """Method that waits for the specified CQ to match a single result.
