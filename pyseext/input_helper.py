@@ -84,7 +84,7 @@ class InputHelper:
             self._action_chains.send_keys(text)
             self._action_chains.perform()
 
-    def type_tab(self, pause_time: float = None):
+    def type_tab(self, pause_time: Union[float, None] = None):
         """Type a tab character into the currently focused element.
 
         Args:

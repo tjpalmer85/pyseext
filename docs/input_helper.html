@@ -113,7 +113,7 @@ class InputHelper:
             self._action_chains.send_keys(text)
             self._action_chains.perform()
 
-    def type_tab(self, pause_time: float = None):
+    def type_tab(self, pause_time: Union[float, None] = None):
         &#34;&#34;&#34;Type a tab character into the currently focused element.
 
         Args:
@@ -230,7 +230,7 @@ class InputHelper:
             self._action_chains.send_keys(text)
             self._action_chains.perform()
 
-    def type_tab(self, pause_time: float = None):
+    def type_tab(self, pause_time: Union[float, None] = None):
         &#34;&#34;&#34;Type a tab character into the currently focused element.
 
         Args:
@@ -351,7 +351,7 @@ class InputHelper:
 </details>
 </dd>
 <dt id="pyseext.input_helper.InputHelper.type_tab"><code class="name flex">
-<span>def <span class="ident">type_tab</span></span>(<span>self, pause_time: float = None)</span>
+<span>def <span class="ident">type_tab</span></span>(<span>self, pause_time: Optional[float] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Type a tab character into the currently focused element.</p>
@@ -365,7 +365,7 @@ Defaults to None, in which case a random wait time is used between TYPING_SLEEP_
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def type_tab(self, pause_time: float = None):
+<pre><code class="python">def type_tab(self, pause_time: Union[float, None] = None):
     &#34;&#34;&#34;Type a tab character into the currently focused element.
 
     Args:
