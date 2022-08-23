@@ -18,93 +18,59 @@ globalThis.PySeExt.TreeHelper = {
     },
 
     /**
-     * Finds a node by text, then the child HTML element that holds it's expander UI.
+     * Finds a node, then the child HTML element that holds it's expander UI.
      *
      * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeText The node text to find.
+     * @param {String} nodeTextOrData The node text or data to find.
      * @returns {HTMLElement} The HTML element for the node's expander.
      */
-     getNodeExpanderByText: function(treeSelector, nodeText) {
-         var me = this;
-
-        return me.getNodeExpanderByData(treeSelector, me.__getDataForText(nodeText));
+     getNodeExpander: function(treeSelector, nodeTextOrData) {
+        return this.getNodeElement(treeSelector, nodeTextOrData, '.x-tree-expander');
     },
 
     /**
-     * Finds a node by text, then the child HTML element that holds it's icon.
+     * Finds a node, then the child HTML element that holds it's icon.
      *
      * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeText The node text to find.
+     * @param {String} nodeTextOrData The node text or data to find.
      * @returns {HTMLElement} The HTML element for the node's icon.
      */
-     getNodeIconByText: function(treeSelector, nodeText) {
-        var me = this;
-
-        return me.getNodeIconByData(treeSelector, me.__getDataForText(nodeText));
+     getNodeIcon: function(treeSelector, nodeTextOrData) {
+        return this.getNodeElement(treeSelector, nodeTextOrData, '.x-tree-icon');
     },
 
     /**
-     * Finds a node by text, then the child HTML element that holds it's text element.
+     * Finds a node, then the child HTML element that holds it's text element.
      *
      * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeText The node text to find.
+     * @param {String} nodeTextOrData The node text or data to find.
      * @returns {HTMLElement} The HTML element for the node's text.
      */
-     getNodeTextByText: function(treeSelector, nodeText) {
-        var me = this;
-
-        return me.getNodeTextByData(treeSelector, me.__getDataForText(nodeText));
+     getNodeText: function(treeSelector, nodeTextOrData) {
+        return this.getNodeElement(treeSelector, nodeTextOrData, '.x-tree-node-text');
     },
 
     /**
-     * Finds a node by data, then the child HTML element that holds it's expander UI.
+     * Finds a node, then a child element by CSS query.
      *
      * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeData The node data to find.
-     * @returns {HTMLElement} The HTML element for the node's expander.
-     */
-     getNodeExpanderByData: function(treeSelector, nodeData) {
-        return this.getNodeElementByData(treeSelector, nodeData, '.x-tree-expander');
-    },
-
-    /**
-     * Finds a node by data, then the child HTML element that holds it's icon.
-     *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeData The node data to find.
-     * @returns {HTMLElement} The HTML element for the node's icon.
-     */
-     getNodeIconByData: function(treeSelector, nodeData) {
-        return this.getNodeElementByData(treeSelector, nodeData, '.x-tree-icon');
-    },
-
-    /**
-     * Finds a node by data, then the child HTML element that holds it's text element.
-     *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeData The node data to find.
-     * @returns {HTMLElement} The HTML element for the node's text.
-     */
-     getNodeTextByData: function(treeSelector, nodeData) {
-        return this.getNodeElementByData(treeSelector, nodeData, '.x-tree-node-text');
-    },
-
-    /**
-     * Finds a node by data, then a child element by CSS query.
-     *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeText The node text to find.
+     * @param {String} nodeTextOrData The node text or data to find.
      * @param {String} cssQuery The CSS to query for in the found node row element.
      *                          Expander UI element = '.x-tree-expander'
      *                          Node icon = '.x-tree-icon'
      *                          Node text = '.x-tree-node-text'
      * @returns {HTMLElement} The HTML element for the node part.
      */
-     getNodeElementByData: function(treeSelector, nodeData, cssQuery) {
+     getNodeElement: function(treeSelector, nodeTextOrData, cssQuery) {
         var me = this,
+            nodeData = nodeTextOrData,
             nodeRowElement,
             children,
             element;
+
+        if (Ext.isString(nodeData)) {
+            nodeData = me.__getDataForText(nodeData);
+        }
 
         nodeRowElement = me.__getNodeRowElementByData(treeSelector, nodeData);
         if (nodeRowElement) {
@@ -118,26 +84,19 @@ globalThis.PySeExt.TreeHelper = {
     },
 
     /**
-     * Finds a node by text, a causes it and its children to reload.
+     * Finds a node, a causes it and its children to reload.
      *
      * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeText The node text to find.
+     * @param {String} nodeTextOrData The node text or data to find.
      */
-     reloadNodeByText: function(treeSelector, nodeText) {
-        var me = this;
-
-        return me.reloadNodeByData(treeSelector, me.__getDataForText(nodeText));
-     },
-
-    /**
-     * Finds a node by data, a causes it and its children to reload.
-     *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeData The node data to find.
-     */
-     reloadNodeByData: function(treeSelector, nodeData) {
+     reloadNode: function(treeSelector, nodeTextOrData) {
         var me = this,
+            nodeData = nodeTextOrData,
             node;
+
+        if (Ext.isString(nodeData)) {
+            nodeData = me.__getDataForText(nodeData);
+        }
 
         node = me.__getNodeByData(treeSelector, nodeData);
         if (node) {
@@ -211,12 +170,14 @@ globalThis.PySeExt.TreeHelper = {
      * @private
      * @param  {String} treeSelector    The selector to use to find the tree.
      * @param  {Object} nodeData        The node data to find.
+     * @param  {Object} parentNode      The optional node to use as the root for finding the child node.
+     *                                  If omitted to whole tree is searched.
      * @return {Ext.data.NodeInterface} The tree node, or undefined if not found.
      */
-    __getNodeByData: function(treeSelector, nodeData) {
+    __getNodeByData: function(treeSelector, nodeData, parentNode) {
         var me = this,
             treePanel = me.__getTree(treeSelector),
-            rootNode = treePanel.getRootNode(),
+            rootNode = parentNode || treePanel.getRootNode(),
             foundNode;
 
         if (me.__isBranchLoading(rootNode)) {
@@ -228,7 +189,7 @@ globalThis.PySeExt.TreeHelper = {
                 prop;
 
             if (node.isLoading()) {
-                globalThis.Ext.raise({ msg: "Found a node that is loading, which was not expected,", node });
+                globalThis.Ext.raise({ msg: "Found a node that is loading, which was not expected.", node });
             } else {
                 for (prop in nodeData) {
                     if (nodeData.hasOwnProperty(prop)) {
