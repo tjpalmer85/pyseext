@@ -148,6 +148,91 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
+    def is_field_a_combobox(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a combobox (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a combobox, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.ComboBox&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_text_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a text field (or a subclass of it).
+        Note that text areas, number fields, and date fields all inherit from text field.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a text field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Text&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_number_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a number field (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a number field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Number&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_date_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a date field (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a date field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Date&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_checkbox(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a checkbox (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a checkbox, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Checkbox&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_radiogroup(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a radiogroup, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.RadioGroup&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_radio_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radio field (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a radio field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Radio&#39;, self.get_field_component_query(form_cq, name))
+
     def get_field_value(self, form_cq: str, name: str) -&gt; Any:
         &#34;&#34;&#34;Attempts to get the value of a field by name from the specified form panel
 
@@ -185,6 +270,7 @@ class FieldHelper(HasReferencedJavaScript):
                                              If the value is supplied as a dictionary and the field is not a store holder then
                                              an exception is thrown.
         &#34;&#34;&#34;
+        # No longer using the xtype, but useful to throw a better error if field not found.
         field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
@@ -192,7 +278,7 @@ class FieldHelper(HasReferencedJavaScript):
             field_value = self._core.try_get_object_member(value, &#39;value&#39;, value)
 
             # Now need to set it&#39;s value
-            if (field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)):
+            if self.is_field_a_combobox(form_cq, name):
                 is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, name)
                 is_value_a_dict = isinstance(field_value, dict)
 
@@ -264,16 +350,14 @@ class FieldHelper(HasReferencedJavaScript):
                         if not was_value_selected:
                             raise FieldHelper.RecordNotFoundException(form_cq, name, field_value)
 
-            elif (field_xtype.endswith(&#39;textfield&#39;) or
-                field_xtype.endswith(&#39;number&#39;) or
-                field_xtype.endswith(&#39;datefield&#39;)):
+            elif self.is_field_a_text_field(form_cq, name):
                 # Field can be typed into
                 field = self.find_field_input_element(form_cq, name)
                 self._input_helper.type_into_element(field, field_value)
 
-            elif (field_xtype.endswith(&#39;checkbox&#39;) or
-                field_xtype.endswith(&#39;radiogroup&#39;) or
-                field_xtype.endswith(&#39;radio&#39;)):
+            elif (self.is_field_a_checkbox(form_cq, name) or
+                self.is_field_a_radiogroup(form_cq, name) or
+                self.is_field_a_radio_field(form_cq, name)):
 
                 # FIXME: We could click on the elements here, after checking whether they
                 # .....: are already set to the value we want.
@@ -374,7 +458,8 @@ class FieldHelper(HasReferencedJavaScript):
             form_cq (str): The component query that identifies the form panel in which to look for the field
             name (str): The name of the field.
         &#34;&#34;&#34;
-        return f&#39;{form_cq} field[name=&#34;{name}&#34;]&#39;
+        # Need to use component rather than field since need to be able to query for radiogroup and checkbox group.
+        return f&#39;{form_cq} component[name=&#34;{name}&#34;]&#39;
 
     def check_field_value(self, form_cq: str, name: str, value: Any) -&gt; bool:
         &#34;&#34;&#34;Method that checks that the value of the specified field is that specified.
@@ -649,6 +734,91 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
+    def is_field_a_combobox(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a combobox (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a combobox, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.ComboBox&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_text_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a text field (or a subclass of it).
+        Note that text areas, number fields, and date fields all inherit from text field.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a text field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Text&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_number_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a number field (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a number field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Number&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_date_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a date field (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a date field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Date&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_checkbox(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a checkbox (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a checkbox, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Checkbox&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_radiogroup(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a radiogroup, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.RadioGroup&#39;, self.get_field_component_query(form_cq, name))
+
+    def is_field_a_radio_field(self, form_cq: str, name: str) -&gt; bool:
+        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radio field (or a subclass of it).
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            bool: True if the field is a radio field, False otherwise.
+        &#34;&#34;&#34;
+        return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Radio&#39;, self.get_field_component_query(form_cq, name))
+
     def get_field_value(self, form_cq: str, name: str) -&gt; Any:
         &#34;&#34;&#34;Attempts to get the value of a field by name from the specified form panel
 
@@ -686,6 +856,7 @@ class FieldHelper(HasReferencedJavaScript):
                                              If the value is supplied as a dictionary and the field is not a store holder then
                                              an exception is thrown.
         &#34;&#34;&#34;
+        # No longer using the xtype, but useful to throw a better error if field not found.
         field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
@@ -693,7 +864,7 @@ class FieldHelper(HasReferencedJavaScript):
             field_value = self._core.try_get_object_member(value, &#39;value&#39;, value)
 
             # Now need to set it&#39;s value
-            if (field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)):
+            if self.is_field_a_combobox(form_cq, name):
                 is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, name)
                 is_value_a_dict = isinstance(field_value, dict)
 
@@ -765,16 +936,14 @@ class FieldHelper(HasReferencedJavaScript):
                         if not was_value_selected:
                             raise FieldHelper.RecordNotFoundException(form_cq, name, field_value)
 
-            elif (field_xtype.endswith(&#39;textfield&#39;) or
-                field_xtype.endswith(&#39;number&#39;) or
-                field_xtype.endswith(&#39;datefield&#39;)):
+            elif self.is_field_a_text_field(form_cq, name):
                 # Field can be typed into
                 field = self.find_field_input_element(form_cq, name)
                 self._input_helper.type_into_element(field, field_value)
 
-            elif (field_xtype.endswith(&#39;checkbox&#39;) or
-                field_xtype.endswith(&#39;radiogroup&#39;) or
-                field_xtype.endswith(&#39;radio&#39;)):
+            elif (self.is_field_a_checkbox(form_cq, name) or
+                self.is_field_a_radiogroup(form_cq, name) or
+                self.is_field_a_radio_field(form_cq, name)):
 
                 # FIXME: We could click on the elements here, after checking whether they
                 # .....: are already set to the value we want.
@@ -875,7 +1044,8 @@ class FieldHelper(HasReferencedJavaScript):
             form_cq (str): The component query that identifies the form panel in which to look for the field
             name (str): The name of the field.
         &#34;&#34;&#34;
-        return f&#39;{form_cq} field[name=&#34;{name}&#34;]&#39;
+        # Need to use component rather than field since need to be able to query for radiogroup and checkbox group.
+        return f&#39;{form_cq} component[name=&#34;{name}&#34;]&#39;
 
     def check_field_value(self, form_cq: str, name: str, value: Any) -&gt; bool:
         &#34;&#34;&#34;Method that checks that the value of the specified field is that specified.
@@ -1247,7 +1417,8 @@ utilise the methods in StoreHelper, say.</p>
         form_cq (str): The component query that identifies the form panel in which to look for the field
         name (str): The name of the field.
     &#34;&#34;&#34;
-    return f&#39;{form_cq} field[name=&#34;{name}&#34;]&#39;</code></pre>
+    # Need to use component rather than field since need to be able to query for radiogroup and checkbox group.
+    return f&#39;{form_cq} component[name=&#34;{name}&#34;]&#39;</code></pre>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.get_field_value"><code class="name flex">
@@ -1320,6 +1491,246 @@ utilise the methods in StoreHelper, say.</p>
     script = self._GET_FIELD_XTYPE_TEMPLATE.format(form_cq=form_cq, name=name)
     self.ensure_javascript_loaded()
     return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
+<dt id="pyseext.field_helper.FieldHelper.is_field_a_checkbox"><code class="name flex">
+<span>def <span class="ident">is_field_a_checkbox</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a checkbox (or a subclass of it).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field is a checkbox, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_field_a_checkbox(self, form_cq: str, name: str) -&gt; bool:
+    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a checkbox (or a subclass of it).
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        bool: True if the field is a checkbox, False otherwise.
+    &#34;&#34;&#34;
+    return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Checkbox&#39;, self.get_field_component_query(form_cq, name))</code></pre>
+</details>
+</dd>
+<dt id="pyseext.field_helper.FieldHelper.is_field_a_combobox"><code class="name flex">
+<span>def <span class="ident">is_field_a_combobox</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a combobox (or a subclass of it).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field is a combobox, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_field_a_combobox(self, form_cq: str, name: str) -&gt; bool:
+    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a combobox (or a subclass of it).
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        bool: True if the field is a combobox, False otherwise.
+    &#34;&#34;&#34;
+    return self._cq.is_component_instance_of_class(&#39;Ext.form.field.ComboBox&#39;, self.get_field_component_query(form_cq, name))</code></pre>
+</details>
+</dd>
+<dt id="pyseext.field_helper.FieldHelper.is_field_a_date_field"><code class="name flex">
+<span>def <span class="ident">is_field_a_date_field</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a date field (or a subclass of it).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field is a date field, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_field_a_date_field(self, form_cq: str, name: str) -&gt; bool:
+    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a date field (or a subclass of it).
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        bool: True if the field is a date field, False otherwise.
+    &#34;&#34;&#34;
+    return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Date&#39;, self.get_field_component_query(form_cq, name))</code></pre>
+</details>
+</dd>
+<dt id="pyseext.field_helper.FieldHelper.is_field_a_number_field"><code class="name flex">
+<span>def <span class="ident">is_field_a_number_field</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a number field (or a subclass of it).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field is a number field, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_field_a_number_field(self, form_cq: str, name: str) -&gt; bool:
+    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a number field (or a subclass of it).
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        bool: True if the field is a number field, False otherwise.
+    &#34;&#34;&#34;
+    return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Number&#39;, self.get_field_component_query(form_cq, name))</code></pre>
+</details>
+</dd>
+<dt id="pyseext.field_helper.FieldHelper.is_field_a_radio_field"><code class="name flex">
+<span>def <span class="ident">is_field_a_radio_field</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a radio field (or a subclass of it).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field is a radio field, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_field_a_radio_field(self, form_cq: str, name: str) -&gt; bool:
+    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radio field (or a subclass of it).
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        bool: True if the field is a radio field, False otherwise.
+    &#34;&#34;&#34;
+    return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Radio&#39;, self.get_field_component_query(form_cq, name))</code></pre>
+</details>
+</dd>
+<dt id="pyseext.field_helper.FieldHelper.is_field_a_radiogroup"><code class="name flex">
+<span>def <span class="ident">is_field_a_radiogroup</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field is a radiogroup, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_field_a_radiogroup(self, form_cq: str, name: str) -&gt; bool:
+    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        bool: True if the field is a radiogroup, False otherwise.
+    &#34;&#34;&#34;
+    return self._cq.is_component_instance_of_class(&#39;Ext.form.RadioGroup&#39;, self.get_field_component_query(form_cq, name))</code></pre>
+</details>
+</dd>
+<dt id="pyseext.field_helper.FieldHelper.is_field_a_text_field"><code class="name flex">
+<span>def <span class="ident">is_field_a_text_field</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a text field (or a subclass of it).
+Note that text areas, number fields, and date fields all inherit from text field.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the field is a text field, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_field_a_text_field(self, form_cq: str, name: str) -&gt; bool:
+    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a text field (or a subclass of it).
+    Note that text areas, number fields, and date fields all inherit from text field.
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        bool: True if the field is a text field, False otherwise.
+    &#34;&#34;&#34;
+    return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Text&#39;, self.get_field_component_query(form_cq, name))</code></pre>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.select_combobox_value"><code class="name flex">
@@ -1422,6 +1833,7 @@ event is fired on the combobox if the record is found.</p>
                                          If the value is supplied as a dictionary and the field is not a store holder then
                                          an exception is thrown.
     &#34;&#34;&#34;
+    # No longer using the xtype, but useful to throw a better error if field not found.
     field_xtype = self.get_field_xtype(form_cq, name)
 
     if field_xtype:
@@ -1429,7 +1841,7 @@ event is fired on the combobox if the record is found.</p>
         field_value = self._core.try_get_object_member(value, &#39;value&#39;, value)
 
         # Now need to set it&#39;s value
-        if (field_xtype.endswith(&#39;combo&#39;) or field_xtype.endswith(&#39;combobox&#39;)):
+        if self.is_field_a_combobox(form_cq, name):
             is_combo_remote = self._is_field_remotely_filtered_combobox(form_cq, name)
             is_value_a_dict = isinstance(field_value, dict)
 
@@ -1501,16 +1913,14 @@ event is fired on the combobox if the record is found.</p>
                     if not was_value_selected:
                         raise FieldHelper.RecordNotFoundException(form_cq, name, field_value)
 
-        elif (field_xtype.endswith(&#39;textfield&#39;) or
-            field_xtype.endswith(&#39;number&#39;) or
-            field_xtype.endswith(&#39;datefield&#39;)):
+        elif self.is_field_a_text_field(form_cq, name):
             # Field can be typed into
             field = self.find_field_input_element(form_cq, name)
             self._input_helper.type_into_element(field, field_value)
 
-        elif (field_xtype.endswith(&#39;checkbox&#39;) or
-            field_xtype.endswith(&#39;radiogroup&#39;) or
-            field_xtype.endswith(&#39;radio&#39;)):
+        elif (self.is_field_a_checkbox(form_cq, name) or
+            self.is_field_a_radiogroup(form_cq, name) or
+            self.is_field_a_radio_field(form_cq, name)):
 
             # FIXME: We could click on the elements here, after checking whether they
             # .....: are already set to the value we want.
@@ -1635,6 +2045,13 @@ event is fired on the combobox if the record is found.</p>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_component_query" href="#pyseext.field_helper.FieldHelper.get_field_component_query">get_field_component_query</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_value" href="#pyseext.field_helper.FieldHelper.get_field_value">get_field_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_xtype" href="#pyseext.field_helper.FieldHelper.get_field_xtype">get_field_xtype</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_checkbox" href="#pyseext.field_helper.FieldHelper.is_field_a_checkbox">is_field_a_checkbox</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_combobox" href="#pyseext.field_helper.FieldHelper.is_field_a_combobox">is_field_a_combobox</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_date_field" href="#pyseext.field_helper.FieldHelper.is_field_a_date_field">is_field_a_date_field</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_number_field" href="#pyseext.field_helper.FieldHelper.is_field_a_number_field">is_field_a_number_field</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_radio_field" href="#pyseext.field_helper.FieldHelper.is_field_a_radio_field">is_field_a_radio_field</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_radiogroup" href="#pyseext.field_helper.FieldHelper.is_field_a_radiogroup">is_field_a_radiogroup</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_text_field" href="#pyseext.field_helper.FieldHelper.is_field_a_text_field">is_field_a_text_field</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.select_combobox_value" href="#pyseext.field_helper.FieldHelper.select_combobox_value">select_combobox_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.set_field_value" href="#pyseext.field_helper.FieldHelper.set_field_value">set_field_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.set_field_value_directly" href="#pyseext.field_helper.FieldHelper.set_field_value_directly">set_field_value_directly</a></code></li>

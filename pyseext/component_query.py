@@ -24,6 +24,14 @@ class ComponentQuery(HasReferencedJavaScript):
     """The script template to use to execute a component query under a specified root.
     Requires the inserts: {cq}, {root_id}"""
 
+    _IS_COMPONENT_INSTANCE_OF_CLASS_TEMPLATE: str = "return globalThis.PySeExt.ComponentQuery.isComponentInstanceOf('{class_name}', '{cq}')"
+    """The script template to use to determine whether a component query matches a component of the specified class.
+    Requires the inserts: {class_name}, {cq}"""
+
+    _IS_COMPONENT_INSTANCE_OF_CLASS_TEMPLATE_WITH_ROOT: str = "return globalThis.PySeExt.ComponentQuery.isComponentInstanceOf('{class_name}', '{cq}', '{root_id}')"
+    """The script template to use to determine whether a component query matches a component of the specified class.
+    Requires the inserts: {class_name}, {cq}, {root_id}"""
+
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
@@ -123,6 +131,36 @@ class ComponentQuery(HasReferencedJavaScript):
             cq = cq + '{isVisible(true)}'
 
         return self.wait_for_single_query(cq, root_id, timeout)
+
+    def is_component_instance_of_class(self, class_name: str, cq: str, root_id: Union[str, None] = None, timeout: float = 1) -> bool:
+        """Determines whether the component for the specified CQ is an instance of the specified class name.
+
+        Note, will return True if the component is a subclass of the type too.
+
+        If the component is not found then an error is thrown.
+
+        Args:
+            class_name (str): The class name to test for, e.g. 'Ext.container.Container'.
+            cq (str): The query to find the component.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
+            timeout (float): Number of seconds before timing out (default 1)
+
+        Returns:
+            bool: True if the component is an instance of the specified class (including a subclass). False otherwise.
+        """
+        if root_id is None:
+            script = self._IS_COMPONENT_INSTANCE_OF_CLASS_TEMPLATE.format(class_name=class_name, cq=cq)
+        else:
+            script = self._IS_COMPONENT_INSTANCE_OF_CLASS_TEMPLATE_WITH_ROOT.format(class_name=class_name, cq=cq, root_id=root_id)
+
+        self.ensure_javascript_loaded()
+        result = self._driver.execute_script(script)
+
+        if result is None:
+            raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id)
+
+        return result
 
     class ComponentQueryFoundExpectation:
         """ An expectation for checking that an Ext.ComponentQuery is found"""
