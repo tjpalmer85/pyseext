@@ -9,7 +9,7 @@ globalThis.PySeExt.TreeHelper = {
      *
      * @param {String} treeSelector The selector to use to find the tree.
      */
-    isTreeLoading: function(treeSelector) {
+    isTreeLoading: function (treeSelector) {
         var me = this,
             treePanel = me.__getTree(treeSelector),
             rootNode = treePanel.getRootNode();
@@ -20,17 +20,20 @@ globalThis.PySeExt.TreeHelper = {
     /**
      * Finds a node, then a child element by CSS query.
      *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeTextOrData The node text or data to find.
-     * @param {String} cssQuery The CSS to query for in the found node row element.
-     *                          Expander UI element = '.x-tree-expander'
-     *                          Node icon = '.x-tree-icon'
-     *                          Node text = '.x-tree-node-text'
-     * @returns {HTMLElement} The HTML element for the node part.
+     * @param {String} treeSelector          The selector to use to find the tree.
+     * @param {String} nodeTextOrData        The node text or data to find.
+     * @param {String} cssQuery              The CSS to query for in the found node row element.
+     *                                       Expander UI element = '.x-tree-expander'
+     *                                       Node icon = '.x-tree-icon'
+     *                                       Node text = '.x-tree-node-text'
+     * @param  {Object} parentNodeTextOrData The optional text or data identifying the node to use as the root for finding the child node.
+     *                                       If omitted to whole tree is searched.
+     * @returns {HTMLElement}                The HTML element for the node part.
      */
-     getNodeElement: function(treeSelector, nodeTextOrData, cssQuery) {
+    getNodeElement: function (treeSelector, nodeTextOrData, cssQuery, parentNodeTextOrData) {
         var me = this,
             nodeData = nodeTextOrData,
+            parentNodeData = parentNodeTextOrData,
             nodeRowElement,
             children,
             element;
@@ -39,7 +42,11 @@ globalThis.PySeExt.TreeHelper = {
             nodeData = me.__getDataForText(nodeData);
         }
 
-        nodeRowElement = me.__getNodeRowElementByData(treeSelector, nodeData);
+        if (Ext.isString(parentNodeData)) {
+            parentNodeData = me.__getDataForText(parentNodeData);
+        }
+
+        nodeRowElement = me.__getNodeRowElementByData(treeSelector, nodeData, parentNodeData);
         if (nodeRowElement) {
             children = Ext.get(nodeRowElement).query(cssQuery);
             if (children && children.length) {
@@ -53,19 +60,35 @@ globalThis.PySeExt.TreeHelper = {
     /**
      * Finds a node, a causes it and its children to reload.
      *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeTextOrData The node text or data to find.
+     * @param {String} treeSelector          The selector to use to find the tree.
+     * @param {String} nodeTextOrData        The node text or data to find.
+     * @param  {Object} parentNodeTextOrData The optional text or data identifying the node to use as the root for finding the child node.
+     *                                       If omitted to whole tree is searched.
      */
-     reloadNode: function(treeSelector, nodeTextOrData) {
+    reloadNode: function (treeSelector, nodeTextOrData, parentNodeTextOrData) {
         var me = this,
             nodeData = nodeTextOrData,
+            parentNodeData = parentNodeTextOrData,
+            parentNode,
             node;
 
         if (Ext.isString(nodeData)) {
             nodeData = me.__getDataForText(nodeData);
         }
 
-        node = me.__getNodeByData(treeSelector, nodeData);
+        if (Ext.isString(parentNodeData)) {
+            parentNodeData = me.__getDataForText(parentNodeData);
+        }
+
+        if (parentNodeData) {
+            parentNode = me.__getNodeByData(treeSelector, parentNodeData);
+
+            if (!parentNode) {
+                globalThis.Ext.raise("Could not find requested parent node!");
+            }
+        }
+
+        node = me.__getNodeByData(treeSelector, nodeData, parentNode);
         if (node) {
             node.getTreeStore().load({ node: node });
         }
@@ -75,14 +98,14 @@ globalThis.PySeExt.TreeHelper = {
      * Determines if the specified node or any of its children are currently loading.
      * @private
      * @param  {Ext.data.NodeInterface} node The node to check.
-     * @return {Boolean} true if the node or any of its children are currently loading.
+     * @return {Boolean}                     true if the node or any of its children are currently loading.
      */
-    __isBranchLoading: function(node) {
+    __isBranchLoading: function (node) {
         var t = this,
             isBranchLoading = node.isLoading();
 
         if (!isBranchLoading) {
-            node.cascadeBy(function(child) {
+            node.cascadeBy(function (child) {
                 isBranchLoading = child.isLoading();
                 return !isBranchLoading;
             });
@@ -94,27 +117,38 @@ globalThis.PySeExt.TreeHelper = {
      * Gets the data to use when searching for a node by text.
      * @private
      * @param {String} nodeText The text for the node.
-     * @returns {Object} An object that allows the path of the node text in a node to be found.
+     * @returns {Object}        An object that allows the path of the node text in a node to be found.
      */
-    __getDataForText: function(nodeText) {
+    __getDataForText: function (nodeText) {
         return { 'data.text': nodeText };
     },
 
     /**
      * Attempts to retrieve a node row element in a single visible tree by data.
      * @private
-     * @param  {String} treeSelector The selector to use to find the tree.
-     * @param  {Object} nodeData     The node data to find.
-     * @return {Element} The element for the tree node, or undefined if not found.
+     * @param  {String} treeSelector   The selector to use to find the tree.
+     * @param  {Object} nodeData       The node data to find.
+     * @param  {Object} parentNodeData The optional data identifying the node to use as the root for finding the child node.
+     *                                 If omitted to whole tree is searched.
+     * @return {Element}               The element for the tree node, or undefined if not found.
      */
-     __getNodeRowElementByData: function(treeSelector, nodeData) {
+    __getNodeRowElementByData: function (treeSelector, nodeData, parentNodeData) {
         var me = this,
             foundNode,
             treePanel,
             treeView,
-            nodeRowElement;
+            nodeRowElement,
+            parentNode;
 
-        foundNode = me.__getNodeByData(treeSelector, nodeData);
+        if (parentNodeData) {
+            parentNode = me.__getNodeByData(treeSelector, parentNodeData);
+
+            if (!parentNode) {
+                globalThis.Ext.raise("Could not find requested parent node!");
+            }
+        }
+
+        foundNode = me.__getNodeByData(treeSelector, nodeData, parentNode);
 
         if (foundNode) {
             // We need to get the row element for the node
@@ -141,17 +175,18 @@ globalThis.PySeExt.TreeHelper = {
      *                                  If omitted to whole tree is searched.
      * @return {Ext.data.NodeInterface} The tree node, or undefined if not found.
      */
-    __getNodeByData: function(treeSelector, nodeData, parentNode) {
+    __getNodeByData: function (treeSelector, nodeData, parentNode) {
         var me = this,
             treePanel = me.__getTree(treeSelector),
-            rootNode = parentNode || treePanel.getRootNode(),
+            rootNode = treePanel.getRootNode(),
             foundNode;
 
         if (me.__isBranchLoading(rootNode)) {
             globalThis.Ext.raise("The tree is still loading. You must wait for loading to have finished before interacting with the tree.");
         }
 
-        foundNode = rootNode.findChildBy.call(rootNode, function(node) {
+        // If we have a parent node then use that rather than root
+        foundNode = (parentNode || rootNode).findChildBy(function(node) {
             var isMatch = true,
                 prop;
 
@@ -181,7 +216,7 @@ globalThis.PySeExt.TreeHelper = {
      * If the tree is not found then an error is raised.
      *
      * @param {String} treeSelector The selector to use to find the tree.
-     * @returns {Ext.tree.Panel} The tree panel that the selector matches.
+     * @returns {Ext.tree.Panel}    The tree panel that the selector matches.
      */
     __getTree(treeSelector) {
         var me = this,

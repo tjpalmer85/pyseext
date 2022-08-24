@@ -53,9 +53,17 @@ class TreeHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElement
     Requires the inserts: {tree_cq}, {node_text_or_data}, {css_query}&#34;&#34;&#34;
 
+    _GET_NODE_ELEMENT_WITH_ROOT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeElement(&#39;{tree_cq}&#39;, {node_text_or_data}, &#39;{css_query}&#39;, {root_node_text_or_data})&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElement including a root node to search from
+    Requires the inserts: {tree_cq}, {node_text_or_data}, {css_query}, {root_node_text_or_data}&#34;&#34;&#34;
+
     _RELOAD_NODE_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNode(&#39;{tree_cq}&#39;, {node_text_or_data})&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNode
     Requires the inserts: {tree_cq}, {node_text_or_data}&#34;&#34;&#34;
+
+    _RELOAD_NODE_WITH_ROOT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNode(&#39;{tree_cq}&#39;, {node_text_or_data}, {root_node_text_or_data})&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNode including a root node to search from
+    Requires the inserts: {tree_cq}, {node_text_or_data}, {root_node_text_or_data}&#34;&#34;&#34;
 
     _ICON_CSS_SELECTOR: str = &#34;.x-tree-icon&#34;
     &#34;&#34;&#34;The CSS selector to use with get_node_element to find the node icon element.
@@ -122,43 +130,62 @@ class TreeHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(TreeHelper.TreeNotLoadingExpectation(tree_cq, recheck_time_if_false))
 
-    def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+    def get_node_icon_element(self,
+                              tree_cq: str,
+                              node_text_or_data: Union[str, dict],
+                              root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s icon.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node icon.
         &#34;&#34;&#34;
-        return self.get_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR)
+        return self.get_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR, root_node_text_or_data)
 
-    def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+    def get_node_text_element(self,
+                              tree_cq: str,
+                              node_text_or_data: Union[str, dict],
+                              root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s text.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node text.
         &#34;&#34;&#34;
-        return self.get_node_element(tree_cq, node_text_or_data, self._NODE_TEXT_CSS_SELECTOR)
+        return self.get_node_element(tree_cq, node_text_or_data, self._NODE_TEXT_CSS_SELECTOR, root_node_text_or_data)
 
-    def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+    def get_node_expander_element(self,
+                                  tree_cq: str,
+                                  node_text_or_data: Union[str, dict],
+                                  root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s expander UI element.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node&#39;s expander.
         &#34;&#34;&#34;
-        return self.get_node_element(tree_cq, node_text_or_data, self._EXPANDER_CSS_SELECTOR)
+        return self.get_node_element(tree_cq, node_text_or_data, self._EXPANDER_CSS_SELECTOR, root_node_text_or_data)
 
-    def get_node_element(self, tree_cq: str, node_text_or_data: Union[str, dict], css_query: str) -&gt; WebElement:
+    def get_node_element(self,
+                         tree_cq: str,
+                         node_text_or_data: Union[str, dict],
+                         css_query: str,
+                         root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then a child element by CSS query.
 
         Args:
@@ -171,6 +198,8 @@ class TreeHelper(HasReferencedJavaScript):
                                 Node text = &#39;.x-tree-node-text&#39;
                              If need those you&#39;d use one of the other methods though.
                              This is in case need to click on another part of the node&#39;s row.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node&#39;s expander.
@@ -180,27 +209,68 @@ class TreeHelper(HasReferencedJavaScript):
         if isinstance(node_text_or_data, str):
             node_text_or_data = f&#34;&#39;{node_text_or_data}&#39;&#34;
 
-        script = self._GET_NODE_ELEMENT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query)
+        if isinstance(root_node_text_or_data, str):
+            root_node_text_or_data = f&#34;&#39;{root_node_text_or_data}&#39;&#34;
+
+        if root_node_text_or_data:
+            script = self._GET_NODE_ELEMENT_WITH_ROOT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query, root_node_text_or_data=root_node_text_or_data)
+        else:
+            script = self._GET_NODE_ELEMENT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query)
+
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def open_node_context_menu(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+    def open_node_context_menu(self,
+                               tree_cq: str,
+                               node_text_or_data: Union[str, dict],
+                               root_node_text_or_data: Union[str, dict, None] = None):
         &#34;&#34;&#34;Finds a node&#39;s text element by text or data, then right clicks on it.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
         &#34;&#34;&#34;
-        node = self.get_node_icon_element(tree_cq, node_text_or_data)
+        node = self.get_node_icon_element(tree_cq, node_text_or_data, root_node_text_or_data)
 
         if node:
-            self._logger.info(&#34;Opening context menu on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+            if root_node_text_or_data:
+                self._logger.info(&#34;Opening context menu on node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+            else:
+                self._logger.info(&#34;Opening context menu on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
 
             self._action_chains.move_to_element(node)
             self._action_chains.context_click(node)
             self._action_chains.perform()
         else:
-            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data)
+            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
+
+    def click_node_expander(self,
+                            tree_cq: str,
+                            node_text_or_data: Union[str, dict],
+                            root_node_text_or_data: Union[str, dict, None] = None):
+        &#34;&#34;&#34;Finds a node&#39;s expander element by text or data, then clicks on it.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
+        &#34;&#34;&#34;
+        node = self.get_node_expander_element(tree_cq, node_text_or_data, root_node_text_or_data)
+
+        if node:
+            if root_node_text_or_data:
+                self._logger.info(&#34;Clicking expander on node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+            else:
+                self._logger.info(&#34;Clicking expander on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+
+            self._action_chains.move_to_element(node)
+            self._action_chains.click(node)
+            self._action_chains.perform()
+        else:
+            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
 
     def wait_for_tree_node(self,
                            tree_cq: str,
@@ -223,21 +293,35 @@ class TreeHelper(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(TreeHelper.NodeFoundExpectation(tree_cq, node_text_or_data, parent_node_text_or_data))
         return self.get_node_icon_element(tree_cq, node_text_or_data)
 
-    def reload_node(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+    def reload_node(self,
+                    tree_cq: str,
+                    node_text_or_data: Union[str, dict],
+                    root_node_text_or_data: Union[str, dict, None] = None):
         &#34;&#34;&#34;Finds a node by text or data, and triggers a reload on it, and its children.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
         &#34;&#34;&#34;
         self.wait_until_tree_not_loading(tree_cq)
 
         if isinstance(node_text_or_data, str):
             node_text_or_data = f&#34;&#39;{node_text_or_data}&#39;&#34;
 
-        script = self._RELOAD_NODE_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
+        if isinstance(root_node_text_or_data, str):
+            root_node_text_or_data = f&#34;&#39;{root_node_text_or_data}&#39;&#34;
 
-        self._logger.info(&#34;Reloading node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+        if root_node_text_or_data:
+            script = self._RELOAD_NODE_WITH_ROOT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, root_node_text_or_data=root_node_text_or_data)
+        else:
+            script = self._RELOAD_NODE_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
+
+        if root_node_text_or_data:
+            self._logger.info(&#34;Reloading node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+        else:
+            self._logger.info(&#34;Reloading node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
 
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
@@ -248,23 +332,34 @@ class TreeHelper(HasReferencedJavaScript):
         def __init__(self,
                      tree_cq: str,
                      node_text_or_data: Union[str, dict],
-                     message: str = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;):
+                     root_node_text_or_data: Union[str, dict, None] = None):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
                 tree_cq (str): The CQ used to find the tree
                 node_text_or_data (Union[str, dict]): The node text or data that we were looking for
+                root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                    Can be an immediate parent, or higher up in the tree.
                 message (str, optional): The exception message. Defaults to &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;.
             &#34;&#34;&#34;
-            self.message = message
+            if root_node_text_or_data:
+                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) on tree with CQ &#39;{tree_cq}&#39;.&#34;
+            else:
+                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+
             self._tree_cq = tree_cq
             self._node_text_or_data = node_text_or_data
+            self._root_node_text_or_data = root_node_text_or_data
 
             super().__init__(self.message)
 
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
-            return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
+
+            if self._root_node_text_or_data:
+                return self.message.format(node_text_or_data=self._node_text_or_data, root_node_text_or_data=self._root_node_text_or_data, tree_cq=self._tree_cq)
+            else:
+                return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
 
     class TreeNotLoadingExpectation:
         &#34;&#34;&#34; An expectation for checking that a tree is not loading.&#34;&#34;&#34;
@@ -318,7 +413,7 @@ class TreeHelper(HasReferencedJavaScript):
             &#34;&#34;&#34;
             tree_helper = TreeHelper(driver)
 
-            node = tree_helper.get_node_icon_element(self._tree_cq, self._node_text_or_data)
+            node = tree_helper.get_node_icon_element(self._tree_cq, self._node_text_or_data, self._parent_node_text_or_data)
             if node:
                 return True
 
@@ -364,9 +459,17 @@ class TreeHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElement
     Requires the inserts: {tree_cq}, {node_text_or_data}, {css_query}&#34;&#34;&#34;
 
+    _GET_NODE_ELEMENT_WITH_ROOT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.getNodeElement(&#39;{tree_cq}&#39;, {node_text_or_data}, &#39;{css_query}&#39;, {root_node_text_or_data})&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElement including a root node to search from
+    Requires the inserts: {tree_cq}, {node_text_or_data}, {css_query}, {root_node_text_or_data}&#34;&#34;&#34;
+
     _RELOAD_NODE_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNode(&#39;{tree_cq}&#39;, {node_text_or_data})&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNode
     Requires the inserts: {tree_cq}, {node_text_or_data}&#34;&#34;&#34;
+
+    _RELOAD_NODE_WITH_ROOT_TEMPLATE: str = &#34;return globalThis.PySeExt.TreeHelper.reloadNode(&#39;{tree_cq}&#39;, {node_text_or_data}, {root_node_text_or_data})&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNode including a root node to search from
+    Requires the inserts: {tree_cq}, {node_text_or_data}, {root_node_text_or_data}&#34;&#34;&#34;
 
     _ICON_CSS_SELECTOR: str = &#34;.x-tree-icon&#34;
     &#34;&#34;&#34;The CSS selector to use with get_node_element to find the node icon element.
@@ -433,43 +536,62 @@ class TreeHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout, poll_frequency = poll_frequecy).until(TreeHelper.TreeNotLoadingExpectation(tree_cq, recheck_time_if_false))
 
-    def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+    def get_node_icon_element(self,
+                              tree_cq: str,
+                              node_text_or_data: Union[str, dict],
+                              root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s icon.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node icon.
         &#34;&#34;&#34;
-        return self.get_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR)
+        return self.get_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR, root_node_text_or_data)
 
-    def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+    def get_node_text_element(self,
+                              tree_cq: str,
+                              node_text_or_data: Union[str, dict],
+                              root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s text.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node text.
         &#34;&#34;&#34;
-        return self.get_node_element(tree_cq, node_text_or_data, self._NODE_TEXT_CSS_SELECTOR)
+        return self.get_node_element(tree_cq, node_text_or_data, self._NODE_TEXT_CSS_SELECTOR, root_node_text_or_data)
 
-    def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+    def get_node_expander_element(self,
+                                  tree_cq: str,
+                                  node_text_or_data: Union[str, dict],
+                                  root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s expander UI element.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node&#39;s expander.
         &#34;&#34;&#34;
-        return self.get_node_element(tree_cq, node_text_or_data, self._EXPANDER_CSS_SELECTOR)
+        return self.get_node_element(tree_cq, node_text_or_data, self._EXPANDER_CSS_SELECTOR, root_node_text_or_data)
 
-    def get_node_element(self, tree_cq: str, node_text_or_data: Union[str, dict], css_query: str) -&gt; WebElement:
+    def get_node_element(self,
+                         tree_cq: str,
+                         node_text_or_data: Union[str, dict],
+                         css_query: str,
+                         root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Finds a node by text or data, then a child element by CSS query.
 
         Args:
@@ -482,6 +604,8 @@ class TreeHelper(HasReferencedJavaScript):
                                 Node text = &#39;.x-tree-node-text&#39;
                              If need those you&#39;d use one of the other methods though.
                              This is in case need to click on another part of the node&#39;s row.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
 
         Returns:
             WebElement: The DOM element for the node&#39;s expander.
@@ -491,27 +615,68 @@ class TreeHelper(HasReferencedJavaScript):
         if isinstance(node_text_or_data, str):
             node_text_or_data = f&#34;&#39;{node_text_or_data}&#39;&#34;
 
-        script = self._GET_NODE_ELEMENT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query)
+        if isinstance(root_node_text_or_data, str):
+            root_node_text_or_data = f&#34;&#39;{root_node_text_or_data}&#39;&#34;
+
+        if root_node_text_or_data:
+            script = self._GET_NODE_ELEMENT_WITH_ROOT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query, root_node_text_or_data=root_node_text_or_data)
+        else:
+            script = self._GET_NODE_ELEMENT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query)
+
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def open_node_context_menu(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+    def open_node_context_menu(self,
+                               tree_cq: str,
+                               node_text_or_data: Union[str, dict],
+                               root_node_text_or_data: Union[str, dict, None] = None):
         &#34;&#34;&#34;Finds a node&#39;s text element by text or data, then right clicks on it.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
         &#34;&#34;&#34;
-        node = self.get_node_icon_element(tree_cq, node_text_or_data)
+        node = self.get_node_icon_element(tree_cq, node_text_or_data, root_node_text_or_data)
 
         if node:
-            self._logger.info(&#34;Opening context menu on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+            if root_node_text_or_data:
+                self._logger.info(&#34;Opening context menu on node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+            else:
+                self._logger.info(&#34;Opening context menu on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
 
             self._action_chains.move_to_element(node)
             self._action_chains.context_click(node)
             self._action_chains.perform()
         else:
-            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data)
+            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
+
+    def click_node_expander(self,
+                            tree_cq: str,
+                            node_text_or_data: Union[str, dict],
+                            root_node_text_or_data: Union[str, dict, None] = None):
+        &#34;&#34;&#34;Finds a node&#39;s expander element by text or data, then clicks on it.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
+        &#34;&#34;&#34;
+        node = self.get_node_expander_element(tree_cq, node_text_or_data, root_node_text_or_data)
+
+        if node:
+            if root_node_text_or_data:
+                self._logger.info(&#34;Clicking expander on node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+            else:
+                self._logger.info(&#34;Clicking expander on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+
+            self._action_chains.move_to_element(node)
+            self._action_chains.click(node)
+            self._action_chains.perform()
+        else:
+            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
 
     def wait_for_tree_node(self,
                            tree_cq: str,
@@ -534,21 +699,35 @@ class TreeHelper(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(TreeHelper.NodeFoundExpectation(tree_cq, node_text_or_data, parent_node_text_or_data))
         return self.get_node_icon_element(tree_cq, node_text_or_data)
 
-    def reload_node(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+    def reload_node(self,
+                    tree_cq: str,
+                    node_text_or_data: Union[str, dict],
+                    root_node_text_or_data: Union[str, dict, None] = None):
         &#34;&#34;&#34;Finds a node by text or data, and triggers a reload on it, and its children.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
             node_text_or_data (Union[str, dict]): The node text or data to find.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
         &#34;&#34;&#34;
         self.wait_until_tree_not_loading(tree_cq)
 
         if isinstance(node_text_or_data, str):
             node_text_or_data = f&#34;&#39;{node_text_or_data}&#39;&#34;
 
-        script = self._RELOAD_NODE_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
+        if isinstance(root_node_text_or_data, str):
+            root_node_text_or_data = f&#34;&#39;{root_node_text_or_data}&#39;&#34;
 
-        self._logger.info(&#34;Reloading node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+        if root_node_text_or_data:
+            script = self._RELOAD_NODE_WITH_ROOT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, root_node_text_or_data=root_node_text_or_data)
+        else:
+            script = self._RELOAD_NODE_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
+
+        if root_node_text_or_data:
+            self._logger.info(&#34;Reloading node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+        else:
+            self._logger.info(&#34;Reloading node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
 
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
@@ -559,23 +738,34 @@ class TreeHelper(HasReferencedJavaScript):
         def __init__(self,
                      tree_cq: str,
                      node_text_or_data: Union[str, dict],
-                     message: str = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;):
+                     root_node_text_or_data: Union[str, dict, None] = None):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
                 tree_cq (str): The CQ used to find the tree
                 node_text_or_data (Union[str, dict]): The node text or data that we were looking for
+                root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                    Can be an immediate parent, or higher up in the tree.
                 message (str, optional): The exception message. Defaults to &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;.
             &#34;&#34;&#34;
-            self.message = message
+            if root_node_text_or_data:
+                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) on tree with CQ &#39;{tree_cq}&#39;.&#34;
+            else:
+                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+
             self._tree_cq = tree_cq
             self._node_text_or_data = node_text_or_data
+            self._root_node_text_or_data = root_node_text_or_data
 
             super().__init__(self.message)
 
         def __str__(self):
             &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
-            return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
+
+            if self._root_node_text_or_data:
+                return self.message.format(node_text_or_data=self._node_text_or_data, root_node_text_or_data=self._root_node_text_or_data, tree_cq=self._tree_cq)
+            else:
+                return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
 
     class TreeNotLoadingExpectation:
         &#34;&#34;&#34; An expectation for checking that a tree is not loading.&#34;&#34;&#34;
@@ -629,7 +819,7 @@ class TreeHelper(HasReferencedJavaScript):
             &#34;&#34;&#34;
             tree_helper = TreeHelper(driver)
 
-            node = tree_helper.get_node_icon_element(self._tree_cq, self._node_text_or_data)
+            node = tree_helper.get_node_icon_element(self._tree_cq, self._node_text_or_data, self._parent_node_text_or_data)
             if node:
                 return True
 
@@ -658,8 +848,54 @@ class TreeHelper(HasReferencedJavaScript):
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="pyseext.tree_helper.TreeHelper.click_node_expander"><code class="name flex">
+<span>def <span class="ident">click_node_expander</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds a node's expander element by text or data, then clicks on it.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query to use to find the tree.</dd>
+<dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
+<dd>The node text or data to find.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def click_node_expander(self,
+                        tree_cq: str,
+                        node_text_or_data: Union[str, dict],
+                        root_node_text_or_data: Union[str, dict, None] = None):
+    &#34;&#34;&#34;Finds a node&#39;s expander element by text or data, then clicks on it.
+
+    Args:
+        tree_cq (str): The component query to use to find the tree.
+        node_text_or_data (Union[str, dict]): The node text or data to find.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
+    &#34;&#34;&#34;
+    node = self.get_node_expander_element(tree_cq, node_text_or_data, root_node_text_or_data)
+
+    if node:
+        if root_node_text_or_data:
+            self._logger.info(&#34;Clicking expander on node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+        else:
+            self._logger.info(&#34;Clicking expander on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+
+        self._action_chains.move_to_element(node)
+        self._action_chains.click(node)
+        self._action_chains.perform()
+    else:
+        raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)</code></pre>
+</details>
+</dd>
 <dt id="pyseext.tree_helper.TreeHelper.get_node_element"><code class="name flex">
-<span>def <span class="ident">get_node_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], css_query: str) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+<span>def <span class="ident">get_node_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], css_query: str, root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a node by text or data, then a child element by CSS query.</p>
@@ -677,6 +913,9 @@ Node icon = '.x-tree-icon'
 Node text = '.x-tree-node-text'
 If need those you'd use one of the other methods though.
 This is in case need to click on another part of the node's row.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -687,7 +926,11 @@ This is in case need to click on another part of the node's row.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_node_element(self, tree_cq: str, node_text_or_data: Union[str, dict], css_query: str) -&gt; WebElement:
+<pre><code class="python">def get_node_element(self,
+                     tree_cq: str,
+                     node_text_or_data: Union[str, dict],
+                     css_query: str,
+                     root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then a child element by CSS query.
 
     Args:
@@ -700,6 +943,8 @@ This is in case need to click on another part of the node's row.</dd>
                             Node text = &#39;.x-tree-node-text&#39;
                          If need those you&#39;d use one of the other methods though.
                          This is in case need to click on another part of the node&#39;s row.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
 
     Returns:
         WebElement: The DOM element for the node&#39;s expander.
@@ -709,13 +954,20 @@ This is in case need to click on another part of the node's row.</dd>
     if isinstance(node_text_or_data, str):
         node_text_or_data = f&#34;&#39;{node_text_or_data}&#39;&#34;
 
-    script = self._GET_NODE_ELEMENT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query)
+    if isinstance(root_node_text_or_data, str):
+        root_node_text_or_data = f&#34;&#39;{root_node_text_or_data}&#39;&#34;
+
+    if root_node_text_or_data:
+        script = self._GET_NODE_ELEMENT_WITH_ROOT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query, root_node_text_or_data=root_node_text_or_data)
+    else:
+        script = self._GET_NODE_ELEMENT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, css_query=css_query)
+
     self.ensure_javascript_loaded()
     return self._driver.execute_script(script)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.get_node_expander_element"><code class="name flex">
-<span>def <span class="ident">get_node_expander_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+<span>def <span class="ident">get_node_expander_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's expander UI element.</p>
@@ -725,6 +977,9 @@ This is in case need to click on another part of the node's row.</dd>
 <dd>The component query to use to find the tree.</dd>
 <dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
 <dd>The node text or data to find.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -735,21 +990,26 @@ This is in case need to click on another part of the node's row.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+<pre><code class="python">def get_node_expander_element(self,
+                              tree_cq: str,
+                              node_text_or_data: Union[str, dict],
+                              root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s expander UI element.
 
     Args:
         tree_cq (str): The component query to use to find the tree.
         node_text_or_data (Union[str, dict]): The node text or data to find.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
 
     Returns:
         WebElement: The DOM element for the node&#39;s expander.
     &#34;&#34;&#34;
-    return self.get_node_element(tree_cq, node_text_or_data, self._EXPANDER_CSS_SELECTOR)</code></pre>
+    return self.get_node_element(tree_cq, node_text_or_data, self._EXPANDER_CSS_SELECTOR, root_node_text_or_data)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.get_node_icon_element"><code class="name flex">
-<span>def <span class="ident">get_node_icon_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+<span>def <span class="ident">get_node_icon_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's icon.</p>
@@ -759,6 +1019,9 @@ This is in case need to click on another part of the node's row.</dd>
 <dd>The component query to use to find the tree.</dd>
 <dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
 <dd>The node text or data to find.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -769,21 +1032,26 @@ This is in case need to click on another part of the node's row.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_node_icon_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+<pre><code class="python">def get_node_icon_element(self,
+                          tree_cq: str,
+                          node_text_or_data: Union[str, dict],
+                          root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s icon.
 
     Args:
         tree_cq (str): The component query to use to find the tree.
         node_text_or_data (Union[str, dict]): The node text or data to find.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
 
     Returns:
         WebElement: The DOM element for the node icon.
     &#34;&#34;&#34;
-    return self.get_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR)</code></pre>
+    return self.get_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR, root_node_text_or_data)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.get_node_text_element"><code class="name flex">
-<span>def <span class="ident">get_node_text_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict]) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+<span>def <span class="ident">get_node_text_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a node by text or data, then the child HTML element that holds it's text.</p>
@@ -793,6 +1061,9 @@ This is in case need to click on another part of the node's row.</dd>
 <dd>The component query to use to find the tree.</dd>
 <dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
 <dd>The node text or data to find.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -803,17 +1074,22 @@ This is in case need to click on another part of the node's row.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -&gt; WebElement:
+<pre><code class="python">def get_node_text_element(self,
+                          tree_cq: str,
+                          node_text_or_data: Union[str, dict],
+                          root_node_text_or_data: Union[str, dict, None] = None) -&gt; WebElement:
     &#34;&#34;&#34;Finds a node by text or data, then the child HTML element that holds it&#39;s text.
 
     Args:
         tree_cq (str): The component query to use to find the tree.
         node_text_or_data (Union[str, dict]): The node text or data to find.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
 
     Returns:
         WebElement: The DOM element for the node text.
     &#34;&#34;&#34;
-    return self.get_node_element(tree_cq, node_text_or_data, self._NODE_TEXT_CSS_SELECTOR)</code></pre>
+    return self.get_node_element(tree_cq, node_text_or_data, self._NODE_TEXT_CSS_SELECTOR, root_node_text_or_data)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.is_tree_loading"><code class="name flex">
@@ -855,7 +1131,7 @@ since we cannot pass things back in callbacks!</p>
 </details>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.open_node_context_menu"><code class="name flex">
-<span>def <span class="ident">open_node_context_menu</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict])</span>
+<span>def <span class="ident">open_node_context_menu</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a node's text element by text or data, then right clicks on it.</p>
@@ -865,32 +1141,43 @@ since we cannot pass things back in callbacks!</p>
 <dd>The component query to use to find the tree.</dd>
 <dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
 <dd>The node text or data to find.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def open_node_context_menu(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+<pre><code class="python">def open_node_context_menu(self,
+                           tree_cq: str,
+                           node_text_or_data: Union[str, dict],
+                           root_node_text_or_data: Union[str, dict, None] = None):
     &#34;&#34;&#34;Finds a node&#39;s text element by text or data, then right clicks on it.
 
     Args:
         tree_cq (str): The component query to use to find the tree.
         node_text_or_data (Union[str, dict]): The node text or data to find.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
     &#34;&#34;&#34;
-    node = self.get_node_icon_element(tree_cq, node_text_or_data)
+    node = self.get_node_icon_element(tree_cq, node_text_or_data, root_node_text_or_data)
 
     if node:
-        self._logger.info(&#34;Opening context menu on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+        if root_node_text_or_data:
+            self._logger.info(&#34;Opening context menu on node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+        else:
+            self._logger.info(&#34;Opening context menu on node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
 
         self._action_chains.move_to_element(node)
         self._action_chains.context_click(node)
         self._action_chains.perform()
     else:
-        raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data)</code></pre>
+        raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)</code></pre>
 </details>
 </dd>
 <dt id="pyseext.tree_helper.TreeHelper.reload_node"><code class="name flex">
-<span>def <span class="ident">reload_node</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict])</span>
+<span>def <span class="ident">reload_node</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds a node by text or data, and triggers a reload on it, and its children.</p>
@@ -900,26 +1187,43 @@ since we cannot pass things back in callbacks!</p>
 <dd>The component query to use to find the tree.</dd>
 <dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
 <dd>The node text or data to find.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def reload_node(self, tree_cq: str, node_text_or_data: Union[str, dict]):
+<pre><code class="python">def reload_node(self,
+                tree_cq: str,
+                node_text_or_data: Union[str, dict],
+                root_node_text_or_data: Union[str, dict, None] = None):
     &#34;&#34;&#34;Finds a node by text or data, and triggers a reload on it, and its children.
 
     Args:
         tree_cq (str): The component query to use to find the tree.
         node_text_or_data (Union[str, dict]): The node text or data to find.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
     &#34;&#34;&#34;
     self.wait_until_tree_not_loading(tree_cq)
 
     if isinstance(node_text_or_data, str):
         node_text_or_data = f&#34;&#39;{node_text_or_data}&#39;&#34;
 
-    script = self._RELOAD_NODE_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
+    if isinstance(root_node_text_or_data, str):
+        root_node_text_or_data = f&#34;&#39;{root_node_text_or_data}&#39;&#34;
 
-    self._logger.info(&#34;Reloading node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
+    if root_node_text_or_data:
+        script = self._RELOAD_NODE_WITH_ROOT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data, root_node_text_or_data=root_node_text_or_data)
+    else:
+        script = self._RELOAD_NODE_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
+
+    if root_node_text_or_data:
+        self._logger.info(&#34;Reloading node &#39;%s&#39; (under root &#39;%s&#39;) on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, tree_cq)
+    else:
+        self._logger.info(&#34;Reloading node &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, tree_cq)
 
     self.ensure_javascript_loaded()
     self._driver.execute_script(script)</code></pre>
@@ -1046,6 +1350,7 @@ or the timeout is hit</p>
 <li><code><a title="pyseext.tree_helper.TreeHelper.NodeFoundExpectation" href="#pyseext.tree_helper.TreeHelper.NodeFoundExpectation">NodeFoundExpectation</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.NodeNotFoundException" href="#pyseext.tree_helper.TreeHelper.NodeNotFoundException">NodeNotFoundException</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation" href="#pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation">TreeNotLoadingExpectation</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.click_node_expander" href="#pyseext.tree_helper.TreeHelper.click_node_expander">click_node_expander</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.get_node_element" href="#pyseext.tree_helper.TreeHelper.get_node_element">get_node_element</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.get_node_expander_element" href="#pyseext.tree_helper.TreeHelper.get_node_expander_element">get_node_expander_element</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.get_node_icon_element" href="#pyseext.tree_helper.TreeHelper.get_node_icon_element">get_node_icon_element</a></code></li>
