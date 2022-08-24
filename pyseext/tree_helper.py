@@ -20,18 +20,6 @@ class TreeHelper(HasReferencedJavaScript):
     """The script template to use to call the JavaScript method PySeExt.TreeHelper.isTreeLoading
     Requires the inserts: {tree_cq}"""
 
-    _GET_NODE_EXPANDER_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeExpander('{tree_cq}', {node_text_or_data})"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeExpander
-    Requires the inserts: {tree_cq}, {node_text_or_data}"""
-
-    _GET_NODE_ICON_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeIcon('{tree_cq}', {node_text_or_data})"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeIcon
-    Requires the inserts: {tree_cq}, {node_text_or_data}"""
-
-    _GET_NODE_TEXT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeText('{tree_cq}', {node_text_or_data})"
-    """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeText
-    Requires the inserts: {tree_cq}, {node_text_or_data}"""
-
     _GET_NODE_ELEMENT_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.getNodeElement('{tree_cq}', {node_text_or_data}, '{css_query}')"
     """The script template to use to call the JavaScript method PySeExt.TreeHelper.getNodeElement
     Requires the inserts: {tree_cq}, {node_text_or_data}, {css_query}"""
@@ -39,6 +27,18 @@ class TreeHelper(HasReferencedJavaScript):
     _RELOAD_NODE_TEMPLATE: str = "return globalThis.PySeExt.TreeHelper.reloadNode('{tree_cq}', {node_text_or_data})"
     """The script template to use to call the JavaScript method PySeExt.TreeHelper.reloadNode
     Requires the inserts: {tree_cq}, {node_text_or_data}"""
+
+    _ICON_CSS_SELECTOR: str = ".x-tree-icon"
+    """The CSS selector to use with get_node_element to find the node icon element.
+    """
+
+    _EXPANDER_CSS_SELECTOR: str = ".x-tree-expander"
+    """The CSS selector to use with get_node_element to find the node expander element.
+    """
+
+    _NODE_TEXT_CSS_SELECTOR: str = ".x-tree-node-text"
+    """The CSS selector to use with get_node_element to find the node text element.
+    """
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -103,15 +103,7 @@ class TreeHelper(HasReferencedJavaScript):
         Returns:
             WebElement: The DOM element for the node icon.
         """
-        self.wait_until_tree_not_loading(tree_cq)
-
-        if isinstance(node_text_or_data, str):
-            node_text_or_data = f"'{node_text_or_data}'"
-
-        script = self._GET_NODE_ICON_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
-
-        self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        return self.get_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR)
 
     def get_node_text_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -> WebElement:
         """Finds a node by text or data, then the child HTML element that holds it's text.
@@ -123,15 +115,7 @@ class TreeHelper(HasReferencedJavaScript):
         Returns:
             WebElement: The DOM element for the node text.
         """
-        self.wait_until_tree_not_loading(tree_cq)
-
-        if isinstance(node_text_or_data, str):
-            node_text_or_data = f"'{node_text_or_data}'"
-
-        script = self._GET_NODE_TEXT_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
-
-        self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        return self.get_node_element(tree_cq, node_text_or_data, self._NODE_TEXT_CSS_SELECTOR)
 
     def get_node_expander_element(self, tree_cq: str, node_text_or_data: Union[str, dict]) -> WebElement:
         """Finds a node by text or data, then the child HTML element that holds it's expander UI element.
@@ -143,15 +127,7 @@ class TreeHelper(HasReferencedJavaScript):
         Returns:
             WebElement: The DOM element for the node's expander.
         """
-        self.wait_until_tree_not_loading(tree_cq)
-
-        if isinstance(node_text_or_data, str):
-            node_text_or_data = f"'{node_text_or_data}'"
-
-        script = self._GET_NODE_EXPANDER_TEMPLATE.format(tree_cq=tree_cq, node_text_or_data=node_text_or_data)
-
-        self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+        return self.get_node_element(tree_cq, node_text_or_data, self._EXPANDER_CSS_SELECTOR)
 
     def get_node_element(self, tree_cq: str, node_text_or_data: Union[str, dict], css_query: str) -> WebElement:
         """Finds a node by text or data, then a child element by CSS query.

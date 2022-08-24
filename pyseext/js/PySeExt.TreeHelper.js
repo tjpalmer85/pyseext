@@ -18,39 +18,6 @@ globalThis.PySeExt.TreeHelper = {
     },
 
     /**
-     * Finds a node, then the child HTML element that holds it's expander UI.
-     *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeTextOrData The node text or data to find.
-     * @returns {HTMLElement} The HTML element for the node's expander.
-     */
-     getNodeExpander: function(treeSelector, nodeTextOrData) {
-        return this.getNodeElement(treeSelector, nodeTextOrData, '.x-tree-expander');
-    },
-
-    /**
-     * Finds a node, then the child HTML element that holds it's icon.
-     *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeTextOrData The node text or data to find.
-     * @returns {HTMLElement} The HTML element for the node's icon.
-     */
-     getNodeIcon: function(treeSelector, nodeTextOrData) {
-        return this.getNodeElement(treeSelector, nodeTextOrData, '.x-tree-icon');
-    },
-
-    /**
-     * Finds a node, then the child HTML element that holds it's text element.
-     *
-     * @param {String} treeSelector The selector to use to find the tree.
-     * @param {String} nodeTextOrData The node text or data to find.
-     * @returns {HTMLElement} The HTML element for the node's text.
-     */
-     getNodeText: function(treeSelector, nodeTextOrData) {
-        return this.getNodeElement(treeSelector, nodeTextOrData, '.x-tree-node-text');
-    },
-
-    /**
      * Finds a node, then a child element by CSS query.
      *
      * @param {String} treeSelector The selector to use to find the tree.
