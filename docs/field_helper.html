@@ -209,18 +209,6 @@ class FieldHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Checkbox&#39;, self.get_field_component_query(form_cq, name))
 
-    def is_field_a_radiogroup(self, form_cq: str, name: str) -&gt; bool:
-        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).
-
-        Args:
-            form_cq (str): The component query that identifies the form panel in which to look for the field
-            name (str): The name of the field
-
-        Returns:
-            bool: True if the field is a radiogroup, False otherwise.
-        &#34;&#34;&#34;
-        return self._cq.is_component_instance_of_class(&#39;Ext.form.RadioGroup&#39;, self.get_field_component_query(form_cq, name))
-
     def is_field_a_radio_field(self, form_cq: str, name: str) -&gt; bool:
         &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radio field (or a subclass of it).
 
@@ -270,7 +258,7 @@ class FieldHelper(HasReferencedJavaScript):
                                              If the value is supplied as a dictionary and the field is not a store holder then
                                              an exception is thrown.
         &#34;&#34;&#34;
-        # No longer using the xtype, but useful to throw a better error if field not found.
+        # Only used for radiogroup controls now, but xtype still useful to throw a better error if field not found.
         field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
@@ -355,8 +343,12 @@ class FieldHelper(HasReferencedJavaScript):
                 field = self.find_field_input_element(form_cq, name)
                 self._input_helper.type_into_element(field, field_value)
 
-            elif (self.is_field_a_checkbox(form_cq, name) or
-                self.is_field_a_radiogroup(form_cq, name) or
+            # Still using xtype for testing for radiogroup controls, since name tends to be
+            # shared between group and contained radios, meaning check fails.
+            # Pretty unlikely to ever subclass a radiogroup class anyway, and if did would almost
+            # certainly have the same suffix (we do).
+            elif (field_xtype.endswith(&#39;radiogroup&#39;) or
+                self.is_field_a_checkbox(form_cq, name) or
                 self.is_field_a_radio_field(form_cq, name)):
 
                 # FIXME: We could click on the elements here, after checking whether they
@@ -795,18 +787,6 @@ class FieldHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Checkbox&#39;, self.get_field_component_query(form_cq, name))
 
-    def is_field_a_radiogroup(self, form_cq: str, name: str) -&gt; bool:
-        &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).
-
-        Args:
-            form_cq (str): The component query that identifies the form panel in which to look for the field
-            name (str): The name of the field
-
-        Returns:
-            bool: True if the field is a radiogroup, False otherwise.
-        &#34;&#34;&#34;
-        return self._cq.is_component_instance_of_class(&#39;Ext.form.RadioGroup&#39;, self.get_field_component_query(form_cq, name))
-
     def is_field_a_radio_field(self, form_cq: str, name: str) -&gt; bool:
         &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radio field (or a subclass of it).
 
@@ -856,7 +836,7 @@ class FieldHelper(HasReferencedJavaScript):
                                              If the value is supplied as a dictionary and the field is not a store holder then
                                              an exception is thrown.
         &#34;&#34;&#34;
-        # No longer using the xtype, but useful to throw a better error if field not found.
+        # Only used for radiogroup controls now, but xtype still useful to throw a better error if field not found.
         field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
@@ -941,8 +921,12 @@ class FieldHelper(HasReferencedJavaScript):
                 field = self.find_field_input_element(form_cq, name)
                 self._input_helper.type_into_element(field, field_value)
 
-            elif (self.is_field_a_checkbox(form_cq, name) or
-                self.is_field_a_radiogroup(form_cq, name) or
+            # Still using xtype for testing for radiogroup controls, since name tends to be
+            # shared between group and contained radios, meaning check fails.
+            # Pretty unlikely to ever subclass a radiogroup class anyway, and if did would almost
+            # certainly have the same suffix (we do).
+            elif (field_xtype.endswith(&#39;radiogroup&#39;) or
+                self.is_field_a_checkbox(form_cq, name) or
                 self.is_field_a_radio_field(form_cq, name)):
 
                 # FIXME: We could click on the elements here, after checking whether they
@@ -1663,40 +1647,6 @@ utilise the methods in StoreHelper, say.</p>
     return self._cq.is_component_instance_of_class(&#39;Ext.form.field.Radio&#39;, self.get_field_component_query(form_cq, name))</code></pre>
 </details>
 </dd>
-<dt id="pyseext.field_helper.FieldHelper.is_field_a_radiogroup"><code class="name flex">
-<span>def <span class="ident">is_field_a_radiogroup</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
-<dd>The component query that identifies the form panel in which to look for the field</dd>
-<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The name of the field</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>bool</code></dt>
-<dd>True if the field is a radiogroup, False otherwise.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def is_field_a_radiogroup(self, form_cq: str, name: str) -&gt; bool:
-    &#34;&#34;&#34;Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).
-
-    Args:
-        form_cq (str): The component query that identifies the form panel in which to look for the field
-        name (str): The name of the field
-
-    Returns:
-        bool: True if the field is a radiogroup, False otherwise.
-    &#34;&#34;&#34;
-    return self._cq.is_component_instance_of_class(&#39;Ext.form.RadioGroup&#39;, self.get_field_component_query(form_cq, name))</code></pre>
-</details>
-</dd>
 <dt id="pyseext.field_helper.FieldHelper.is_field_a_text_field"><code class="name flex">
 <span>def <span class="ident">is_field_a_text_field</span></span>(<span>self, form_cq: str, name: str) ‑> bool</span>
 </code></dt>
@@ -1833,7 +1783,7 @@ event is fired on the combobox if the record is found.</p>
                                          If the value is supplied as a dictionary and the field is not a store holder then
                                          an exception is thrown.
     &#34;&#34;&#34;
-    # No longer using the xtype, but useful to throw a better error if field not found.
+    # Only used for radiogroup controls now, but xtype still useful to throw a better error if field not found.
     field_xtype = self.get_field_xtype(form_cq, name)
 
     if field_xtype:
@@ -1918,8 +1868,12 @@ event is fired on the combobox if the record is found.</p>
             field = self.find_field_input_element(form_cq, name)
             self._input_helper.type_into_element(field, field_value)
 
-        elif (self.is_field_a_checkbox(form_cq, name) or
-            self.is_field_a_radiogroup(form_cq, name) or
+        # Still using xtype for testing for radiogroup controls, since name tends to be
+        # shared between group and contained radios, meaning check fails.
+        # Pretty unlikely to ever subclass a radiogroup class anyway, and if did would almost
+        # certainly have the same suffix (we do).
+        elif (field_xtype.endswith(&#39;radiogroup&#39;) or
+            self.is_field_a_checkbox(form_cq, name) or
             self.is_field_a_radio_field(form_cq, name)):
 
             # FIXME: We could click on the elements here, after checking whether they
@@ -2050,7 +2004,6 @@ event is fired on the combobox if the record is found.</p>
 <li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_date_field" href="#pyseext.field_helper.FieldHelper.is_field_a_date_field">is_field_a_date_field</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_number_field" href="#pyseext.field_helper.FieldHelper.is_field_a_number_field">is_field_a_number_field</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_radio_field" href="#pyseext.field_helper.FieldHelper.is_field_a_radio_field">is_field_a_radio_field</a></code></li>
-<li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_radiogroup" href="#pyseext.field_helper.FieldHelper.is_field_a_radiogroup">is_field_a_radiogroup</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_text_field" href="#pyseext.field_helper.FieldHelper.is_field_a_text_field">is_field_a_text_field</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.select_combobox_value" href="#pyseext.field_helper.FieldHelper.select_combobox_value">select_combobox_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.set_field_value" href="#pyseext.field_helper.FieldHelper.set_field_value">set_field_value</a></code></li>

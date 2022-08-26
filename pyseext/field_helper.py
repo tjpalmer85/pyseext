@@ -180,18 +180,6 @@ class FieldHelper(HasReferencedJavaScript):
         """
         return self._cq.is_component_instance_of_class('Ext.form.field.Checkbox', self.get_field_component_query(form_cq, name))
 
-    def is_field_a_radiogroup(self, form_cq: str, name: str) -> bool:
-        """Determine whether the field (by name) on the specified form panel is a radiogroup (or a subclass of it).
-
-        Args:
-            form_cq (str): The component query that identifies the form panel in which to look for the field
-            name (str): The name of the field
-
-        Returns:
-            bool: True if the field is a radiogroup, False otherwise.
-        """
-        return self._cq.is_component_instance_of_class('Ext.form.RadioGroup', self.get_field_component_query(form_cq, name))
-
     def is_field_a_radio_field(self, form_cq: str, name: str) -> bool:
         """Determine whether the field (by name) on the specified form panel is a radio field (or a subclass of it).
 
@@ -241,7 +229,7 @@ class FieldHelper(HasReferencedJavaScript):
                                              If the value is supplied as a dictionary and the field is not a store holder then
                                              an exception is thrown.
         """
-        # No longer using the xtype, but useful to throw a better error if field not found.
+        # Only used for radiogroup controls now, but xtype still useful to throw a better error if field not found.
         field_xtype = self.get_field_xtype(form_cq, name)
 
         if field_xtype:
@@ -326,8 +314,12 @@ class FieldHelper(HasReferencedJavaScript):
                 field = self.find_field_input_element(form_cq, name)
                 self._input_helper.type_into_element(field, field_value)
 
-            elif (self.is_field_a_checkbox(form_cq, name) or
-                self.is_field_a_radiogroup(form_cq, name) or
+            # Still using xtype for testing for radiogroup controls, since name tends to be
+            # shared between group and contained radios, meaning check fails.
+            # Pretty unlikely to ever subclass a radiogroup class anyway, and if did would almost
+            # certainly have the same suffix (we do).
+            elif (field_xtype.endswith('radiogroup') or
+                self.is_field_a_checkbox(form_cq, name) or
                 self.is_field_a_radio_field(form_cq, name)):
 
                 # FIXME: We could click on the elements here, after checking whether they
