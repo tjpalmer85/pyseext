@@ -63,7 +63,7 @@ class InputHelper:
         self._action_chains = ActionChains(driver)
         &#34;&#34;&#34;The ActionChains instance for this class instance&#34;&#34;&#34;
 
-    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False):
+    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False, clear_first: bool = True):
         &#34;&#34;&#34;Types into an input element in a realistic manner, unless web driver is remote.
 
         Args:
@@ -72,12 +72,14 @@ class InputHelper:
             delay (float, optional): The number of seconds to delay after typing. Defaults to None.
             tab_off (bool, optional): Indicates whether to tab off the field after typing, and delay. Defaults to False.
             disable_realistic_typing (bool, optional): Indicates whether to disable typing in a &#39;realistic&#39; manner when not remote. Defaults to False.
+            clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
         &#34;&#34;&#34;
         # Ensure text really is a string
         text = str(text)
 
-        # Clear the element first, in case has something in it
-        element.clear()
+        if clear_first:
+            # Clear the element first, in case has something in it
+            element.clear()
 
         # First move to and click on element to give it focus
         self._action_chains.move_to_element(element)
@@ -128,6 +130,12 @@ class InputHelper:
 
             self._action_chains.pause(pause_time)
 
+        self._action_chains.perform()
+
+    def type_escape(self):
+        &#34;&#34;&#34;Type an escape character into the currently focused element.
+        &#34;&#34;&#34;
+        self._action_chains.send_keys(Keys.ESCAPE)
         self._action_chains.perform()</code></pre>
 </details>
 </section>
@@ -180,7 +188,7 @@ class InputHelper:
         self._action_chains = ActionChains(driver)
         &#34;&#34;&#34;The ActionChains instance for this class instance&#34;&#34;&#34;
 
-    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False):
+    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False, clear_first: bool = True):
         &#34;&#34;&#34;Types into an input element in a realistic manner, unless web driver is remote.
 
         Args:
@@ -189,12 +197,14 @@ class InputHelper:
             delay (float, optional): The number of seconds to delay after typing. Defaults to None.
             tab_off (bool, optional): Indicates whether to tab off the field after typing, and delay. Defaults to False.
             disable_realistic_typing (bool, optional): Indicates whether to disable typing in a &#39;realistic&#39; manner when not remote. Defaults to False.
+            clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
         &#34;&#34;&#34;
         # Ensure text really is a string
         text = str(text)
 
-        # Clear the element first, in case has something in it
-        element.clear()
+        if clear_first:
+            # Clear the element first, in case has something in it
+            element.clear()
 
         # First move to and click on element to give it focus
         self._action_chains.move_to_element(element)
@@ -245,6 +255,12 @@ class InputHelper:
 
             self._action_chains.pause(pause_time)
 
+        self._action_chains.perform()
+
+    def type_escape(self):
+        &#34;&#34;&#34;Type an escape character into the currently focused element.
+        &#34;&#34;&#34;
+        self._action_chains.send_keys(Keys.ESCAPE)
         self._action_chains.perform()</code></pre>
 </details>
 <h3>Class variables</h3>
@@ -296,8 +312,24 @@ class InputHelper:
         self._action_chains.perform()</code></pre>
 </details>
 </dd>
+<dt id="pyseext.input_helper.InputHelper.type_escape"><code class="name flex">
+<span>def <span class="ident">type_escape</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Type an escape character into the currently focused element.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def type_escape(self):
+    &#34;&#34;&#34;Type an escape character into the currently focused element.
+    &#34;&#34;&#34;
+    self._action_chains.send_keys(Keys.ESCAPE)
+    self._action_chains.perform()</code></pre>
+</details>
+</dd>
 <dt id="pyseext.input_helper.InputHelper.type_into_element"><code class="name flex">
-<span>def <span class="ident">type_into_element</span></span>(<span>self, element: selenium.webdriver.remote.webelement.WebElement, text: str, delay: Optional[float] = None, tab_off: Optional[bool] = False, disable_realistic_typing: bool = False)</span>
+<span>def <span class="ident">type_into_element</span></span>(<span>self, element: selenium.webdriver.remote.webelement.WebElement, text: str, delay: Optional[float] = None, tab_off: Optional[bool] = False, disable_realistic_typing: bool = False, clear_first: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Types into an input element in a realistic manner, unless web driver is remote.</p>
@@ -313,12 +345,14 @@ class InputHelper:
 <dd>Indicates whether to tab off the field after typing, and delay. Defaults to False.</dd>
 <dt><strong><code>disable_realistic_typing</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Indicates whether to disable typing in a 'realistic' manner when not remote. Defaults to False.</dd>
+<dt><strong><code>clear_first</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Indicates whether to clear the element first. Defaults to True.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False):
+<pre><code class="python">def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False, clear_first: bool = True):
     &#34;&#34;&#34;Types into an input element in a realistic manner, unless web driver is remote.
 
     Args:
@@ -327,12 +361,14 @@ class InputHelper:
         delay (float, optional): The number of seconds to delay after typing. Defaults to None.
         tab_off (bool, optional): Indicates whether to tab off the field after typing, and delay. Defaults to False.
         disable_realistic_typing (bool, optional): Indicates whether to disable typing in a &#39;realistic&#39; manner when not remote. Defaults to False.
+        clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
     &#34;&#34;&#34;
     # Ensure text really is a string
     text = str(text)
 
-    # Clear the element first, in case has something in it
-    element.clear()
+    if clear_first:
+        # Clear the element first, in case has something in it
+        element.clear()
 
     # First move to and click on element to give it focus
     self._action_chains.move_to_element(element)
@@ -407,6 +443,7 @@ Defaults to None, in which case a random wait time is used between TYPING_SLEEP_
 <li><code><a title="pyseext.input_helper.InputHelper.TYPING_SLEEP_MAXIMUM" href="#pyseext.input_helper.InputHelper.TYPING_SLEEP_MAXIMUM">TYPING_SLEEP_MAXIMUM</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.TYPING_SLEEP_MINIMUM" href="#pyseext.input_helper.InputHelper.TYPING_SLEEP_MINIMUM">TYPING_SLEEP_MINIMUM</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type" href="#pyseext.input_helper.InputHelper.type">type</a></code></li>
+<li><code><a title="pyseext.input_helper.InputHelper.type_escape" href="#pyseext.input_helper.InputHelper.type_escape">type_escape</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_into_element" href="#pyseext.input_helper.InputHelper.type_into_element">type_into_element</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_tab" href="#pyseext.input_helper.InputHelper.type_tab">type_tab</a></code></li>
 </ul>

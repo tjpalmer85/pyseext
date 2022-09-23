@@ -38,8 +38,8 @@ class MenuHelper:
         self._action_chains = ActionChains(driver)
         """The ActionChains instance for this class instance"""
 
-    def click_menu_item(self, cq: str, root_id: Union[str, None] = None):
-        """Finds a menu item using the supplied component query and clicks it.
+    def move_to_menu_item(self, cq: str, root_id: Union[str, None] = None):
+        """Finds a menu item using the supplied component query and moves to it.
 
         Args:
             cq (str): The component query to find the menu item.
@@ -49,11 +49,46 @@ class MenuHelper:
         menu_item = self._cq.wait_for_single_query_visible(cq, root_id)
 
         # Rather than call click, move mouse to button and click...
-        self._logger.info("Clicking menu item with CQ '%s'", cq)
+        self._logger.info("Moving to menu item with CQ '%s'", cq)
 
         self._action_chains.move_to_element(menu_item)
+        self._action_chains.perform()
+
+    def click_menu_item(self, cq: str, root_id: Union[str, None] = None):
+        """Finds a menu item using the supplied component query and clicks it.
+
+        Args:
+            cq (str): The component query to find the menu item.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
+        """
+        self.move_to_menu_item(cq, root_id)
+
+        # Rather than call click, move mouse to button and click...
+        self._logger.info("Clicking menu item with CQ '%s'", cq)
+
         self._action_chains.click()
         self._action_chains.perform()
+
+    def click_menu_item_by_text(self, text: str, root_id: Union[str, None] = None):
+        """Finds a visible, enabled menu item with the specified text and clicks it.
+
+        Args:
+            text (str): The text on the menu item
+            root_id (str, optional): The id of the container within which to perform the query.
+                If omitted, all components within the document are included in the search.
+        """
+        self.click_menu_item(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
+
+    def move_to_menu_item_by_text(self, text: str, root_id: Union[str, None] = None):
+        """Finds a visible, enabled menu item with the specified text and moves to it.
+
+        Args:
+            cq (str): The component query to find the menu item.
+            root_id (str, optional): The id of the container within which to perform the query.
+                                     If omitted, all components within the document are included in the search.
+        """
+        self.move_to_menu_item(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
 
     def try_get_menu_item_by_text(self, text: str, root_id: Union[str, None] = None, timeout: float = 1):
         """Finds a visible, enabled menu item with the specified text and returns it if found.
@@ -75,23 +110,6 @@ class MenuHelper:
             return results[0]
         else:
             return None
-
-    def click_menu_item_by_text(self, text: str, root_id: Union[str, None] = None):
-        """Finds a visible, enabled menu item with the specified text and clicks it.
-
-        Args:
-            text (str): The text on the menu item
-            root_id (str, optional): The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
-        """
-        menu_item = self._cq.wait_for_single_query_visible(self._ENABLED_MENU_ITEM_TEMPLATE.format(text=text), root_id)
-
-        # Rather than call click, move mouse to the menu item and click...
-        self._logger.info("Clicking menu item '%s'", text)
-
-        self._action_chains.move_to_element(menu_item)
-        self._action_chains.click()
-        self._action_chains.perform()
 
     def check_menu_item_enabled(self, text: str, root_id: Union[str, None] = None):
         """Checks that we can find an enabled menu item with the specified text.

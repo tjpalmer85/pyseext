@@ -34,7 +34,7 @@ class InputHelper:
         self._action_chains = ActionChains(driver)
         """The ActionChains instance for this class instance"""
 
-    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False):
+    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False, clear_first: bool = True):
         """Types into an input element in a realistic manner, unless web driver is remote.
 
         Args:
@@ -43,12 +43,14 @@ class InputHelper:
             delay (float, optional): The number of seconds to delay after typing. Defaults to None.
             tab_off (bool, optional): Indicates whether to tab off the field after typing, and delay. Defaults to False.
             disable_realistic_typing (bool, optional): Indicates whether to disable typing in a 'realistic' manner when not remote. Defaults to False.
+            clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
         """
         # Ensure text really is a string
         text = str(text)
 
-        # Clear the element first, in case has something in it
-        element.clear()
+        if clear_first:
+            # Clear the element first, in case has something in it
+            element.clear()
 
         # First move to and click on element to give it focus
         self._action_chains.move_to_element(element)
@@ -99,4 +101,10 @@ class InputHelper:
 
             self._action_chains.pause(pause_time)
 
+        self._action_chains.perform()
+
+    def type_escape(self):
+        """Type an escape character into the currently focused element.
+        """
+        self._action_chains.send_keys(Keys.ESCAPE)
         self._action_chains.perform()

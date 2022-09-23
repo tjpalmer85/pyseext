@@ -11,6 +11,8 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 from pyseext.component_query import ComponentQuery
+from pyseext.input_helper import InputHelper
+from pyseext.menu_helper import MenuHelper
 from pyseext.store_helper import StoreHelper
 
 class GridHelper(HasReferencedJavaScript):
@@ -53,6 +55,15 @@ class GridHelper(HasReferencedJavaScript):
 
         self._cq = ComponentQuery(driver)
         """The `ComponentQuery` instance for this class instance"""
+
+        self._input_helper = InputHelper(driver)
+        """The `InputHelper` instance for this class instance"""
+
+        self._menu_helper = MenuHelper(driver)
+        """The `MenuHelper` instance for this class instance"""
+
+        self._store_helper = StoreHelper(driver)
+        """The `StoreHelper` instance for this class instance"""
 
         self._action_chains = ActionChains(driver)
         """The ActionChains instance for this class instance"""
@@ -206,6 +217,55 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.move_to_element(column_header_trigger)
         self._action_chains.click()
         self._action_chains.perform()
+
+    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True):
+        """Filters a column on a grid for the specified value.
+
+        Only supports string filters at the moment.
+
+        Args:
+            grid_cq (str): The component query for the owning grid.
+            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            filter_value (str): The value to filter the column by.
+            wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+        """
+        self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+        self._menu_helper.move_to_menu_item_by_text('Filters')
+
+        filter_textbox = self._cq.wait_for_single_query_visible('textfield[emptyText="Enter Filter Text..."]')
+
+        if wait_for_store_loaded:
+            self._store_helper.reset_store_load_count(grid_cq)
+
+        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = False)
+
+        if wait_for_store_loaded:
+            self._store_helper.wait_for_store_loaded(grid_cq)
+
+        self._input_helper.type_escape()
+
+    def toggle_column_filter(self, grid_cq: str, column_text_or_data_index: str, wait_for_store_loaded: bool = True):
+        """Toggles the filter on a column by clicking on the filters element.
+
+        Args:
+            grid_cq (str): The component query for the owning grid.
+            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+        """
+        self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+        filter_menu_item = self._menu_helper.try_get_menu_item_by_text('Filters')
+
+        if wait_for_store_loaded:
+            self._store_helper.reset_store_load_count(grid_cq)
+
+        self._action_chains.move_to_element(filter_menu_item)
+        self._action_chains.click()
+        self._action_chains.perform()
+
+        if wait_for_store_loaded:
+            self._store_helper.wait_for_store_loaded(grid_cq)
+
+        self._input_helper.type_escape()
 
     def clear_selection(self, grid_cq: str):
         """ Clears the current selection.
