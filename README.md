@@ -11,11 +11,15 @@ that it was indeed possible, I started pulling this together.
 ## How to Use
 It seems that GitHub does not allow publishing to PyPi yet, and it's not looking like it's coming [soon](https://github.community/t/pypi-compatible-github-package-registry/14615), since the roadmap looks empty.
 
-You can direct pip at GitHub though. Simply run `pip install git+https://github.com/westy/pyseext`
+You can direct pip at GitHub though. Simply run `pip install git+https://github.com/westy/pyseext` or `pip install git+https://github.com/westy/pyseext@1.0.0` (say, to get tag 1.0.0)
 
 Alternatively, add this to your `requirements.txt`:
 ```
 pyseext @ git+https://github.com/westy/pyseext
+```
+Or for a tagged version
+```
+pyseext @ git+https://github.com/westy/pyseext@1.0.0
 ```
 
 And then run `pip install -r requirements.txt`
