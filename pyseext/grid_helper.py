@@ -218,7 +218,7 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.click()
         self._action_chains.perform()
 
-    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True):
+    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False):
         """Filters a column on a grid for the specified value.
 
         Only supports string filters at the moment.
@@ -228,6 +228,7 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_data_index (str): The header texst of dataIndex of the grid column.
             filter_value (str): The value to filter the column by.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+            clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
         """
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
         self._menu_helper.move_to_menu_item_by_text('Filters')
@@ -237,7 +238,7 @@ class GridHelper(HasReferencedJavaScript):
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
 
-        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = False)
+        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first)
 
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)

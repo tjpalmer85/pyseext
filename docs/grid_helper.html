@@ -247,7 +247,7 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.click()
         self._action_chains.perform()
 
-    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True):
+    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False):
         &#34;&#34;&#34;Filters a column on a grid for the specified value.
 
         Only supports string filters at the moment.
@@ -257,6 +257,7 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_data_index (str): The header texst of dataIndex of the grid column.
             filter_value (str): The value to filter the column by.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+            clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
         &#34;&#34;&#34;
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
         self._menu_helper.move_to_menu_item_by_text(&#39;Filters&#39;)
@@ -266,7 +267,7 @@ class GridHelper(HasReferencedJavaScript):
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
 
-        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = False)
+        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first)
 
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)
@@ -694,7 +695,7 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.click()
         self._action_chains.perform()
 
-    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True):
+    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False):
         &#34;&#34;&#34;Filters a column on a grid for the specified value.
 
         Only supports string filters at the moment.
@@ -704,6 +705,7 @@ class GridHelper(HasReferencedJavaScript):
             column_text_or_data_index (str): The header texst of dataIndex of the grid column.
             filter_value (str): The value to filter the column by.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+            clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
         &#34;&#34;&#34;
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
         self._menu_helper.move_to_menu_item_by_text(&#39;Filters&#39;)
@@ -713,7 +715,7 @@ class GridHelper(HasReferencedJavaScript):
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
 
-        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = False)
+        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first)
 
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)
@@ -1159,7 +1161,7 @@ The column must be visible.</p>
 </details>
 </dd>
 <dt id="pyseext.grid_helper.GridHelper.filter_column"><code class="name flex">
-<span>def <span class="ident">filter_column</span></span>(<span>self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True)</span>
+<span>def <span class="ident">filter_column</span></span>(<span>self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Filters a column on a grid for the specified value.</p>
@@ -1174,12 +1176,14 @@ The column must be visible.</p>
 <dd>The value to filter the column by.</dd>
 <dt><strong><code>wait_for_store_loaded</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Indicates whether to wait for the store to load. Defaults to True.</dd>
+<dt><strong><code>clear_first</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Indicates whether to clear the filter element first. Defaults to False.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True):
+<pre><code class="python">def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False):
     &#34;&#34;&#34;Filters a column on a grid for the specified value.
 
     Only supports string filters at the moment.
@@ -1189,6 +1193,7 @@ The column must be visible.</p>
         column_text_or_data_index (str): The header texst of dataIndex of the grid column.
         filter_value (str): The value to filter the column by.
         wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+        clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
     &#34;&#34;&#34;
     self.click_column_header_trigger(grid_cq, column_text_or_data_index)
     self._menu_helper.move_to_menu_item_by_text(&#39;Filters&#39;)
@@ -1198,7 +1203,7 @@ The column must be visible.</p>
     if wait_for_store_loaded:
         self._store_helper.reset_store_load_count(grid_cq)
 
-    self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = False)
+    self._input_helper.type_into_element(filter_textbox, filter_value, clear_first)
 
     if wait_for_store_loaded:
         self._store_helper.wait_for_store_loaded(grid_cq)
