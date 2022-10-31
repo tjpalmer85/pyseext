@@ -103,8 +103,37 @@ class InputHelper:
 
         self._action_chains.perform()
 
-    def type_escape(self):
-        """Type an escape character into the currently focused element.
+    def type_return(self, pause_time: Union[float, None] = None):
+
+        """Types a return character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+        """
+        self._action_chains.send_keys(Keys.RETURN)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
+        self._action_chains.perform()
+
+    def type_escape(self, pause_time: Union[float, None] = None):
+        """Types an escape character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
         """
         self._action_chains.send_keys(Keys.ESCAPE)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
         self._action_chains.perform()

@@ -132,10 +132,39 @@ class InputHelper:
 
         self._action_chains.perform()
 
-    def type_escape(self):
-        &#34;&#34;&#34;Type an escape character into the currently focused element.
+    def type_return(self, pause_time: Union[float, None] = None):
+
+        &#34;&#34;&#34;Types a return character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+        &#34;&#34;&#34;
+        self._action_chains.send_keys(Keys.RETURN)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
+        self._action_chains.perform()
+
+    def type_escape(self, pause_time: Union[float, None] = None):
+        &#34;&#34;&#34;Types an escape character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
         &#34;&#34;&#34;
         self._action_chains.send_keys(Keys.ESCAPE)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
         self._action_chains.perform()</code></pre>
 </details>
 </section>
@@ -257,10 +286,39 @@ class InputHelper:
 
         self._action_chains.perform()
 
-    def type_escape(self):
-        &#34;&#34;&#34;Type an escape character into the currently focused element.
+    def type_return(self, pause_time: Union[float, None] = None):
+
+        &#34;&#34;&#34;Types a return character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+        &#34;&#34;&#34;
+        self._action_chains.send_keys(Keys.RETURN)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
+        self._action_chains.perform()
+
+    def type_escape(self, pause_time: Union[float, None] = None):
+        &#34;&#34;&#34;Types an escape character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
         &#34;&#34;&#34;
         self._action_chains.send_keys(Keys.ESCAPE)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
         self._action_chains.perform()</code></pre>
 </details>
 <h3>Class variables</h3>
@@ -313,18 +371,35 @@ class InputHelper:
 </details>
 </dd>
 <dt id="pyseext.input_helper.InputHelper.type_escape"><code class="name flex">
-<span>def <span class="ident">type_escape</span></span>(<span>self)</span>
+<span>def <span class="ident">type_escape</span></span>(<span>self, pause_time: Optional[float] = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Type an escape character into the currently focused element.</p></div>
+<div class="desc"><p>Types an escape character into the currently focused element.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pause_time</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The amount of time to pause after hitting return (when web driver is not remote).
+Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def type_escape(self):
-    &#34;&#34;&#34;Type an escape character into the currently focused element.
+<pre><code class="python">def type_escape(self, pause_time: Union[float, None] = None):
+    &#34;&#34;&#34;Types an escape character into the currently focused element.
+
+    Args:
+        pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                      Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
     &#34;&#34;&#34;
     self._action_chains.send_keys(Keys.ESCAPE)
+
+    if not self._driver._is_remote: # pylint: disable=protected-access
+        if pause_time is None:
+            pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+        self._action_chains.pause(pause_time)
+
     self._action_chains.perform()</code></pre>
 </details>
 </dd>
@@ -386,6 +461,40 @@ class InputHelper:
         self.type_tab()</code></pre>
 </details>
 </dd>
+<dt id="pyseext.input_helper.InputHelper.type_return"><code class="name flex">
+<span>def <span class="ident">type_return</span></span>(<span>self, pause_time: Optional[float] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Types a return character into the currently focused element.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pause_time</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The amount of time to pause after hitting return (when web driver is not remote).
+Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def type_return(self, pause_time: Union[float, None] = None):
+
+    &#34;&#34;&#34;Types a return character into the currently focused element.
+
+    Args:
+        pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+                                      Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+    &#34;&#34;&#34;
+    self._action_chains.send_keys(Keys.RETURN)
+
+    if not self._driver._is_remote: # pylint: disable=protected-access
+        if pause_time is None:
+            pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+
+        self._action_chains.pause(pause_time)
+
+    self._action_chains.perform()</code></pre>
+</details>
+</dd>
 <dt id="pyseext.input_helper.InputHelper.type_tab"><code class="name flex">
 <span>def <span class="ident">type_tab</span></span>(<span>self, pause_time: Optional[float] = None)</span>
 </code></dt>
@@ -445,6 +554,7 @@ Defaults to None, in which case a random wait time is used between TYPING_SLEEP_
 <li><code><a title="pyseext.input_helper.InputHelper.type" href="#pyseext.input_helper.InputHelper.type">type</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_escape" href="#pyseext.input_helper.InputHelper.type_escape">type_escape</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_into_element" href="#pyseext.input_helper.InputHelper.type_into_element">type_into_element</a></code></li>
+<li><code><a title="pyseext.input_helper.InputHelper.type_return" href="#pyseext.input_helper.InputHelper.type_return">type_return</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_tab" href="#pyseext.input_helper.InputHelper.type_tab">type_tab</a></code></li>
 </ul>
 </li>
