@@ -267,7 +267,7 @@ class GridHelper(HasReferencedJavaScript):
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
 
-        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first)
+        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = clear_first)
 
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)
@@ -715,7 +715,7 @@ class GridHelper(HasReferencedJavaScript):
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
 
-        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first)
+        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = clear_first)
 
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)
@@ -1203,7 +1203,7 @@ The column must be visible.</p>
     if wait_for_store_loaded:
         self._store_helper.reset_store_load_count(grid_cq)
 
-    self._input_helper.type_into_element(filter_textbox, filter_value, clear_first)
+    self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = clear_first)
 
     if wait_for_store_loaded:
         self._store_helper.wait_for_store_loaded(grid_cq)
