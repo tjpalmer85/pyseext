@@ -272,6 +272,40 @@ class TreeHelper(HasReferencedJavaScript):
         else:
             raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
 
+    def click_node_element(self,
+                           tree_cq: str,
+                           node_text_or_data: Union[str, dict],
+                           css_query: str,
+                           root_node_text_or_data: Union[str, dict, None] = None):
+        &#34;&#34;&#34;Finds a node by text or data, then a child element by CSS query, then clicks on it.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+            css_query (str): The CSS to query for in the found node row element.
+                             Some expected ones:
+                                Expander UI element = &#39;.x-tree-expander&#39;
+                                Node icon = &#39;.x-tree-icon&#39;
+                                Node text = &#39;.x-tree-node-text&#39;
+                             If need those you&#39;d use one of the other methods though.
+                             This is in case need to click on another part of the node&#39;s row.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
+        &#34;&#34;&#34;
+        node = self.get_node_element(tree_cq, node_text_or_data, css_query, root_node_text_or_data)
+
+        if node:
+            if root_node_text_or_data:
+                self._logger.info(&#34;Clicking on node &#39;%s&#39; (under root &#39;%s&#39;), with CSS query &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, css_query, tree_cq)
+            else:
+                self._logger.info(&#34;Clicking on node &#39;%s&#39; with CSS query &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, css_query, tree_cq)
+
+            self._action_chains.move_to_element(node)
+            self._action_chains.click(node)
+            self._action_chains.perform()
+        else:
+            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
+
     def wait_for_tree_node(self,
                            tree_cq: str,
                            node_text_or_data: Union[str, dict],
@@ -332,7 +366,8 @@ class TreeHelper(HasReferencedJavaScript):
         def __init__(self,
                      tree_cq: str,
                      node_text_or_data: Union[str, dict],
-                     root_node_text_or_data: Union[str, dict, None] = None):
+                     root_node_text_or_data: Union[str, dict, None] = None,
+                     css_query: Union[str, None] = None):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
@@ -340,16 +375,23 @@ class TreeHelper(HasReferencedJavaScript):
                 node_text_or_data (Union[str, dict]): The node text or data that we were looking for
                 root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
                                                                     Can be an immediate parent, or higher up in the tree.
-                message (str, optional): The exception message. Defaults to &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;.
+                css_query (str, optional): The CSS that was queryed for in the node that we were looking for.
             &#34;&#34;&#34;
             if root_node_text_or_data:
-                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                if css_query:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) with CSS query &#39;{css_query}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                else:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) on tree with CQ &#39;{tree_cq}&#39;.&#34;
             else:
-                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                if css_query:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; with CSS query &#39;{css_query}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                else:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
 
             self._tree_cq = tree_cq
             self._node_text_or_data = node_text_or_data
             self._root_node_text_or_data = root_node_text_or_data
+            self._css_query = css_query
 
             super().__init__(self.message)
 
@@ -357,9 +399,9 @@ class TreeHelper(HasReferencedJavaScript):
             &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
 
             if self._root_node_text_or_data:
-                return self.message.format(node_text_or_data=self._node_text_or_data, root_node_text_or_data=self._root_node_text_or_data, tree_cq=self._tree_cq)
+                return self.message.format(node_text_or_data=self._node_text_or_data, root_node_text_or_data=self._root_node_text_or_data, css_query=self._css_query, tree_cq=self._tree_cq)
             else:
-                return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
+                return self.message.format(node_text_or_data=self._node_text_or_data, css_query=self._css_query, tree_cq=self._tree_cq)
 
     class TreeNotLoadingExpectation:
         &#34;&#34;&#34; An expectation for checking that a tree is not loading.&#34;&#34;&#34;
@@ -678,6 +720,40 @@ class TreeHelper(HasReferencedJavaScript):
         else:
             raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
 
+    def click_node_element(self,
+                           tree_cq: str,
+                           node_text_or_data: Union[str, dict],
+                           css_query: str,
+                           root_node_text_or_data: Union[str, dict, None] = None):
+        &#34;&#34;&#34;Finds a node by text or data, then a child element by CSS query, then clicks on it.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+            css_query (str): The CSS to query for in the found node row element.
+                             Some expected ones:
+                                Expander UI element = &#39;.x-tree-expander&#39;
+                                Node icon = &#39;.x-tree-icon&#39;
+                                Node text = &#39;.x-tree-node-text&#39;
+                             If need those you&#39;d use one of the other methods though.
+                             This is in case need to click on another part of the node&#39;s row.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
+        &#34;&#34;&#34;
+        node = self.get_node_element(tree_cq, node_text_or_data, css_query, root_node_text_or_data)
+
+        if node:
+            if root_node_text_or_data:
+                self._logger.info(&#34;Clicking on node &#39;%s&#39; (under root &#39;%s&#39;), with CSS query &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, css_query, tree_cq)
+            else:
+                self._logger.info(&#34;Clicking on node &#39;%s&#39; with CSS query &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, css_query, tree_cq)
+
+            self._action_chains.move_to_element(node)
+            self._action_chains.click(node)
+            self._action_chains.perform()
+        else:
+            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
+
     def wait_for_tree_node(self,
                            tree_cq: str,
                            node_text_or_data: Union[str, dict],
@@ -738,7 +814,8 @@ class TreeHelper(HasReferencedJavaScript):
         def __init__(self,
                      tree_cq: str,
                      node_text_or_data: Union[str, dict],
-                     root_node_text_or_data: Union[str, dict, None] = None):
+                     root_node_text_or_data: Union[str, dict, None] = None,
+                     css_query: Union[str, None] = None):
             &#34;&#34;&#34;Initialises an instance of this exception
 
             Args:
@@ -746,16 +823,23 @@ class TreeHelper(HasReferencedJavaScript):
                 node_text_or_data (Union[str, dict]): The node text or data that we were looking for
                 root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
                                                                     Can be an immediate parent, or higher up in the tree.
-                message (str, optional): The exception message. Defaults to &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;.
+                css_query (str, optional): The CSS that was queryed for in the node that we were looking for.
             &#34;&#34;&#34;
             if root_node_text_or_data:
-                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                if css_query:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) with CSS query &#39;{css_query}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                else:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; (under root &#39;{root_node_text_or_data}&#39;) on tree with CQ &#39;{tree_cq}&#39;.&#34;
             else:
-                self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                if css_query:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; with CSS query &#39;{css_query}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
+                else:
+                    self.message = &#34;Failed to find node with data (or text) &#39;{node_text_or_data}&#39; on tree with CQ &#39;{tree_cq}&#39;.&#34;
 
             self._tree_cq = tree_cq
             self._node_text_or_data = node_text_or_data
             self._root_node_text_or_data = root_node_text_or_data
+            self._css_query = css_query
 
             super().__init__(self.message)
 
@@ -763,9 +847,9 @@ class TreeHelper(HasReferencedJavaScript):
             &#34;&#34;&#34;Returns a string representation of this exception&#34;&#34;&#34;
 
             if self._root_node_text_or_data:
-                return self.message.format(node_text_or_data=self._node_text_or_data, root_node_text_or_data=self._root_node_text_or_data, tree_cq=self._tree_cq)
+                return self.message.format(node_text_or_data=self._node_text_or_data, root_node_text_or_data=self._root_node_text_or_data, css_query=self._css_query, tree_cq=self._tree_cq)
             else:
-                return self.message.format(node_text_or_data=self._node_text_or_data, tree_cq=self._tree_cq)
+                return self.message.format(node_text_or_data=self._node_text_or_data, css_query=self._css_query, tree_cq=self._tree_cq)
 
     class TreeNotLoadingExpectation:
         &#34;&#34;&#34; An expectation for checking that a tree is not loading.&#34;&#34;&#34;
@@ -848,6 +932,68 @@ class TreeHelper(HasReferencedJavaScript):
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="pyseext.tree_helper.TreeHelper.click_node_element"><code class="name flex">
+<span>def <span class="ident">click_node_element</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], css_query: str, root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds a node by text or data, then a child element by CSS query, then clicks on it.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tree_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query to use to find the tree.</dd>
+<dt><strong><code>node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code></dt>
+<dd>The node text or data to find.</dd>
+<dt><strong><code>css_query</code></strong> :&ensp;<code>str</code></dt>
+<dd>The CSS to query for in the found node row element.
+Some expected ones:
+Expander UI element = '.x-tree-expander'
+Node icon = '.x-tree-icon'
+Node text = '.x-tree-node-text'
+If need those you'd use one of the other methods though.
+This is in case need to click on another part of the node's row.</dd>
+<dt><strong><code>root_node_text_or_data</code></strong> :&ensp;<code>Union[str, dict]</code>, optional</dt>
+<dd>The text or data indicating the root node under which to search for the node.
+Can be an immediate parent, or higher up in the tree.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def click_node_element(self,
+                       tree_cq: str,
+                       node_text_or_data: Union[str, dict],
+                       css_query: str,
+                       root_node_text_or_data: Union[str, dict, None] = None):
+    &#34;&#34;&#34;Finds a node by text or data, then a child element by CSS query, then clicks on it.
+
+    Args:
+        tree_cq (str): The component query to use to find the tree.
+        node_text_or_data (Union[str, dict]): The node text or data to find.
+        css_query (str): The CSS to query for in the found node row element.
+                         Some expected ones:
+                            Expander UI element = &#39;.x-tree-expander&#39;
+                            Node icon = &#39;.x-tree-icon&#39;
+                            Node text = &#39;.x-tree-node-text&#39;
+                         If need those you&#39;d use one of the other methods though.
+                         This is in case need to click on another part of the node&#39;s row.
+        root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                             Can be an immediate parent, or higher up in the tree.
+    &#34;&#34;&#34;
+    node = self.get_node_element(tree_cq, node_text_or_data, css_query, root_node_text_or_data)
+
+    if node:
+        if root_node_text_or_data:
+            self._logger.info(&#34;Clicking on node &#39;%s&#39; (under root &#39;%s&#39;), with CSS query &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, root_node_text_or_data, css_query, tree_cq)
+        else:
+            self._logger.info(&#34;Clicking on node &#39;%s&#39; with CSS query &#39;%s&#39; on tree with CQ &#39;%s&#39;&#34;, node_text_or_data, css_query, tree_cq)
+
+        self._action_chains.move_to_element(node)
+        self._action_chains.click(node)
+        self._action_chains.perform()
+    else:
+        raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)</code></pre>
+</details>
+</dd>
 <dt id="pyseext.tree_helper.TreeHelper.click_node_expander"><code class="name flex">
 <span>def <span class="ident">click_node_expander</span></span>(<span>self, tree_cq: str, node_text_or_data: Union[str, dict], root_node_text_or_data: Union[str, dict, ForwardRef(None)] = None)</span>
 </code></dt>
@@ -1350,6 +1496,7 @@ or the timeout is hit</p>
 <li><code><a title="pyseext.tree_helper.TreeHelper.NodeFoundExpectation" href="#pyseext.tree_helper.TreeHelper.NodeFoundExpectation">NodeFoundExpectation</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.NodeNotFoundException" href="#pyseext.tree_helper.TreeHelper.NodeNotFoundException">NodeNotFoundException</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation" href="#pyseext.tree_helper.TreeHelper.TreeNotLoadingExpectation">TreeNotLoadingExpectation</a></code></li>
+<li><code><a title="pyseext.tree_helper.TreeHelper.click_node_element" href="#pyseext.tree_helper.TreeHelper.click_node_element">click_node_element</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.click_node_expander" href="#pyseext.tree_helper.TreeHelper.click_node_expander">click_node_expander</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.get_node_element" href="#pyseext.tree_helper.TreeHelper.get_node_element">get_node_element</a></code></li>
 <li><code><a title="pyseext.tree_helper.TreeHelper.get_node_expander_element" href="#pyseext.tree_helper.TreeHelper.get_node_expander_element">get_node_expander_element</a></code></li>
