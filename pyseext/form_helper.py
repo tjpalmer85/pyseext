@@ -48,7 +48,7 @@ class FormHelper:
                         - value (Any): The value for the field
                         - delay (int): Number of seconds to delay after setting a value (a botch for remote combos at the moment)
                         - tab_off (bool): Indicates whether to tab off the field after typing (another botch for remote combos)
-                                            and only works with fields that are being typed into.
+                                          and only works with fields that are being typed into.
                 Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
                     A value of None in the array means that no value should be entered.
             starting_field_index_or_name (Union[int, str, None]): The field where focus should start when using a list for the field values.
@@ -68,7 +68,10 @@ class FormHelper:
             if not starting_field_index_or_name is None:
                 # Ensure we are starting at our desired field in the form
                 if not self._field_helper.does_field_have_focus(form_cq, starting_field_index_or_name):
-                    self._field_helper.focus_field(form_cq, starting_field_index_or_name)
+                    self._field_helper.focus_field(form_cq, starting_field_index_or_name, check_has_focus_after = False)
+
+                # Wait for field to have focus, so that it's functionally equivalent to the old version of this method
+                self._field_helper.wait_until_field_has_focus(form_cq, starting_field_index_or_name)
 
             for field_value in field_values:
                 if field_value:
