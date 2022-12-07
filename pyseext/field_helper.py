@@ -383,7 +383,7 @@ class FieldHelper(HasReferencedJavaScript):
             else:
                 self._logger.debug("Field %s on form '%s' has focus!", index_or_name, form_cq)
 
-    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]) -> bool:
         """Determines whether focus is on a field on a form by (zero-based) index or name.
 
         Args:

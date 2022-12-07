@@ -412,7 +412,7 @@ class FieldHelper(HasReferencedJavaScript):
             else:
                 self._logger.debug(&#34;Field %s on form &#39;%s&#39; has focus!&#34;, index_or_name, form_cq)
 
-    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]) -&gt; bool:
         &#34;&#34;&#34;Determines whether focus is on a field on a form by (zero-based) index or name.
 
         Args:
@@ -990,7 +990,7 @@ class FieldHelper(HasReferencedJavaScript):
             else:
                 self._logger.debug(&#34;Field %s on form &#39;%s&#39; has focus!&#34;, index_or_name, form_cq)
 
-    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+    def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]) -&gt; bool:
         &#34;&#34;&#34;Determines whether focus is on a field on a form by (zero-based) index or name.
 
         Args:
@@ -1240,7 +1240,7 @@ supported for the given field xtype.</p></div>
 </details>
 </dd>
 <dt id="pyseext.field_helper.FieldHelper.does_field_have_focus"><code class="name flex">
-<span>def <span class="ident">does_field_have_focus</span></span>(<span>self, form_cq: str, index_or_name: Union[int, str])</span>
+<span>def <span class="ident">does_field_have_focus</span></span>(<span>self, form_cq: str, index_or_name: Union[int, str]) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Determines whether focus is on a field on a form by (zero-based) index or name.</p>
@@ -1260,7 +1260,7 @@ supported for the given field xtype.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]):
+<pre><code class="python">def does_field_have_focus(self, form_cq: str, index_or_name: Union[int, str]) -&gt; bool:
     &#34;&#34;&#34;Determines whether focus is on a field on a form by (zero-based) index or name.
 
     Args:

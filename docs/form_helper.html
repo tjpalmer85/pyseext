@@ -63,7 +63,7 @@ class FormHelper:
         self._input_helper = InputHelper(driver)
         &#34;&#34;&#34;The `InputHelper` instance for this class instance&#34;&#34;&#34;
 
-    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
+    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]], starting_field_index_or_name: Union[int, str, None] = 0):
         &#34;&#34;&#34;Sets the values on the specified form panel.
 
         If using the list version, you can only supply values that can be typed into input elements, so
@@ -80,6 +80,9 @@ class FormHelper:
                                             and only works with fields that are being typed into.
                 Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
                     A value of None in the array means that no value should be entered.
+            starting_field_index_or_name (Union[int, str, None]): The field where focus should start when using a list for the field values.
+                                                                  Can be a zero-based index or field name. Defaults to 0.
+                                                                  Use None if do not want to try and check it or force it for some reason.
 
         &#34;&#34;&#34;
         if isinstance(field_values, dict):
@@ -91,7 +94,10 @@ class FormHelper:
         elif isinstance(field_values, list):
             self._logger.info(&#34;Populating form &#39;%s&#39; with values: %s&#34;, form_cq, field_values)
 
-            self._field_helper.wait_until_field_has_focus(form_cq, 0)
+            if not starting_field_index_or_name is None:
+                # Ensure we are starting at our desired field in the form
+                if not self._field_helper.does_field_have_focus(form_cq, starting_field_index_or_name):
+                    self._field_helper.focus_field(form_cq, starting_field_index_or_name)
 
             for field_value in field_values:
                 if field_value:
@@ -161,7 +167,7 @@ class FormHelper:
         self._input_helper = InputHelper(driver)
         &#34;&#34;&#34;The `InputHelper` instance for this class instance&#34;&#34;&#34;
 
-    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
+    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]], starting_field_index_or_name: Union[int, str, None] = 0):
         &#34;&#34;&#34;Sets the values on the specified form panel.
 
         If using the list version, you can only supply values that can be typed into input elements, so
@@ -178,6 +184,9 @@ class FormHelper:
                                             and only works with fields that are being typed into.
                 Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
                     A value of None in the array means that no value should be entered.
+            starting_field_index_or_name (Union[int, str, None]): The field where focus should start when using a list for the field values.
+                                                                  Can be a zero-based index or field name. Defaults to 0.
+                                                                  Use None if do not want to try and check it or force it for some reason.
 
         &#34;&#34;&#34;
         if isinstance(field_values, dict):
@@ -189,7 +198,10 @@ class FormHelper:
         elif isinstance(field_values, list):
             self._logger.info(&#34;Populating form &#39;%s&#39; with values: %s&#34;, form_cq, field_values)
 
-            self._field_helper.wait_until_field_has_focus(form_cq, 0)
+            if not starting_field_index_or_name is None:
+                # Ensure we are starting at our desired field in the form
+                if not self._field_helper.does_field_have_focus(form_cq, starting_field_index_or_name):
+                    self._field_helper.focus_field(form_cq, starting_field_index_or_name)
 
             for field_value in field_values:
                 if field_value:
@@ -212,7 +224,7 @@ class FormHelper:
 <h3>Methods</h3>
 <dl>
 <dt id="pyseext.form_helper.FormHelper.set_form_values"><code class="name flex">
-<span>def <span class="ident">set_form_values</span></span>(<span>self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, NoneType]]])</span>
+<span>def <span class="ident">set_form_values</span></span>(<span>self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, NoneType]]], starting_field_index_or_name: Union[int, str, ForwardRef(None)] = 0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Sets the values on the specified form panel.</p>
@@ -232,12 +244,16 @@ The values can be strings, numbers or an object containing:
 and only works with fields that are being typed into.
 Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
 A value of None in the array means that no value should be entered.</dd>
+<dt><strong><code>starting_field_index_or_name</code></strong> :&ensp;<code>Union[int, str, None]</code></dt>
+<dd>The field where focus should start when using a list for the field values.
+Can be a zero-based index or field name. Defaults to 0.
+Use None if do not want to try and check it or force it for some reason.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
+<pre><code class="python">def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]], starting_field_index_or_name: Union[int, str, None] = 0):
     &#34;&#34;&#34;Sets the values on the specified form panel.
 
     If using the list version, you can only supply values that can be typed into input elements, so
@@ -254,6 +270,9 @@ A value of None in the array means that no value should be entered.</dd>
                                         and only works with fields that are being typed into.
             Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
                 A value of None in the array means that no value should be entered.
+        starting_field_index_or_name (Union[int, str, None]): The field where focus should start when using a list for the field values.
+                                                              Can be a zero-based index or field name. Defaults to 0.
+                                                              Use None if do not want to try and check it or force it for some reason.
 
     &#34;&#34;&#34;
     if isinstance(field_values, dict):
@@ -265,7 +284,10 @@ A value of None in the array means that no value should be entered.</dd>
     elif isinstance(field_values, list):
         self._logger.info(&#34;Populating form &#39;%s&#39; with values: %s&#34;, form_cq, field_values)
 
-        self._field_helper.wait_until_field_has_focus(form_cq, 0)
+        if not starting_field_index_or_name is None:
+            # Ensure we are starting at our desired field in the form
+            if not self._field_helper.does_field_have_focus(form_cq, starting_field_index_or_name):
+                self._field_helper.focus_field(form_cq, starting_field_index_or_name)
 
         for field_value in field_values:
             if field_value:

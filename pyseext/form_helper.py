@@ -34,7 +34,7 @@ class FormHelper:
         self._input_helper = InputHelper(driver)
         """The `InputHelper` instance for this class instance"""
 
-    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]]):
+    def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]], starting_field_index_or_name: Union[int, str, None] = 0):
         """Sets the values on the specified form panel.
 
         If using the list version, you can only supply values that can be typed into input elements, so
@@ -51,6 +51,9 @@ class FormHelper:
                                             and only works with fields that are being typed into.
                 Or an array of values to type into the fields, in order of appearance, tabbing on from each field.
                     A value of None in the array means that no value should be entered.
+            starting_field_index_or_name (Union[int, str, None]): The field where focus should start when using a list for the field values.
+                                                                  Can be a zero-based index or field name. Defaults to 0.
+                                                                  Use None if do not want to try and check it or force it for some reason.
 
         """
         if isinstance(field_values, dict):
@@ -62,7 +65,10 @@ class FormHelper:
         elif isinstance(field_values, list):
             self._logger.info("Populating form '%s' with values: %s", form_cq, field_values)
 
-            self._field_helper.wait_until_field_has_focus(form_cq, 0)
+            if not starting_field_index_or_name is None:
+                # Ensure we are starting at our desired field in the form
+                if not self._field_helper.does_field_have_focus(form_cq, starting_field_index_or_name):
+                    self._field_helper.focus_field(form_cq, starting_field_index_or_name)
 
             for field_value in field_values:
                 if field_value:
