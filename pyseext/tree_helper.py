@@ -277,6 +277,40 @@ class TreeHelper(HasReferencedJavaScript):
         else:
             raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
 
+    def context_click_node_element(self,
+                                   tree_cq: str,
+                                   node_text_or_data: Union[str, dict],
+                                   css_query: str,
+                                   root_node_text_or_data: Union[str, dict, None] = None):
+        """Finds a node by text or data, then a child element by CSS query, then right clicks on it.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+            css_query (str): The CSS to query for in the found node row element.
+                             Some expected ones:
+                                Expander UI element = '.x-tree-expander'
+                                Node icon = '.x-tree-icon'
+                                Node text = '.x-tree-node-text'
+                             If need those you'd use one of the other methods though.
+                             This is in case need to click on another part of the node's row.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
+        """
+        node = self.get_node_element(tree_cq, node_text_or_data, css_query, root_node_text_or_data)
+
+        if node:
+            if root_node_text_or_data:
+                self._logger.info("Right clicking on node '%s' (under root '%s'), with CSS query '%s' on tree with CQ '%s'", node_text_or_data, root_node_text_or_data, css_query, tree_cq)
+            else:
+                self._logger.info("Right clicking on node '%s' with CSS query '%s' on tree with CQ '%s'", node_text_or_data, css_query, tree_cq)
+
+            self._action_chains.move_to_element(node)
+            self._action_chains.context_click(node)
+            self._action_chains.perform()
+        else:
+            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
+
     def wait_for_tree_node(self,
                            tree_cq: str,
                            node_text_or_data: Union[str, dict],
