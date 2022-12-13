@@ -27,6 +27,10 @@ globalThis.PySeExt.ComponentQuery = {
         // Get component for our root if specified
         if (rootId) {
             root = globalThis.Ext.getCmp(rootId);
+
+            if (!root) {
+                globalThis.Ext.Error.raise("Failed to find root component with id '" + rootId + "'! Are you passing in WebElement.get_attribute('id'), because that's what you need?");
+            }
         }
 
         components = globalThis.Ext.ComponentQuery.query(selector, root);
