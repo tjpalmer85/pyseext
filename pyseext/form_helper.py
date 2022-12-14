@@ -6,6 +6,7 @@ from typing import Union
 
 from selenium.webdriver.remote.webdriver import WebDriver
 
+from pyseext.component_query import ComponentQuery
 from pyseext.field_helper import FieldHelper
 from pyseext.button_helper import ButtonHelper
 from pyseext.input_helper import InputHelper
@@ -33,6 +34,9 @@ class FormHelper:
 
         self._input_helper = InputHelper(driver)
         """The `InputHelper` instance for this class instance"""
+
+        self._cq = ComponentQuery(driver)
+        """The `ComponentQuery` instance for this class instance"""
 
     def set_form_values(self, form_cq: str, field_values: Union[dict, list[Union[str, float, int, None]]], starting_field_index_or_name: Union[int, str, None] = 0):
         """Sets the values on the specified form panel.
@@ -89,4 +93,5 @@ class FormHelper:
             form_cq (str): The component query that identifies the form panel to submit.
             text (str, optional): The text on the submit button. Defaults to 'Ok'.
         """
-        self._button_helper.click_button_by_text(text, form_cq)
+        form = self._cq.wait_for_single_query_visible(form_cq)
+        self._button_helper.click_button_by_text(text, form.get_attribute('id'))
