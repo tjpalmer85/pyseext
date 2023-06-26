@@ -53,6 +53,14 @@ class ComponentQuery(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to execute a component query under a specified root.
     Requires the inserts: {cq}, {root_id}&#34;&#34;&#34;
 
+    _QUERY_TEMPLATE_WITH_CSS_SELECTOR: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, undefined, &#39;{css_selector}&#39;)&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query, and then execute a CSS selector query against each matched element.
+    Requires the inserts: {cq}, {css_selector}&#34;&#34;&#34;
+
+    _QUERY_TEMPLATE_WITH_ROOT_AND_CSS_SELECTOR: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;, &#39;{css_selector}&#39;)&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query under a specified root, and then execute a CSS selector query against each matched element.
+    Requires the inserts: {cq}, {root_id}, {css_selector}&#34;&#34;&#34;
+
     _IS_COMPONENT_INSTANCE_OF_CLASS_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.isComponentInstanceOf(&#39;{class_name}&#39;, &#39;{cq}&#39;)&#34;
     &#34;&#34;&#34;The script template to use to determine whether a component query matches a component of the specified class.
     Requires the inserts: {class_name}, {cq}&#34;&#34;&#34;
@@ -77,23 +85,30 @@ class ComponentQuery(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def query(self, cq: str, root_id: Union[str, None] = None) -&gt; list[WebElement]:
+    def query(self, cq: str, root_id: Union[str, None] = None, css_selector: Union[str, None] = None) -&gt; list[WebElement]:
         &#34;&#34;&#34;Executes a ComponentQuery and returns the result
 
         Args:
             cq (str): The query to execute
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
-
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found
         &#34;&#34;&#34;
-        if root_id is None:
+        if root_id is None and css_selector is None:
             self._logger.debug(&#34;Executing CQ &#39;%s&#39;&#34;, cq)
             script = self._QUERY_TEMPLATE.format(cq=cq)
-        else:
+        elif css_selector is None:
             self._logger.debug(&#34;Executing CQ &#39;%s&#39; under root &#39;%s&#39;&#34;, cq, root_id)
             script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, root_id=root_id)
+        elif root_id is None:
+            self._logger.debug(&#34;Executing CQ &#39;%s&#39; with CSS selector &#39;%s&#39;&#34;, cq, css_selector)
+            script = self._QUERY_TEMPLATE_WITH_CSS_SELECTOR.format(cq=cq, css_selector=css_selector)
+        else:
+            self._logger.debug(&#34;Executing CQ &#39;%s&#39; under root &#39;%s&#39; with CSS selector &#39;%s&#39;&#34;, cq, root_id, css_selector)
+            script = self._QUERY_TEMPLATE_WITH_ROOT_AND_CSS_SELECTOR.format(cq=cq, root_id=root_id, css_selector=css_selector)
 
         self.ensure_javascript_loaded()
         query_result = self._driver.execute_script(script)
@@ -102,7 +117,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True) -&gt; list[WebElement]:
+    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True, css_selector: Union[str, None] = None) -&gt; list[WebElement]:
         &#34;&#34;&#34;Method that waits for the specified CQ to match something
 
         Args:
@@ -111,20 +126,22 @@ class ComponentQuery(HasReferencedJavaScript):
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
             throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found (and not configured to throw)
         &#34;&#34;&#34;
         try:
             WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-            return self.query(cq, root_id)
+            return self.query(cq, root_id, css_selector)
         except TimeoutException as exc:
             if throw_if_not_found:
                 raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
 
             return []
 
-    def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
+    def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, css_selector: Union[str, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
         If there are multiple matches then an error is thrown.
 
@@ -133,17 +150,19 @@ class ComponentQuery(HasReferencedJavaScript):
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
         Returns:
             WebElement: The DOM element that matches the query
         &#34;&#34;&#34;
-        results = self.wait_for_query(cq, root_id, timeout)
+        results = self.wait_for_query(cq, root_id, timeout, True, css_selector)
         if len(results) &gt; 1:
             raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
         return results[0]
 
-    def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
+    def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, css_selector: Union[str, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single visible result.
         If there are multiple matches then an error is thrown.
 
@@ -152,6 +171,8 @@ class ComponentQuery(HasReferencedJavaScript):
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
         Returns:
             WebElement: The DOM element that matches the query
@@ -159,7 +180,7 @@ class ComponentQuery(HasReferencedJavaScript):
         if not cq.endswith(&#39;{isVisible(true)}&#39;):
             cq = cq + &#39;{isVisible(true)}&#39;
 
-        return self.wait_for_single_query(cq, root_id, timeout)
+        return self.wait_for_single_query(cq, root_id, timeout, css_selector)
 
     def is_component_instance_of_class(self, class_name: str, cq: str, root_id: Union[str, None] = None, timeout: float = 1) -&gt; bool:
         &#34;&#34;&#34;Determines whether the component for the specified CQ is an instance of the specified class name.
@@ -304,6 +325,14 @@ class ComponentQuery(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to execute a component query under a specified root.
     Requires the inserts: {cq}, {root_id}&#34;&#34;&#34;
 
+    _QUERY_TEMPLATE_WITH_CSS_SELECTOR: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, undefined, &#39;{css_selector}&#39;)&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query, and then execute a CSS selector query against each matched element.
+    Requires the inserts: {cq}, {css_selector}&#34;&#34;&#34;
+
+    _QUERY_TEMPLATE_WITH_ROOT_AND_CSS_SELECTOR: str = &#34;return globalThis.PySeExt.ComponentQuery.query(&#39;{cq}&#39;, &#39;{root_id}&#39;, &#39;{css_selector}&#39;)&#34;
+    &#34;&#34;&#34;The script template to use to execute a component query under a specified root, and then execute a CSS selector query against each matched element.
+    Requires the inserts: {cq}, {root_id}, {css_selector}&#34;&#34;&#34;
+
     _IS_COMPONENT_INSTANCE_OF_CLASS_TEMPLATE: str = &#34;return globalThis.PySeExt.ComponentQuery.isComponentInstanceOf(&#39;{class_name}&#39;, &#39;{cq}&#39;)&#34;
     &#34;&#34;&#34;The script template to use to determine whether a component query matches a component of the specified class.
     Requires the inserts: {class_name}, {cq}&#34;&#34;&#34;
@@ -328,23 +357,30 @@ class ComponentQuery(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def query(self, cq: str, root_id: Union[str, None] = None) -&gt; list[WebElement]:
+    def query(self, cq: str, root_id: Union[str, None] = None, css_selector: Union[str, None] = None) -&gt; list[WebElement]:
         &#34;&#34;&#34;Executes a ComponentQuery and returns the result
 
         Args:
             cq (str): The query to execute
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
-
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found
         &#34;&#34;&#34;
-        if root_id is None:
+        if root_id is None and css_selector is None:
             self._logger.debug(&#34;Executing CQ &#39;%s&#39;&#34;, cq)
             script = self._QUERY_TEMPLATE.format(cq=cq)
-        else:
+        elif css_selector is None:
             self._logger.debug(&#34;Executing CQ &#39;%s&#39; under root &#39;%s&#39;&#34;, cq, root_id)
             script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, root_id=root_id)
+        elif root_id is None:
+            self._logger.debug(&#34;Executing CQ &#39;%s&#39; with CSS selector &#39;%s&#39;&#34;, cq, css_selector)
+            script = self._QUERY_TEMPLATE_WITH_CSS_SELECTOR.format(cq=cq, css_selector=css_selector)
+        else:
+            self._logger.debug(&#34;Executing CQ &#39;%s&#39; under root &#39;%s&#39; with CSS selector &#39;%s&#39;&#34;, cq, root_id, css_selector)
+            script = self._QUERY_TEMPLATE_WITH_ROOT_AND_CSS_SELECTOR.format(cq=cq, root_id=root_id, css_selector=css_selector)
 
         self.ensure_javascript_loaded()
         query_result = self._driver.execute_script(script)
@@ -353,7 +389,7 @@ class ComponentQuery(HasReferencedJavaScript):
 
         return query_result
 
-    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True) -&gt; list[WebElement]:
+    def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True, css_selector: Union[str, None] = None) -&gt; list[WebElement]:
         &#34;&#34;&#34;Method that waits for the specified CQ to match something
 
         Args:
@@ -362,20 +398,22 @@ class ComponentQuery(HasReferencedJavaScript):
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
             throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
         Returns:
             list[WebElement]: An array of DOM elements that match the query or an empty array if not found (and not configured to throw)
         &#34;&#34;&#34;
         try:
             WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-            return self.query(cq, root_id)
+            return self.query(cq, root_id, css_selector)
         except TimeoutException as exc:
             if throw_if_not_found:
                 raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
 
             return []
 
-    def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
+    def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, css_selector: Union[str, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
         If there are multiple matches then an error is thrown.
 
@@ -384,17 +422,19 @@ class ComponentQuery(HasReferencedJavaScript):
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
         Returns:
             WebElement: The DOM element that matches the query
         &#34;&#34;&#34;
-        results = self.wait_for_query(cq, root_id, timeout)
+        results = self.wait_for_query(cq, root_id, timeout, True, css_selector)
         if len(results) &gt; 1:
             raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
         return results[0]
 
-    def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
+    def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, css_selector: Union[str, None] = None) -&gt; WebElement:
         &#34;&#34;&#34;Method that waits for the specified CQ to match a single visible result.
         If there are multiple matches then an error is thrown.
 
@@ -403,6 +443,8 @@ class ComponentQuery(HasReferencedJavaScript):
             root_id (str, optional): The id of the container within which to perform the query.
                                      If omitted, all components within the document are included in the search.
             timeout (float): Number of seconds before timing out (default 10)
+            css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                          e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
         Returns:
             WebElement: The DOM element that matches the query
@@ -410,7 +452,7 @@ class ComponentQuery(HasReferencedJavaScript):
         if not cq.endswith(&#39;{isVisible(true)}&#39;):
             cq = cq + &#39;{isVisible(true)}&#39;
 
-        return self.wait_for_single_query(cq, root_id, timeout)
+        return self.wait_for_single_query(cq, root_id, timeout, css_selector)
 
     def is_component_instance_of_class(self, class_name: str, cq: str, root_id: Union[str, None] = None, timeout: float = 1) -&gt; bool:
         &#34;&#34;&#34;Determines whether the component for the specified CQ is an instance of the specified class name.
@@ -598,7 +640,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.component_query.ComponentQuery.query"><code class="name flex">
-<span>def <span class="ident">query</span></span>(<span>self, cq: str, root_id: Optional[str] = None) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
+<span>def <span class="ident">query</span></span>(<span>self, cq: str, root_id: Optional[str] = None, css_selector: Optional[str] = None) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Executes a ComponentQuery and returns the result</p>
@@ -609,6 +651,9 @@ If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>root_id</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>The id of the container within which to perform the query.
 If omitted, all components within the document are included in the search.</dd>
+<dt><strong><code>css_selector</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>An optional CSS selector that can be used to get child elements of a found component,
+e.g. a clear trigger on a field would be '.x-form-clear-trigger'.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -619,23 +664,30 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def query(self, cq: str, root_id: Union[str, None] = None) -&gt; list[WebElement]:
+<pre><code class="python">def query(self, cq: str, root_id: Union[str, None] = None, css_selector: Union[str, None] = None) -&gt; list[WebElement]:
     &#34;&#34;&#34;Executes a ComponentQuery and returns the result
 
     Args:
         cq (str): The query to execute
         root_id (str, optional): The id of the container within which to perform the query.
                                  If omitted, all components within the document are included in the search.
-
+        css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                      e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
     Returns:
         list[WebElement]: An array of DOM elements that match the query or an empty array if not found
     &#34;&#34;&#34;
-    if root_id is None:
+    if root_id is None and css_selector is None:
         self._logger.debug(&#34;Executing CQ &#39;%s&#39;&#34;, cq)
         script = self._QUERY_TEMPLATE.format(cq=cq)
-    else:
+    elif css_selector is None:
         self._logger.debug(&#34;Executing CQ &#39;%s&#39; under root &#39;%s&#39;&#34;, cq, root_id)
         script = self._QUERY_TEMPLATE_WITH_ROOT.format(cq=cq, root_id=root_id)
+    elif root_id is None:
+        self._logger.debug(&#34;Executing CQ &#39;%s&#39; with CSS selector &#39;%s&#39;&#34;, cq, css_selector)
+        script = self._QUERY_TEMPLATE_WITH_CSS_SELECTOR.format(cq=cq, css_selector=css_selector)
+    else:
+        self._logger.debug(&#34;Executing CQ &#39;%s&#39; under root &#39;%s&#39; with CSS selector &#39;%s&#39;&#34;, cq, root_id, css_selector)
+        script = self._QUERY_TEMPLATE_WITH_ROOT_AND_CSS_SELECTOR.format(cq=cq, root_id=root_id, css_selector=css_selector)
 
     self.ensure_javascript_loaded()
     query_result = self._driver.execute_script(script)
@@ -646,7 +698,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.component_query.ComponentQuery.wait_for_query"><code class="name flex">
-<span>def <span class="ident">wait_for_query</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10, throw_if_not_found: bool = True) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
+<span>def <span class="ident">wait_for_query</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10, throw_if_not_found: bool = True, css_selector: Optional[str] = None) ‑> list[selenium.webdriver.remote.webelement.WebElement]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method that waits for the specified CQ to match something</p>
@@ -661,6 +713,9 @@ If omitted, all components within the document are included in the search.</dd>
 <dd>Number of seconds before timing out (default 10)</dd>
 <dt><strong><code>throw_if_not_found</code></strong> :&ensp;<code>bool</code></dt>
 <dd>Indicates whether to throw an exception if not found (default True).</dd>
+<dt><strong><code>css_selector</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>An optional CSS selector that can be used to get child elements of a found component,
+e.g. a clear trigger on a field would be '.x-form-clear-trigger'.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -671,7 +726,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True) -&gt; list[WebElement]:
+<pre><code class="python">def wait_for_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, throw_if_not_found: bool = True, css_selector: Union[str, None] = None) -&gt; list[WebElement]:
     &#34;&#34;&#34;Method that waits for the specified CQ to match something
 
     Args:
@@ -680,13 +735,15 @@ If omitted, all components within the document are included in the search.</dd>
                                  If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
         throw_if_not_found (bool): Indicates whether to throw an exception if not found (default True).
+        css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                      e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
     Returns:
         list[WebElement]: An array of DOM elements that match the query or an empty array if not found (and not configured to throw)
     &#34;&#34;&#34;
     try:
         WebDriverWait(self._driver, timeout).until(ComponentQuery.ComponentQueryFoundExpectation(cq))
-        return self.query(cq, root_id)
+        return self.query(cq, root_id, css_selector)
     except TimeoutException as exc:
         if throw_if_not_found:
             raise ComponentQuery.QueryNotFoundException(cq, timeout, root_id) from exc
@@ -695,7 +752,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.component_query.ComponentQuery.wait_for_single_query"><code class="name flex">
-<span>def <span class="ident">wait_for_single_query</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+<span>def <span class="ident">wait_for_single_query</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10, css_selector: Optional[str] = None) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method that waits for the specified CQ to match a single result.
@@ -709,6 +766,9 @@ If there are multiple matches then an error is thrown.</p>
 If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
 <dd>Number of seconds before timing out (default 10)</dd>
+<dt><strong><code>css_selector</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>An optional CSS selector that can be used to get child elements of a found component,
+e.g. a clear trigger on a field would be '.x-form-clear-trigger'.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -719,7 +779,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
+<pre><code class="python">def wait_for_single_query(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, css_selector: Union[str, None] = None) -&gt; WebElement:
     &#34;&#34;&#34;Method that waits for the specified CQ to match a single result.
     If there are multiple matches then an error is thrown.
 
@@ -728,11 +788,13 @@ If omitted, all components within the document are included in the search.</dd>
         root_id (str, optional): The id of the container within which to perform the query.
                                  If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
+        css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                      e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
     Returns:
         WebElement: The DOM element that matches the query
     &#34;&#34;&#34;
-    results = self.wait_for_query(cq, root_id, timeout)
+    results = self.wait_for_query(cq, root_id, timeout, True, css_selector)
     if len(results) &gt; 1:
         raise ComponentQuery.QueryMatchedMultipleElementsException(cq, len(results))
 
@@ -740,7 +802,7 @@ If omitted, all components within the document are included in the search.</dd>
 </details>
 </dd>
 <dt id="pyseext.component_query.ComponentQuery.wait_for_single_query_visible"><code class="name flex">
-<span>def <span class="ident">wait_for_single_query_visible</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10) ‑> selenium.webdriver.remote.webelement.WebElement</span>
+<span>def <span class="ident">wait_for_single_query_visible</span></span>(<span>self, cq: str, root_id: Optional[str] = None, timeout: float = 10, css_selector: Optional[str] = None) ‑> selenium.webdriver.remote.webelement.WebElement</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Method that waits for the specified CQ to match a single visible result.
@@ -754,6 +816,9 @@ If there are multiple matches then an error is thrown.</p>
 If omitted, all components within the document are included in the search.</dd>
 <dt><strong><code>timeout</code></strong> :&ensp;<code>float</code></dt>
 <dd>Number of seconds before timing out (default 10)</dd>
+<dt><strong><code>css_selector</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>An optional CSS selector that can be used to get child elements of a found component,
+e.g. a clear trigger on a field would be '.x-form-clear-trigger'.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -764,7 +829,7 @@ If omitted, all components within the document are included in the search.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10) -&gt; WebElement:
+<pre><code class="python">def wait_for_single_query_visible(self, cq: str, root_id: Union[str, None] = None, timeout: float = 10, css_selector: Union[str, None] = None) -&gt; WebElement:
     &#34;&#34;&#34;Method that waits for the specified CQ to match a single visible result.
     If there are multiple matches then an error is thrown.
 
@@ -773,6 +838,8 @@ If omitted, all components within the document are included in the search.</dd>
         root_id (str, optional): The id of the container within which to perform the query.
                                  If omitted, all components within the document are included in the search.
         timeout (float): Number of seconds before timing out (default 10)
+        css_selector (str, optional): An optional CSS selector that can be used to get child elements of a found component,
+                                      e.g. a clear trigger on a field would be &#39;.x-form-clear-trigger&#39;.
 
     Returns:
         WebElement: The DOM element that matches the query
@@ -780,7 +847,7 @@ If omitted, all components within the document are included in the search.</dd>
     if not cq.endswith(&#39;{isVisible(true)}&#39;):
         cq = cq + &#39;{isVisible(true)}&#39;
 
-    return self.wait_for_single_query(cq, root_id, timeout)</code></pre>
+    return self.wait_for_single_query(cq, root_id, timeout, css_selector)</code></pre>
 </details>
 </dd>
 </dl>
