@@ -8,21 +8,24 @@ globalThis.PySeExt.ComponentQuery = {
      * Each component has it's dom object returned however.
      * You should never need this from Ext code. This will likely be useful for automated testing.
      *
-     * Only supports the passing in of a single root (so no filtering).
+     * Only supports the passing in of a single root (so no filtering), and an optional CSS selector,
+     * to return a sub-element in the found component.
      *
-     * @param {String} selector The selector string to filter returned elements.
-     * @param {String} [rootId] The id of the dom element indicating the container within which to perform the query.
-     *                          If omitted, all components within the document are included in the search.
-     * @return {Object[]} The matched dom objects or an empty array if none found.
+     * @param {String} selector      The selector string to filter returned elements.
+     * @param {String} [rootId]      The id of the dom element indicating the container within which to perform the query.
+     *                               If omitted, all components within the document are included in the search.
+     * @param {String} [cssSelector] An optional CSS selector that can be used to get child elements of a found component, e.g. a trigger on a field.
+     * @return {Object[]}            The matched dom objects or an empty array if none found.
      */
-    query: function(selector, rootId) {
+    query: function(selector, rootId, cssSelector) {
         var components,
             results = [],
             root,
             len,
             i,
             component,
-            el;
+            el,
+            j;
 
         // Get component for our root if specified
         if (rootId) {
@@ -44,7 +47,21 @@ globalThis.PySeExt.ComponentQuery = {
                     el = component.getEl();
 
                     if (el) {
-                        results.push(el.dom);
+                        if (cssSelector) {
+                            el = el.query(cssSelector);
+
+                            if (el && el.length) {
+                                for (j = 0; j < el.length; j += 1) {
+                                    if (el[j]) {
+                                        // This will already be a DOM element,
+                                        // since Element.query defaults to that.
+                                        results.push(el[j]);
+                                    }
+                                }
+                            }
+                        } else {
+                            results.push(el.dom);
+                        }
                     }
                 }
             }
