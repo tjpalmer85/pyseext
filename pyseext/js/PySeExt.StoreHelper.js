@@ -78,7 +78,58 @@ globalThis.PySeExt.StoreHelper = {
         globalThis.PySeExt.StoreHelper.__getStoreFromStoreHolder(storeHolderCQ).reload();
     },
 
-    // FIXME: loadAndWait or something like that?
+    /**
+     * Method that checks that the store contains the specified data, and optionally only the specified data.
+     *
+     * Can be used to check combobox data, say.
+     *
+     * @param {String}   storeHolderCQ                  The component query to use to find the store holder.
+     * @param {Object[]} data                           An array of JSON objects containing the data to check for.
+     * @param {Boolean}  shouldOnlyContainSpecifiedData Indicates whether the store should only contain the passed in data.
+     */
+    checkStoreContains: function(storeHolderCQ, data, shouldOnlyContainSpecifiedData) {
+        var store = globalThis.PySeExt.StoreHelper.__getStoreFromStoreHolder(storeHolderCQ),
+            storeCount,
+            dataLength,
+            i,
+            foundIndex,
+            dataItem;
+
+        storeCount = store.getCount();
+        dataLength = data && data.length || 0;
+
+        if (shouldOnlyContainSpecifiedData) {
+            // Can check array lengths, to test a negative case of this.
+            // Might be nice to do something better in future, so can give better feedback,
+            // but this'll do for now.
+            if (storeCount !== dataLength) {
+                globalThis.Ext.raise('Store contains ' + storeCount + ' records, but was expecting ' + dataLength + '.');
+            }
+        }
+
+        for (i = 0; i < dataLength; i += 1) {
+            dataItem = data[i];
+
+            foundIndex = store.findBy(function(record, id) {
+                var hasRecordBeenFound = true;
+
+                for (prop in dataItem) {
+                    if (dataItem.hasOwnProperty(prop)) {
+                        if (record.get(prop) !== dataItem[prop]) {
+                            hasRecordBeenFound = false;
+                            break;
+                        }
+                    }
+                }
+
+                return hasRecordBeenFound;
+            });
+
+            if (foundIndex === -1) {
+                globalThis.Ext.raise('Expected store to contain item ' + globalThis.Ext.JSON.encode(dataItem) + ', but it was not found.');
+            }
+        }
+    },
 
     /**
      * Attempts to retrieve the store from a store holder described by a component query.

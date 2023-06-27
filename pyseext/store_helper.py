@@ -25,6 +25,10 @@ class StoreHelper(HasReferencedJavaScript):
     """The script template to use to call the JavaScript method PySeExt.StoreHelper.reload
     Requires the inserts: {store_holder_cq}"""
 
+    _CHECK_STORE_CONTAINS_TEMPLATE: str = "return globalThis.PySeExt.StoreHelper.checkStoreContains('{store_holder_cq}', {data}, {should_only_contain_specified_data})"
+    """The script template to use to call the JavaScript method PySeExt.StoreHelper.checkStoreContains
+    Requires the inserts: {store_holder_cq}, {data}, {should_only_contain_specified_data}"""
+
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
@@ -102,7 +106,40 @@ class StoreHelper(HasReferencedJavaScript):
         self.trigger_reload(store_holder_cq)
         self.wait_for_store_loaded(store_holder_cq)
 
-    # FIXME: Some method ideas:
-    # .....:    - check_store_contains(self, store_holder_cq: str, data: list[dict], should_only_contain_specified_data: bool = False)= > bool
-    # .....:        Method that checks that the store contains the specified data, and optionally only the specified data.
-    # .....:        Can be used to check combobox data, say.
+    def check_store_contains(self, store_holder_cq: str, data: list[dict], should_only_contain_specified_data: bool = False):
+        """Method that checks that the store contains the specified data, and optionally only the specified data.
+
+        Can be used to check combobox data, say, or perhaps a grid.
+
+        If the combobox or grid is paged, you will need to handle the paging yourself, checking the contents of each page
+        as you go. That's well beyond the scope of what I can accomplish here!
+
+        Throws an exception if the data does not match that which is expected.
+
+        Args:
+            store_holder_cq (str): The component query to use to find the store holder.
+            data (list[dict]): The data we are looking for in the store specified as an array of
+                               dictionary entries containing the 'name' and 'value' of the models
+                               within the store.
+                               Only data specified is checked for in the store's model data.
+                               e.g.
+                                    [
+                                        {
+                                            'name': 'Cat'
+                                            'isSpecial': True
+                                        },
+                                        {
+                                            'name': 'Dog'
+                                        },
+                                        {
+                                            'name': 'Stoat',
+                                            'id': 123
+                                        }
+                                    ]
+            should_only_contain_specified_data (bool, optional): Indicates whether the store should only contain the passed in data.
+                                                                 Defaults to False, so the store is allowed to contain other data.
+        """
+        self.wait_for_store_loaded(store_holder_cq)
+        script = self._CHECK_STORE_CONTAINS_TEMPLATE.format(store_holder_cq=store_holder_cq, data=data, should_only_contain_specified_data=str(should_only_contain_specified_data).lower())
+        self.ensure_javascript_loaded()
+        self._driver.execute_script(script)
