@@ -11,6 +11,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 from pyseext.core import Core
+from pyseext.menu_helper import MenuHelper
 
 class TreeHelper(HasReferencedJavaScript):
     """A class to help with using trees, through Ext's interfaces."""
@@ -65,6 +66,9 @@ class TreeHelper(HasReferencedJavaScript):
 
         self._core = Core(driver)
         """The `Core` instance for this class instance"""
+
+        self._menu_helper = MenuHelper(driver)
+        """The `MenuHelper` instance for this class instance"""
 
         # Initialise our base class
         super().__init__(driver, self._logger)
@@ -195,7 +199,7 @@ class TreeHelper(HasReferencedJavaScript):
                                tree_cq: str,
                                node_text_or_data: Union[str, dict],
                                root_node_text_or_data: Union[str, dict, None] = None):
-        """Finds a node's text element by text or data, then right clicks on it.
+        """Finds a node's icon element by text or data, then right clicks on it.
 
         Args:
             tree_cq (str): The component query to use to find the tree.
@@ -203,19 +207,65 @@ class TreeHelper(HasReferencedJavaScript):
             root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
                                                                  Can be an immediate parent, or higher up in the tree.
         """
-        node = self.get_node_icon_element(tree_cq, node_text_or_data, root_node_text_or_data)
+        self.context_click_node_element(tree_cq, node_text_or_data, self._ICON_CSS_SELECTOR, root_node_text_or_data)
 
-        if node:
-            if root_node_text_or_data:
-                self._logger.info("Opening context menu on node '%s' (under root '%s') on tree with CQ '%s'", node_text_or_data, root_node_text_or_data, tree_cq)
+    def check_node_context_menu_contains_items(self,
+                                               tree_cq: str,
+                                               node_text_or_data: Union[str, dict],
+                                               expected_items: list[str],
+                                               check_contains_no_additional_items: bool = True,
+                                               ignore_spacers: bool = False,
+                                               root_node_text_or_data: Union[str, dict, None] = None):
+        """Opens the context menu for a node, and checks that it contains the specified items.
+
+        Args:
+            tree_cq (str): The component query to use to find the tree.
+            node_text_or_data (Union[str, dict]): The node text or data to find.
+            expected_items (list[str]): A list of menu items (text) that we're expecting to find.
+                                        Spacers have text containing of a single space (MenuHelper.SPACER_TEXT_CONTEXT), but can be ignored using ignore_spacers if desired.
+                                        e.g. ['Add', 'Edit', 'Delete', MenuHelper.SPACER_TEXT_CONTEXT, 'Refresh']
+            check_contains_no_additional_items (bool, optional): Indicates whether we should check that there are no additional items in the menu.
+                                                                 Defaults to True.
+            ignore_spacers (bool, optional): Indicates whether we should include spacers in our checks. Defaults to False.
+            root_node_text_or_data (Union[str, dict], optional): The text or data indicating the root node under which to search for the node.
+                                                                 Can be an immediate parent, or higher up in the tree.
+        """
+        self.open_node_context_menu(tree_cq, node_text_or_data, root_node_text_or_data)
+
+        unexpected_items: list[str] = []
+
+        # Get all menu items
+        menu_items = self._menu_helper.get_enabled_menu_items()
+
+        # Each element has a text member we can compare.
+        for item in menu_items:
+            if ignore_spacers is True and item.text == MenuHelper.SPACER_TEXT_CONTEXT:
+                continue
+
+            if not item.text in expected_items:
+                # Item not expected
+                if check_contains_no_additional_items:
+                    unexpected_items.append(item.text)
             else:
-                self._logger.info("Opening context menu on node '%s' on tree with CQ '%s'", node_text_or_data, tree_cq)
+                # Item expected and found, so remove from expected list.
+                expected_items.remove(item.text)
 
-            self._action_chains.move_to_element(node)
-            self._action_chains.context_click(node)
-            self._action_chains.perform()
-        else:
-            raise TreeHelper.NodeNotFoundException(tree_cq, node_text_or_data, root_node_text_or_data)
+                # If have nothing left to find, and we're not checking for unexpected items, then can break from our loop.
+                if not check_contains_no_additional_items and len(expected_items) == 0:
+                    break
+
+        # Is there anything left in our expected item list?
+        if len(expected_items) > 0:
+            raise TreeHelper.ExpectedMenuItemsNotFoundException(tree_cq,
+                                                                node_text_or_data,
+                                                                expected_items)
+
+        # Was there anything in the menu that was not expected, and we were checking?
+        if len(unexpected_items) > 0:
+            raise TreeHelper.UnexpectedMenuItemsFoundException(tree_cq,
+                                                               node_text_or_data,
+                                                               unexpected_items)
+
 
     def click_node_expander(self,
                             tree_cq: str,
@@ -467,3 +517,57 @@ class TreeHelper(HasReferencedJavaScript):
             # Trigger a reload of the parent
             tree_helper.reload_node(self._tree_cq, self._parent_node_text_or_data)
             return False
+
+    class UnexpectedMenuItemsFoundException(Exception):
+        """Exception class thrown when we have found unexpected menu items in a context menu"""
+
+        def __init__(self,
+                     tree_cq: str,
+                     node_text_or_data: Union[str, dict],
+                     unexpected_menu_items: list[str],
+                     message: str = "Unexpected menu items {unexpected_menu_items} found on context menu, on tree with CQ '{tree_cq}' and node with text or data '{node_text_or_data}'."):
+            """Initialises an instance of this exception
+
+            Args:
+                tree_cq (str): The component query to use to find the tree.
+                node_text_or_data (Union[str, dict]): The node text or data to find.
+                unexpected_menu_items (list[str]): A list of menu items that were unexpected.
+                message (str, optional): The exception message. Defaults to "Unexpected menu items {unexpected_menu_items} found on context menu, on tree with CQ '{tree_cq}' and node with text or data '{node_text_or_data}'.".
+            """
+            self.message = message
+            self._tree_cq = tree_cq
+            self._node_text_or_data = node_text_or_data
+            self._unexpected_menu_items = unexpected_menu_items
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            """Returns a string representation of this exception"""
+            return self.message.format(unexpected_menu_items=self._unexpected_menu_items, tree_cq=self._tree_cq, node_text_or_data=self._node_text_or_data)
+
+    class ExpectedMenuItemsNotFoundException(Exception):
+        """Exception class thrown when we have failed to find some expected menu items in a context menu"""
+
+        def __init__(self,
+                     tree_cq: str,
+                     node_text_or_data: Union[str, dict],
+                     missing_menu_items: list[str],
+                     message: str = "Expected menu items {missing_menu_items} not found on tree with CQ '{tree_cq}' and node with text or data '{node_text_or_data}'."):
+            """Initialises an instance of this exception
+
+            Args:
+                tree_cq (str): The component query to use to find the tree.
+                node_text_or_data (Union[str, dict]): The node text or data to find.
+                missing_menu_items (list[str]): A list of menu items that were expected but not found.
+                message (str, optional): The exception message. Defaults to "Expected menu items {missing_menu_items} not found on tree with CQ '{tree_cq}' and node with text or data '{node_text_or_data}'.".
+            """
+            self.message = message
+            self._tree_cq = tree_cq
+            self._node_text_or_data = node_text_or_data
+            self._missing_menu_items = missing_menu_items
+
+            super().__init__(self.message)
+
+        def __str__(self):
+            """Returns a string representation of this exception"""
+            return self.message.format(missing_menu_items=self._missing_menu_items, tree_cq=self._tree_cq, node_text_or_data=self._node_text_or_data)
