@@ -31,6 +31,10 @@ class FieldHelper(HasReferencedJavaScript):
     """The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue
     Requires the inserts: {form_cq}, {name}"""
 
+    _GET_FIELD_DISPLAY_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.getFieldDisplayValue('{form_cq}', '{name}')"
+    """The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldDisplayValue
+    Requires the inserts: {form_cq}, {name}"""
+
     _SET_FIELD_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.setFieldValue('{form_cq}', '{name}', {value})"
     """The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue
     Requires the inserts: {form_cq}, {name}, {value}"""
@@ -203,6 +207,22 @@ class FieldHelper(HasReferencedJavaScript):
             Any: The value of the field, or None if not found.
         """
         script = self._GET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
+    def get_field_display_value(self, form_cq: str, name: str) -> Any:
+        """Attempts to get the display value of a field by name from the specified form panel.
+
+        Supported by comboboxes and display fields.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            Any: The display value of the field, or None if not found or if the field does not have a display value.
+        """
+        script = self._GET_FIELD_DISPLAY_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 

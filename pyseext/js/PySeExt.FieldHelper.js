@@ -38,6 +38,18 @@ globalThis.PySeExt.FieldHelper = {
     },
 
     /**
+     * Finds the specified field on the specified form and returns it's display value, if it has one.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     * @returns {Mixed} The display value of the field, if found and has a display value.
+     */
+    getFieldDisplayValue: function(formCQ, name) {
+        var field = this.__getField(formCQ, name);
+
+        return field && field.getDisplayValue && field.getDisplayValue();
+    },
+
+    /**
      * Finds the specified field and sets its value directly.
      *
      * Raises an error if the field was not found.
