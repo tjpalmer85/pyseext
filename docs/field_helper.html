@@ -60,6 +60,10 @@ class FieldHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue
     Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
+    _GET_FIELD_DISPLAY_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.getFieldDisplayValue(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldDisplayValue
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
+
     _SET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.setFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue
     Requires the inserts: {form_cq}, {name}, {value}&#34;&#34;&#34;
@@ -232,6 +236,22 @@ class FieldHelper(HasReferencedJavaScript):
             Any: The value of the field, or None if not found.
         &#34;&#34;&#34;
         script = self._GET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
+    def get_field_display_value(self, form_cq: str, name: str) -&gt; Any:
+        &#34;&#34;&#34;Attempts to get the display value of a field by name from the specified form panel.
+
+        Supported by comboboxes and display fields.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            Any: The display value of the field, or None if not found or if the field does not have a display value.
+        &#34;&#34;&#34;
+        script = self._GET_FIELD_DISPLAY_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
@@ -638,6 +658,10 @@ class FieldHelper(HasReferencedJavaScript):
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldValue
     Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
 
+    _GET_FIELD_DISPLAY_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.getFieldDisplayValue(&#39;{form_cq}&#39;, &#39;{name}&#39;)&#34;
+    &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.getFieldDisplayValue
+    Requires the inserts: {form_cq}, {name}&#34;&#34;&#34;
+
     _SET_FIELD_VALUE_TEMPLATE: str = &#34;return globalThis.PySeExt.FieldHelper.setFieldValue(&#39;{form_cq}&#39;, &#39;{name}&#39;, {value})&#34;
     &#34;&#34;&#34;The script template to use to call the JavaScript method PySeExt.FieldHelper.setFieldValue
     Requires the inserts: {form_cq}, {name}, {value}&#34;&#34;&#34;
@@ -810,6 +834,22 @@ class FieldHelper(HasReferencedJavaScript):
             Any: The value of the field, or None if not found.
         &#34;&#34;&#34;
         script = self._GET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
+    def get_field_display_value(self, form_cq: str, name: str) -&gt; Any:
+        &#34;&#34;&#34;Attempts to get the display value of a field by name from the specified form panel.
+
+        Supported by comboboxes and display fields.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            Any: The display value of the field, or None if not found or if the field does not have a display value.
+        &#34;&#34;&#34;
+        script = self._GET_FIELD_DISPLAY_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
@@ -1405,6 +1445,45 @@ utilise the methods in StoreHelper, say.</p>
     return f&#39;{form_cq} component[name=&#34;{name}&#34;]&#39;</code></pre>
 </details>
 </dd>
+<dt id="pyseext.field_helper.FieldHelper.get_field_display_value"><code class="name flex">
+<span>def <span class="ident">get_field_display_value</span></span>(<span>self, form_cq: str, name: str) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attempts to get the display value of a field by name from the specified form panel.</p>
+<p>Supported by comboboxes and display fields.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>form_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query that identifies the form panel in which to look for the field</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the field</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>The display value of the field, or None if not found or if the field does not have a display value.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_field_display_value(self, form_cq: str, name: str) -&gt; Any:
+    &#34;&#34;&#34;Attempts to get the display value of a field by name from the specified form panel.
+
+    Supported by comboboxes and display fields.
+
+    Args:
+        form_cq (str): The component query that identifies the form panel in which to look for the field
+        name (str): The name of the field
+
+    Returns:
+        Any: The display value of the field, or None if not found or if the field does not have a display value.
+    &#34;&#34;&#34;
+    script = self._GET_FIELD_DISPLAY_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
+    self.ensure_javascript_loaded()
+    return self._driver.execute_script(script)</code></pre>
+</details>
+</dd>
 <dt id="pyseext.field_helper.FieldHelper.get_field_value"><code class="name flex">
 <span>def <span class="ident">get_field_value</span></span>(<span>self, form_cq: str, name: str) ‑> Any</span>
 </code></dt>
@@ -1997,6 +2076,7 @@ event is fired on the combobox if the record is found.</p>
 <li><code><a title="pyseext.field_helper.FieldHelper.find_field_input_element" href="#pyseext.field_helper.FieldHelper.find_field_input_element">find_field_input_element</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.focus_field" href="#pyseext.field_helper.FieldHelper.focus_field">focus_field</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_component_query" href="#pyseext.field_helper.FieldHelper.get_field_component_query">get_field_component_query</a></code></li>
+<li><code><a title="pyseext.field_helper.FieldHelper.get_field_display_value" href="#pyseext.field_helper.FieldHelper.get_field_display_value">get_field_display_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_value" href="#pyseext.field_helper.FieldHelper.get_field_value">get_field_value</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.get_field_xtype" href="#pyseext.field_helper.FieldHelper.get_field_xtype">get_field_xtype</a></code></li>
 <li><code><a title="pyseext.field_helper.FieldHelper.is_field_a_checkbox" href="#pyseext.field_helper.FieldHelper.is_field_a_checkbox">is_field_a_checkbox</a></code></li>
