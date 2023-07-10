@@ -1,3 +1,4 @@
+globalThis.None = null;
 
 globalThis.PySeExt = globalThis.PySeExt || {};
 globalThis.PySeExt.ComponentQuery = {
