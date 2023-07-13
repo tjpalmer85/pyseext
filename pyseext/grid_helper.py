@@ -2,6 +2,7 @@
 Module that contains our GridHelper class.
 """
 import logging
+import random
 from typing import Union
 
 from selenium.webdriver.support.wait import WebDriverWait
@@ -225,7 +226,7 @@ class GridHelper(HasReferencedJavaScript):
 
         Args:
             grid_cq (str): The component query for the owning grid.
-            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
             filter_value (str): The value to filter the column by.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
             clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
@@ -250,7 +251,7 @@ class GridHelper(HasReferencedJavaScript):
 
         Args:
             grid_cq (str): The component query for the owning grid.
-            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
         """
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
@@ -357,6 +358,38 @@ class GridHelper(HasReferencedJavaScript):
         """
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         self.click_row(grid_cq, row_data)
+
+    def toggle_columns(self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]):
+        """Toggles a list of columns on the specified grid.
+        Any that are visible will be hidden, and any that a currently hidden will be shown.
+
+        Args:
+            grid_cq (str): The component query for the owning grid.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column to use for the interaction.
+            columns_to_toggle (list[str]): The list of columns to toggle.
+        """
+
+        # Use first visible column for our interaction
+        self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+
+        # Get the 'Columns' menu itema and move to it, so that submenu shows.
+        filter_menu_item = self._menu_helper.try_get_menu_item_by_text('Columns')
+        self._action_chains.move_to_element(filter_menu_item)
+        self._action_chains.perform()
+
+        for column in columns_to_toggle:
+            # FIXME: If column is off the bottom of the list this'll blow up...
+            column_to_click = self._cq.wait_for_single_query_visible(f'menucheckitem[text="{column}"]')
+
+            self._action_chains.move_to_element(column_to_click)
+            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.click()
+            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.perform()
+
+        # Close columns submenu, and grid menu.
+        self._input_helper.type_escape()
+        self._input_helper.type_escape()
 
     class ColumnNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified column"""

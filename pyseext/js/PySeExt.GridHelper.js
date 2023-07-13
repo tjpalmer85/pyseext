@@ -74,6 +74,16 @@ globalThis.PySeExt.GridHelper = {
 
             if (typeof(rowData) === 'number') {
                 foundIndex = rowData;
+
+                // Verify it's not bollocks
+                if (!Ext.isNumber(parseInt(foundIndex)) || foundIndex < 0) {
+                    globalThis.Ext.raise('If attempting to get a row for a specific index, the index must be an integer greater than or equal to zero.');
+                }
+
+                // Check that found index is within bounds, if so grab the row.
+                if (foundIndex < store.getCount()) {
+                    row = grid.getView().getRow(foundIndex);
+                }
             } else {
                 foundIndex = store.findBy(function(record, id) {
                     var hasRecordBeenFound = true;

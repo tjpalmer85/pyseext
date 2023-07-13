@@ -13,11 +13,11 @@ from selenium.webdriver.remote.webelement import WebElement
 class InputHelper:
     """A class to help with user input."""
 
-    TYPING_SLEEP_MINIMUM: float = 0.0001
-    """The minimum amount of time in seconds to wait between key presses when typing. Defaults to 0.0001 seconds."""
+    INPUT_SLEEP_MINIMUM: float = 0.0001
+    """The minimum amount of time in seconds to wait between key presses when typing or other inputs. Defaults to 0.0001 seconds."""
 
-    TYPING_SLEEP_MAXIMUM: float = 0.002
-    """The maximum amount of time in seconds to wait between key presses when typing. Defaults to 0.002 seconds."""
+    INPUT_SLEEP_MAXIMUM: float = 0.002
+    """The maximum amount of time in seconds to wait between key presses when typing or other inputs. Defaults to 0.002 seconds."""
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -80,7 +80,7 @@ class InputHelper:
         if not disable_realistic_typing and not self._driver._is_remote: # pylint: disable=protected-access
             for character in text:
                 self._action_chains.send_keys(character)
-                self._action_chains.pause(random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM))
+                self._action_chains.pause(random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM))
                 self._action_chains.perform()
         else:
             self._action_chains.send_keys(text)
@@ -91,13 +91,13 @@ class InputHelper:
 
         Args:
             pause_time (float, optional): The amount of time to pause after hitting tab (when web driver is not remote).
-                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+                                          Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
         """
         self._action_chains.send_keys(Keys.TAB)
 
         if not self._driver._is_remote: # pylint: disable=protected-access
             if pause_time is None:
-                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+                pause_time = random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM)
 
             self._action_chains.pause(pause_time)
 
@@ -109,13 +109,13 @@ class InputHelper:
 
         Args:
             pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
-                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+                                          Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
         """
         self._action_chains.send_keys(Keys.RETURN)
 
         if not self._driver._is_remote: # pylint: disable=protected-access
             if pause_time is None:
-                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+                pause_time = random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM)
 
             self._action_chains.pause(pause_time)
 
@@ -126,13 +126,13 @@ class InputHelper:
 
         Args:
             pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
-                                          Defaults to None, in which case a random wait time is used between TYPING_SLEEP_MINIMUM and TYPING_SLEEP_MAXIMUM.
+                                          Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
         """
         self._action_chains.send_keys(Keys.ESCAPE)
 
         if not self._driver._is_remote: # pylint: disable=protected-access
             if pause_time is None:
-                pause_time = random.uniform(self.TYPING_SLEEP_MINIMUM, self.TYPING_SLEEP_MAXIMUM)
+                pause_time = random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM)
 
             self._action_chains.pause(pause_time)
 

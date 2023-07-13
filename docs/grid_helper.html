@@ -31,6 +31,7 @@
 Module that contains our GridHelper class.
 &#34;&#34;&#34;
 import logging
+import random
 from typing import Union
 
 from selenium.webdriver.support.wait import WebDriverWait
@@ -254,7 +255,7 @@ class GridHelper(HasReferencedJavaScript):
 
         Args:
             grid_cq (str): The component query for the owning grid.
-            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
             filter_value (str): The value to filter the column by.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
             clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
@@ -279,7 +280,7 @@ class GridHelper(HasReferencedJavaScript):
 
         Args:
             grid_cq (str): The component query for the owning grid.
-            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
         &#34;&#34;&#34;
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
@@ -386,6 +387,38 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         self.click_row(grid_cq, row_data)
+
+    def toggle_columns(self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]):
+        &#34;&#34;&#34;Toggles a list of columns on the specified grid.
+        Any that are visible will be hidden, and any that a currently hidden will be shown.
+
+        Args:
+            grid_cq (str): The component query for the owning grid.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column to use for the interaction.
+            columns_to_toggle (list[str]): The list of columns to toggle.
+        &#34;&#34;&#34;
+
+        # Use first visible column for our interaction
+        self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+
+        # Get the &#39;Columns&#39; menu itema and move to it, so that submenu shows.
+        filter_menu_item = self._menu_helper.try_get_menu_item_by_text(&#39;Columns&#39;)
+        self._action_chains.move_to_element(filter_menu_item)
+        self._action_chains.perform()
+
+        for column in columns_to_toggle:
+            # FIXME: If column is off the bottom of the list this&#39;ll blow up...
+            column_to_click = self._cq.wait_for_single_query_visible(f&#39;menucheckitem[text=&#34;{column}&#34;]&#39;)
+
+            self._action_chains.move_to_element(column_to_click)
+            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.click()
+            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.perform()
+
+        # Close columns submenu, and grid menu.
+        self._input_helper.type_escape()
+        self._input_helper.type_escape()
 
     class ColumnNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified column&#34;&#34;&#34;
@@ -702,7 +735,7 @@ class GridHelper(HasReferencedJavaScript):
 
         Args:
             grid_cq (str): The component query for the owning grid.
-            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
             filter_value (str): The value to filter the column by.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
             clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
@@ -727,7 +760,7 @@ class GridHelper(HasReferencedJavaScript):
 
         Args:
             grid_cq (str): The component query for the owning grid.
-            column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
         &#34;&#34;&#34;
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
@@ -834,6 +867,38 @@ class GridHelper(HasReferencedJavaScript):
         &#34;&#34;&#34;
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         self.click_row(grid_cq, row_data)
+
+    def toggle_columns(self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]):
+        &#34;&#34;&#34;Toggles a list of columns on the specified grid.
+        Any that are visible will be hidden, and any that a currently hidden will be shown.
+
+        Args:
+            grid_cq (str): The component query for the owning grid.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column to use for the interaction.
+            columns_to_toggle (list[str]): The list of columns to toggle.
+        &#34;&#34;&#34;
+
+        # Use first visible column for our interaction
+        self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+
+        # Get the &#39;Columns&#39; menu itema and move to it, so that submenu shows.
+        filter_menu_item = self._menu_helper.try_get_menu_item_by_text(&#39;Columns&#39;)
+        self._action_chains.move_to_element(filter_menu_item)
+        self._action_chains.perform()
+
+        for column in columns_to_toggle:
+            # FIXME: If column is off the bottom of the list this&#39;ll blow up...
+            column_to_click = self._cq.wait_for_single_query_visible(f&#39;menucheckitem[text=&#34;{column}&#34;]&#39;)
+
+            self._action_chains.move_to_element(column_to_click)
+            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.click()
+            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.perform()
+
+        # Close columns submenu, and grid menu.
+        self._input_helper.type_escape()
+        self._input_helper.type_escape()
 
     class ColumnNotFoundException(Exception):
         &#34;&#34;&#34;Exception class thrown when we failed to find the specified column&#34;&#34;&#34;
@@ -1171,7 +1236,7 @@ The column must be visible.</p>
 <dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query for the owning grid.</dd>
 <dt><strong><code>column_text_or_data_index</code></strong> :&ensp;<code>str</code></dt>
-<dd>The header texst of dataIndex of the grid column.</dd>
+<dd>The header text or dataIndex of the grid column.</dd>
 <dt><strong><code>filter_value</code></strong> :&ensp;<code>str</code></dt>
 <dd>The value to filter the column by.</dd>
 <dt><strong><code>wait_for_store_loaded</code></strong> :&ensp;<code>bool</code>, optional</dt>
@@ -1190,7 +1255,7 @@ The column must be visible.</p>
 
     Args:
         grid_cq (str): The component query for the owning grid.
-        column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+        column_text_or_data_index (str): The header text or dataIndex of the grid column.
         filter_value (str): The value to filter the column by.
         wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
         clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
@@ -1429,7 +1494,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 <dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
 <dd>The component query for the owning grid.</dd>
 <dt><strong><code>column_text_or_data_index</code></strong> :&ensp;<code>str</code></dt>
-<dd>The header texst of dataIndex of the grid column.</dd>
+<dd>The header text or dataIndex of the grid column.</dd>
 <dt><strong><code>wait_for_store_loaded</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Indicates whether to wait for the store to load. Defaults to True.</dd>
 </dl></div>
@@ -1442,7 +1507,7 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
 
     Args:
         grid_cq (str): The component query for the owning grid.
-        column_text_or_data_index (str): The header texst of dataIndex of the grid column.
+        column_text_or_data_index (str): The header text or dataIndex of the grid column.
         wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
     &#34;&#34;&#34;
     self.click_column_header_trigger(grid_cq, column_text_or_data_index)
@@ -1458,6 +1523,58 @@ Throws a ColumnNotFoundException if the column does not exist.</p>
     if wait_for_store_loaded:
         self._store_helper.wait_for_store_loaded(grid_cq)
 
+    self._input_helper.type_escape()</code></pre>
+</details>
+</dd>
+<dt id="pyseext.grid_helper.GridHelper.toggle_columns"><code class="name flex">
+<span>def <span class="ident">toggle_columns</span></span>(<span>self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Toggles a list of columns on the specified grid.
+Any that are visible will be hidden, and any that a currently hidden will be shown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>grid_cq</code></strong> :&ensp;<code>str</code></dt>
+<dd>The component query for the owning grid.</dd>
+<dt><strong><code>column_text_or_data_index</code></strong> :&ensp;<code>str</code></dt>
+<dd>The header text or dataIndex of the grid column to use for the interaction.</dd>
+<dt><strong><code>columns_to_toggle</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>The list of columns to toggle.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def toggle_columns(self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]):
+    &#34;&#34;&#34;Toggles a list of columns on the specified grid.
+    Any that are visible will be hidden, and any that a currently hidden will be shown.
+
+    Args:
+        grid_cq (str): The component query for the owning grid.
+        column_text_or_data_index (str): The header text or dataIndex of the grid column to use for the interaction.
+        columns_to_toggle (list[str]): The list of columns to toggle.
+    &#34;&#34;&#34;
+
+    # Use first visible column for our interaction
+    self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+
+    # Get the &#39;Columns&#39; menu itema and move to it, so that submenu shows.
+    filter_menu_item = self._menu_helper.try_get_menu_item_by_text(&#39;Columns&#39;)
+    self._action_chains.move_to_element(filter_menu_item)
+    self._action_chains.perform()
+
+    for column in columns_to_toggle:
+        # FIXME: If column is off the bottom of the list this&#39;ll blow up...
+        column_to_click = self._cq.wait_for_single_query_visible(f&#39;menucheckitem[text=&#34;{column}&#34;]&#39;)
+
+        self._action_chains.move_to_element(column_to_click)
+        self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+        self._action_chains.click()
+        self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+        self._action_chains.perform()
+
+    # Close columns submenu, and grid menu.
+    self._input_helper.type_escape()
     self._input_helper.type_escape()</code></pre>
 </details>
 </dd>
@@ -1583,6 +1700,7 @@ Once we have found the row it is clicked.</p>
 <li><code><a title="pyseext.grid_helper.GridHelper.is_column_hidden" href="#pyseext.grid_helper.GridHelper.is_column_hidden">is_column_hidden</a></code></li>
 <li><code><a title="pyseext.grid_helper.GridHelper.is_column_visible" href="#pyseext.grid_helper.GridHelper.is_column_visible">is_column_visible</a></code></li>
 <li><code><a title="pyseext.grid_helper.GridHelper.toggle_column_filter" href="#pyseext.grid_helper.GridHelper.toggle_column_filter">toggle_column_filter</a></code></li>
+<li><code><a title="pyseext.grid_helper.GridHelper.toggle_columns" href="#pyseext.grid_helper.GridHelper.toggle_columns">toggle_columns</a></code></li>
 <li><code><a title="pyseext.grid_helper.GridHelper.wait_for_row" href="#pyseext.grid_helper.GridHelper.wait_for_row">wait_for_row</a></code></li>
 <li><code><a title="pyseext.grid_helper.GridHelper.wait_to_click_row" href="#pyseext.grid_helper.GridHelper.wait_to_click_row">wait_to_click_row</a></code></li>
 </ul>
