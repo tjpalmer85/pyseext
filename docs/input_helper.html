@@ -74,6 +74,10 @@ class InputHelper:
             disable_realistic_typing (bool, optional): Indicates whether to disable typing in a &#39;realistic&#39; manner when not remote. Defaults to False.
             clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
         &#34;&#34;&#34;
+        # If text is None then use empty string
+        if text is None:
+            text = &#39;&#39;
+
         # Ensure text really is a string
         text = str(text)
 
@@ -154,10 +158,27 @@ class InputHelper:
         &#34;&#34;&#34;Types an escape character into the currently focused element.
 
         Args:
-            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+            pause_time (float, optional): The amount of time to pause after hitting escape (when web driver is not remote).
                                           Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
         &#34;&#34;&#34;
         self._action_chains.send_keys(Keys.ESCAPE)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
+        self._action_chains.perform()
+
+    def type_delete(self, pause_time: Union[float, None] = None):
+        &#34;&#34;&#34;Types a delete character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting delete (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
+        &#34;&#34;&#34;
+        self._action_chains.send_keys(Keys.DELETE)
 
         if not self._driver._is_remote: # pylint: disable=protected-access
             if pause_time is None:
@@ -228,6 +249,10 @@ class InputHelper:
             disable_realistic_typing (bool, optional): Indicates whether to disable typing in a &#39;realistic&#39; manner when not remote. Defaults to False.
             clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
         &#34;&#34;&#34;
+        # If text is None then use empty string
+        if text is None:
+            text = &#39;&#39;
+
         # Ensure text really is a string
         text = str(text)
 
@@ -308,10 +333,27 @@ class InputHelper:
         &#34;&#34;&#34;Types an escape character into the currently focused element.
 
         Args:
-            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+            pause_time (float, optional): The amount of time to pause after hitting escape (when web driver is not remote).
                                           Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
         &#34;&#34;&#34;
         self._action_chains.send_keys(Keys.ESCAPE)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
+        self._action_chains.perform()
+
+    def type_delete(self, pause_time: Union[float, None] = None):
+        &#34;&#34;&#34;Types a delete character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting delete (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
+        &#34;&#34;&#34;
+        self._action_chains.send_keys(Keys.DELETE)
 
         if not self._driver._is_remote: # pylint: disable=protected-access
             if pause_time is None:
@@ -370,15 +412,48 @@ class InputHelper:
         self._action_chains.perform()</code></pre>
 </details>
 </dd>
+<dt id="pyseext.input_helper.InputHelper.type_delete"><code class="name flex">
+<span>def <span class="ident">type_delete</span></span>(<span>self, pause_time: Optional[None] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Types a delete character into the currently focused element.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pause_time</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The amount of time to pause after hitting delete (when web driver is not remote).
+Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def type_delete(self, pause_time: Union[float, None] = None):
+    &#34;&#34;&#34;Types a delete character into the currently focused element.
+
+    Args:
+        pause_time (float, optional): The amount of time to pause after hitting delete (when web driver is not remote).
+                                      Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
+    &#34;&#34;&#34;
+    self._action_chains.send_keys(Keys.DELETE)
+
+    if not self._driver._is_remote: # pylint: disable=protected-access
+        if pause_time is None:
+            pause_time = random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM)
+
+        self._action_chains.pause(pause_time)
+
+    self._action_chains.perform()</code></pre>
+</details>
+</dd>
 <dt id="pyseext.input_helper.InputHelper.type_escape"><code class="name flex">
-<span>def <span class="ident">type_escape</span></span>(<span>self, pause_time: Optional[float] = None)</span>
+<span>def <span class="ident">type_escape</span></span>(<span>self, pause_time: Optional[None] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Types an escape character into the currently focused element.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>pause_time</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>The amount of time to pause after hitting return (when web driver is not remote).
+<dd>The amount of time to pause after hitting escape (when web driver is not remote).
 Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.</dd>
 </dl></div>
 <details class="source">
@@ -389,7 +464,7 @@ Defaults to None, in which case a random wait time is used between INPUT_SLEEP_M
     &#34;&#34;&#34;Types an escape character into the currently focused element.
 
     Args:
-        pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+        pause_time (float, optional): The amount of time to pause after hitting escape (when web driver is not remote).
                                       Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
     &#34;&#34;&#34;
     self._action_chains.send_keys(Keys.ESCAPE)
@@ -404,7 +479,7 @@ Defaults to None, in which case a random wait time is used between INPUT_SLEEP_M
 </details>
 </dd>
 <dt id="pyseext.input_helper.InputHelper.type_into_element"><code class="name flex">
-<span>def <span class="ident">type_into_element</span></span>(<span>self, element: selenium.webdriver.remote.webelement.WebElement, text: str, delay: Optional[float] = None, tab_off: Optional[bool] = False, disable_realistic_typing: bool = False, clear_first: bool = True)</span>
+<span>def <span class="ident">type_into_element</span></span>(<span>self, element: selenium.webdriver.remote.webelement.WebElement, text: str, delay: Optional[None] = None, tab_off: Optional[bool] = False, disable_realistic_typing: bool = False, clear_first: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Types into an input element in a realistic manner, unless web driver is remote.</p>
@@ -438,6 +513,10 @@ Defaults to None, in which case a random wait time is used between INPUT_SLEEP_M
         disable_realistic_typing (bool, optional): Indicates whether to disable typing in a &#39;realistic&#39; manner when not remote. Defaults to False.
         clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
     &#34;&#34;&#34;
+    # If text is None then use empty string
+    if text is None:
+        text = &#39;&#39;
+
     # Ensure text really is a string
     text = str(text)
 
@@ -462,7 +541,7 @@ Defaults to None, in which case a random wait time is used between INPUT_SLEEP_M
 </details>
 </dd>
 <dt id="pyseext.input_helper.InputHelper.type_return"><code class="name flex">
-<span>def <span class="ident">type_return</span></span>(<span>self, pause_time: Optional[float] = None)</span>
+<span>def <span class="ident">type_return</span></span>(<span>self, pause_time: Optional[None] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Types a return character into the currently focused element.</p>
@@ -496,7 +575,7 @@ Defaults to None, in which case a random wait time is used between INPUT_SLEEP_M
 </details>
 </dd>
 <dt id="pyseext.input_helper.InputHelper.type_tab"><code class="name flex">
-<span>def <span class="ident">type_tab</span></span>(<span>self, pause_time: Optional[float] = None)</span>
+<span>def <span class="ident">type_tab</span></span>(<span>self, pause_time: Optional[None] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Type a tab character into the currently focused element.</p>
@@ -552,6 +631,7 @@ Defaults to None, in which case a random wait time is used between INPUT_SLEEP_M
 <li><code><a title="pyseext.input_helper.InputHelper.INPUT_SLEEP_MAXIMUM" href="#pyseext.input_helper.InputHelper.INPUT_SLEEP_MAXIMUM">INPUT_SLEEP_MAXIMUM</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.INPUT_SLEEP_MINIMUM" href="#pyseext.input_helper.InputHelper.INPUT_SLEEP_MINIMUM">INPUT_SLEEP_MINIMUM</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type" href="#pyseext.input_helper.InputHelper.type">type</a></code></li>
+<li><code><a title="pyseext.input_helper.InputHelper.type_delete" href="#pyseext.input_helper.InputHelper.type_delete">type_delete</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_escape" href="#pyseext.input_helper.InputHelper.type_escape">type_escape</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_into_element" href="#pyseext.input_helper.InputHelper.type_into_element">type_into_element</a></code></li>
 <li><code><a title="pyseext.input_helper.InputHelper.type_return" href="#pyseext.input_helper.InputHelper.type_return">type_return</a></code></li>

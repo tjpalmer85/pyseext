@@ -45,6 +45,10 @@ class InputHelper:
             disable_realistic_typing (bool, optional): Indicates whether to disable typing in a 'realistic' manner when not remote. Defaults to False.
             clear_first (bool, optional): Indicates whether to clear the element first. Defaults to True.
         """
+        # If text is None then use empty string
+        if text is None:
+            text = ''
+
         # Ensure text really is a string
         text = str(text)
 
@@ -125,10 +129,27 @@ class InputHelper:
         """Types an escape character into the currently focused element.
 
         Args:
-            pause_time (float, optional): The amount of time to pause after hitting return (when web driver is not remote).
+            pause_time (float, optional): The amount of time to pause after hitting escape (when web driver is not remote).
                                           Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
         """
         self._action_chains.send_keys(Keys.ESCAPE)
+
+        if not self._driver._is_remote: # pylint: disable=protected-access
+            if pause_time is None:
+                pause_time = random.uniform(self.INPUT_SLEEP_MINIMUM, self.INPUT_SLEEP_MAXIMUM)
+
+            self._action_chains.pause(pause_time)
+
+        self._action_chains.perform()
+
+    def type_delete(self, pause_time: Union[float, None] = None):
+        """Types a delete character into the currently focused element.
+
+        Args:
+            pause_time (float, optional): The amount of time to pause after hitting delete (when web driver is not remote).
+                                          Defaults to None, in which case a random wait time is used between INPUT_SLEEP_MINIMUM and INPUT_SLEEP_MAXIMUM.
+        """
+        self._action_chains.send_keys(Keys.DELETE)
 
         if not self._driver._is_remote: # pylint: disable=protected-access
             if pause_time is None:

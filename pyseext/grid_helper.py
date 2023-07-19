@@ -219,10 +219,8 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.click()
         self._action_chains.perform()
 
-    def filter_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False):
-        """Filters a column on a grid for the specified value.
-
-        Only supports string filters at the moment.
+    def filter_string_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False):
+        """Filters a string column on a grid for the specified value.
 
         Args:
             grid_cq (str): The component query for the owning grid.
@@ -244,6 +242,92 @@ class GridHelper(HasReferencedJavaScript):
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)
 
+        # Close filter and then column menu
+        self._input_helper.type_escape()
+        self._input_helper.type_escape()
+
+    def filter_list_column(self, grid_cq: str, column_text_or_data_index: str, filter_values_to_toggle: list[str], wait_for_store_loaded: bool = True):
+        """Toggles the values on a list filtered column on a grid.
+
+        Args:
+            grid_cq (str): The component query for the owning grid.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
+            filter_values_to_toggle (list[str]): The filter values to toggle.
+            wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+        """
+        self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+        self._menu_helper.move_to_menu_item_by_text('Filters')
+
+        if wait_for_store_loaded:
+            self._store_helper.reset_store_load_count(grid_cq)
+
+        for filter_value_to_toggle in filter_values_to_toggle:
+            self._menu_helper.click_menu_item_by_text(filter_value_to_toggle)
+
+        if wait_for_store_loaded:
+            self._store_helper.wait_for_store_loaded(grid_cq)
+
+        # Close filter and then column menu
+        self._input_helper.type_escape()
+        self._input_helper.type_escape()
+
+    def filter_number_column(self,
+                             grid_cq: str,
+                             column_text_or_data_index: str,
+                             equal_to: Union[None, float] = None,
+                             less_than: Union[None, float] = None,
+                             greater_than: Union[None, float] = None,
+                             wait_for_store_loaded: bool = True):
+        """Filters a number column on a grid for the specified values.
+
+        Args:
+            grid_cq (str): The component query for the owning grid.
+            column_text_or_data_index (str): The header text or dataIndex of the grid column.
+            filter_values_to_toggle (list[str]): The filter values to toggle.
+            wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
+        """
+        self.click_column_header_trigger(grid_cq, column_text_or_data_index)
+        self._menu_helper.move_to_menu_item_by_text('Filters')
+
+        if wait_for_store_loaded:
+            self._store_helper.reset_store_load_count(grid_cq)
+
+        filter_textboxes = self._cq.wait_for_query('textfield[emptyText="Enter Number..."]')
+
+        # clear_first does not work with these :/
+        # Double-clicking then either typing or deleting should do it.
+        self._action_chains.move_to_element(filter_textboxes[0])
+        self._action_chains.double_click()
+        self._action_chains.perform()
+
+        if less_than is not None:
+            self._input_helper.type_into_element(filter_textboxes[0], less_than, clear_first = False)
+        else:
+            self._input_helper.type_delete()
+
+        self._action_chains.move_to_element(filter_textboxes[1])
+        self._action_chains.double_click()
+        self._action_chains.perform()
+
+        if greater_than is not None:
+            self._input_helper.type_into_element(filter_textboxes[1], greater_than, clear_first = False)
+        else:
+            self._input_helper.type_delete()
+
+        self._action_chains.move_to_element(filter_textboxes[2])
+        self._action_chains.double_click()
+        self._action_chains.perform()
+
+        if equal_to is not None:
+            self._input_helper.type_into_element(filter_textboxes[2], equal_to, clear_first = False)
+        else:
+            self._input_helper.type_delete()
+
+        if wait_for_store_loaded:
+            self._store_helper.wait_for_store_loaded(grid_cq)
+
+        # Close filter and then column menu
+        self._input_helper.type_escape()
         self._input_helper.type_escape()
 
     def toggle_column_filter(self, grid_cq: str, column_text_or_data_index: str, wait_for_store_loaded: bool = True):
@@ -267,6 +351,8 @@ class GridHelper(HasReferencedJavaScript):
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)
 
+        # Close filter and then column menu
+        self._input_helper.type_escape()
         self._input_helper.type_escape()
 
     def clear_selection(self, grid_cq: str):
