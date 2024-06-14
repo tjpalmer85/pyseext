@@ -40,6 +40,10 @@ class GridHelper(HasReferencedJavaScript):
     """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow
     Requires the inserts: {grid_cq}, {row_data}"""
 
+    _GET_ROW_STORE_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRowStore('{grid_cq}', {row_data})"
+    """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow
+    Requires the inserts: {grid_cq}, {row_data}"""
+
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
 
@@ -391,6 +395,32 @@ class GridHelper(HasReferencedJavaScript):
         self._cq.wait_for_single_query_visible(grid_cq)
 
         script = self._GET_ROW_TEMPLATE.format(grid_cq=grid_cq, row_data=row_data)
+        self.ensure_javascript_loaded()
+        row = self._driver.execute_script(script)
+
+        if row or not should_throw_exception:
+            return row
+
+        raise GridHelper.RowNotFoundException(grid_cq, row_data)
+
+    def get_row_store(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -> dict:
+        """ Gets the store for the row with the specified data or index in the grid.
+
+        The grid must be visible.
+
+        Args:
+            grid_cq (str): The component query for the grid
+            row_data (Union[int, dict]): The row data or index for the record to be found.
+            should_throw_exception (bool): Indicates whether this method should throw an exception
+                                           if the row is not found. Defaults to True.
+
+        Returns:
+            Dict: Dict containing the store for the row or None if not found (and not thrown)
+        """
+        # Check grid can be found and is visible
+        self._cq.wait_for_single_query_visible(grid_cq)
+
+        script = self._GET_ROW_STORE_TEMPLATE.format(grid_cq=grid_cq, row_data=row_data)
         self.ensure_javascript_loaded()
         row = self._driver.execute_script(script)
 
