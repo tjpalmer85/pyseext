@@ -40,7 +40,7 @@ class GridHelper(HasReferencedJavaScript):
     """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow
     Requires the inserts: {grid_cq}, {row_data}"""
 
-    _GET_ROW_STORE_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRowStore('{grid_cq}', {row_data})"
+    _GET_ROW_DATA_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRowData('{grid_cq}', {row_data})"
     """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow
     Requires the inserts: {grid_cq}, {row_data}"""
 
@@ -403,8 +403,8 @@ class GridHelper(HasReferencedJavaScript):
 
         raise GridHelper.RowNotFoundException(grid_cq, row_data)
 
-    def get_row_store(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -> dict:
-        """ Gets the store for the row with the specified data or index in the grid.
+    def get_row_data(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -> dict:
+        """ Gets the data for the row with the specified data or index in the grid.
 
         The grid must be visible.
 
@@ -420,7 +420,7 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_ROW_STORE_TEMPLATE.format(grid_cq=grid_cq, row_data=row_data)
+        script = self._GET_ROW_DATA_TEMPLATE.format(grid_cq=grid_cq, row_data=row_data)
         self.ensure_javascript_loaded()
         row = self._driver.execute_script(script)
 
