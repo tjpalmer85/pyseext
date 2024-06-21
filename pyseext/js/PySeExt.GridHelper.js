@@ -70,14 +70,15 @@ globalThis.PySeExt.GridHelper = {
             grid = grids[0];
             store = grid.getStore();
 
-            row = me.__findRowRecord(rowData, store);
+            row = me.__findRowIndex(rowData, store);
         }
-        if (row !== undefined && row !== null) {
+        if (row) {
             return grid.getView().getRow(row);
         } else {
             return null;
         }
     },
+
     /**
      * Gets the row data with the specified data or index in the grid.
      * The row is scrolled into view ready for clicking by the caller.
@@ -99,9 +100,9 @@ globalThis.PySeExt.GridHelper = {
                 grid = grids[0];
                 store = grid.getStore();
 
-                row = me.__findRowRecord(rowData, store);
+                row = me.__findRowIndex(rowData, store);
             }
-            if (row !== undefined && row !== null) {
+            if (row) {
                 return store.getAt(row).getData();
             } else {
                 return null;
@@ -181,8 +182,9 @@ globalThis.PySeExt.GridHelper = {
 
         return columnHeader;
     },
+
     /**
-     * Gets the row record with the specified data or index in the grid.
+     * Gets the row index with the specified data or index in the grid.
      * The row is scrolled into view ready for clicking by the caller.
      *
      * The grid must be visible.
@@ -190,8 +192,8 @@ globalThis.PySeExt.GridHelper = {
      * @param  {Object|Number} rowData The index of or an object containing the row data for the record to be found.
      * @return {Object} The data for the row record.
      */
-    __findRowRecord: function(rowData, store) {
-        var rowRecord,
+    __findRowIndex: function(rowData, store) {
+        var rowIndex,
             foundIndex,
             prop;
 
@@ -205,7 +207,7 @@ globalThis.PySeExt.GridHelper = {
 
             // Check that found index is within bounds, if so grab the row.
             if (foundIndex < store.getCount()) {
-                rowRecord = foundIndex;
+                rowIndex = foundIndex;
             }
         } else {
             foundIndex = store.findBy(function(record, id) {
@@ -224,10 +226,10 @@ globalThis.PySeExt.GridHelper = {
             });
 
             if (foundIndex !== -1) {
-                rowRecord = foundIndex;
+                rowIndex = foundIndex;
             }
         }
 
-        return rowRecord;
+        return rowIndex;
     }
 };
