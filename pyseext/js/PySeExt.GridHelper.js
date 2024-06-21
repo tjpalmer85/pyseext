@@ -61,52 +61,52 @@ globalThis.PySeExt.GridHelper = {
      * @return {Element} The element for the found row.
      */
     getRow: function(gridSelector, rowData) {
-        var row,
+        var me = this,
             grids = globalThis.Ext.ComponentQuery.query(gridSelector),
             grid,
-            store,
-            foundIndex,
-            prop;
+            store;
 
         if (grids && grids.length) {
             grid = grids[0];
             store = grid.getStore();
 
-            if (typeof(rowData) === 'number') {
-                foundIndex = rowData;
-
-                // Verify it's not bollocks
-                if (!Ext.isNumber(parseInt(foundIndex)) || foundIndex < 0) {
-                    globalThis.Ext.raise('If attempting to get a row for a specific index, the index must be an integer greater than or equal to zero.');
-                }
-
-                // Check that found index is within bounds, if so grab the row.
-                if (foundIndex < store.getCount()) {
-                    row = grid.getView().getRow(foundIndex);
-                }
-            } else {
-                foundIndex = store.findBy(function(record, id) {
-                    var hasRecordBeenFound = true;
-
-                    for (prop in rowData) {
-                        if (rowData.hasOwnProperty(prop)) {
-                            if (record.get(prop) !== rowData[prop]) {
-                                hasRecordBeenFound = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    return hasRecordBeenFound;
-                });
-
-                if (foundIndex !== -1) {
-                    row = grid.getView().getRow(foundIndex);
-                }
-            }
+            row = me.__findRowIndex(rowData, store);
         }
+        if (row) {
+            return grid.getView().getRow(row);
+        } else {
+            return null;
+        }
+    },
 
-        return row;
+    /**
+     * Gets the row data with the specified data or index in the grid.
+     * The row is scrolled into view ready for clicking by the caller.
+     *
+     * The grid must be visible.
+     *
+     * @param  {String} gridSelector   The selector for the grid.
+     * @param  {Object|Number} rowData The index of or an object containing the row data for the record to be found.
+     * @return {Object[]} The data for the found row.
+     */
+    getRowData: function(gridSelector, rowData) {
+        var me = this,
+            row,
+            grids = globalThis.Ext.ComponentQuery.query(gridSelector),
+            grid,
+            store;
+
+            if (grids && grids.length) {
+                grid = grids[0];
+                store = grid.getStore();
+
+                row = me.__findRowIndex(rowData, store);
+            }
+            if (row) {
+                return store.getAt(row).getData();
+            } else {
+                return null;
+            }
     },
 
     /**
@@ -181,5 +181,55 @@ globalThis.PySeExt.GridHelper = {
         }
 
         return columnHeader;
+    },
+
+    /**
+     * Gets the row index with the specified data or index in the grid.
+     * The row is scrolled into view ready for clicking by the caller.
+     *
+     * The grid must be visible.
+     *
+     * @param  {Object|Number} rowData The index of or an object containing the row data for the record to be found.
+     * @return {Number} The index for the row record, or undefined if not found
+     */
+    __findRowIndex: function(rowData, store) {
+        var rowIndex,
+            foundIndex,
+            prop;
+
+        if (typeof(rowData) === 'number') {
+            foundIndex = rowData;
+
+            // Verify it's not bollocks
+            if (!Ext.isNumber(parseInt(foundIndex)) || foundIndex < 0) {
+                globalThis.Ext.raise('If attempting to get a row for a specific index, the index must be an integer greater than or equal to zero.');
+            }
+
+            // Check that found index is within bounds, if so grab the row.
+            if (foundIndex < store.getCount()) {
+                rowIndex = foundIndex;
+            }
+        } else {
+            foundIndex = store.findBy(function(record, id) {
+                var hasRecordBeenFound = true;
+
+                for (prop in rowData) {
+                    if (rowData.hasOwnProperty(prop)) {
+                        if (record.get(prop) !== rowData[prop]) {
+                            hasRecordBeenFound = false;
+                            break;
+                        }
+                    }
+                }
+
+                return hasRecordBeenFound;
+            });
+
+            if (foundIndex !== -1) {
+                rowIndex = foundIndex;
+            }
+        }
+
+        return rowIndex;
     }
 };
