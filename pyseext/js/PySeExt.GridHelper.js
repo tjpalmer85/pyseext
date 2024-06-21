@@ -190,7 +190,7 @@ globalThis.PySeExt.GridHelper = {
      * The grid must be visible.
      *
      * @param  {Object|Number} rowData The index of or an object containing the row data for the record to be found.
-     * @return {Object} The data for the row record.
+     * @return {Number} The index for the row record, or undefined if not found
      */
     __findRowIndex: function(rowData, store) {
         var rowIndex,
