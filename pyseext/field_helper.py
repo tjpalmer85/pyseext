@@ -1,6 +1,9 @@
 """
 Module that contains our FieldHelper class.
 """
+from datetime import datetime
+import dateutil.parser as dt
+
 import logging
 from typing import Union, Any
 
@@ -54,6 +57,8 @@ class FieldHelper(HasReferencedJavaScript):
     _SELECT_COMBOBOX_VALUE_TEMPLATE: str = "return globalThis.PySeExt.FieldHelper.selectComboBoxValue('{form_cq}', '{name}', {data})"
     """The script template to use to call the JavaScript method PySeExt.FieldHelper.selectComboBoxValue
     Requires the inserts: {form_cq}, {name}, {data}"""
+
+    _GET_FIELD_RAW_VALUE: str = "return globalThis.PySeExt.FieldHelper.getFieldRawValue('{form_cq}', '{name}')"
 
     def __init__(self, driver: WebDriver):
         """Initialises an instance of this class
@@ -202,13 +207,17 @@ class FieldHelper(HasReferencedJavaScript):
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
             name (str): The name of the field
+            is_date (bool): Indicates whether the field is a date time or not. Defaults to False.
 
         Returns:
             Any: The value of the field, or None if not found.
         """
         script = self._GET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
-        return self._driver.execute_script(script)
+
+        value = self._driver.execute_script(script)
+
+        return value
 
     def get_field_display_value(self, form_cq: str, name: str) -> Any:
         """Attempts to get the display value of a field by name from the specified form panel.
@@ -223,6 +232,22 @@ class FieldHelper(HasReferencedJavaScript):
             Any: The display value of the field, or None if not found or if the field does not have a display value.
         """
         script = self._GET_FIELD_DISPLAY_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
+        self.ensure_javascript_loaded()
+        return self._driver.execute_script(script)
+
+    def get_field_raw_value(self, form_cq: str, name: str) -> Any:
+        """Attempts to get the raw value of a field by name from the specified form panel.
+
+        Can be used to get the value for a date field.
+
+        Args:
+            form_cq (str): The component query that identifies the form panel in which to look for the field
+            name (str): The name of the field
+
+        Returns:
+            Any: The raw value of the field, or None if not found or if the field does not have a raw value.
+        """
+        script = self._GET_FIELD_RAW_VALUE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 

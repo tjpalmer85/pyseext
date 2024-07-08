@@ -33,9 +33,18 @@ globalThis.PySeExt.FieldHelper = {
      * @returns {Mixed} The value of the field, if found.
      */
     getFieldValue: function(formCQ, name) {
-        var field = this.__getField(formCQ, name);
+        var field = this.__getField(formCQ, name),
+            value;
 
-        return field && field.getValue();
+        if (field) {
+            value = field.getValue();
+            // Python cannot convert a JS datetime to a Python one, so convert before sending.
+            if (Ext.isDate(value)) {
+                value = value.toLocaleDateString('en-gb')
+            }
+        }
+
+        return value;
     },
 
     /**
@@ -48,6 +57,18 @@ globalThis.PySeExt.FieldHelper = {
         var field = this.__getField(formCQ, name);
 
         return field && field.getDisplayValue && field.getDisplayValue();
+    },
+
+    /**
+     * Finds the specified field on the specified form and returns it's raw value, if it has one.
+     * @param {String} formCQ The CQ to get to the form panel.
+     * @param {String} name The name of the field.
+     * @returns {String} The raw value of the field, if found and has a raw value.
+     */
+    getFieldRawValue: function(formCQ, name) {
+        var field = this.__getField(formCQ, name);
+
+        return field && field.getRawValue && field.getRawValue();
     },
 
     /**
