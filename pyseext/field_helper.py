@@ -1,9 +1,6 @@
 """
 Module that contains our FieldHelper class.
 """
-from datetime import datetime
-import dateutil.parser as dt
-
 import logging
 from typing import Union, Any
 
