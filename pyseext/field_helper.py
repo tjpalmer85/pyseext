@@ -204,7 +204,6 @@ class FieldHelper(HasReferencedJavaScript):
         Args:
             form_cq (str): The component query that identifies the form panel in which to look for the field
             name (str): The name of the field
-            is_date (bool): Indicates whether the field is a date time or not. Defaults to False.
 
         Returns:
             Any: The value of the field, or None if not found.
@@ -212,9 +211,7 @@ class FieldHelper(HasReferencedJavaScript):
         script = self._GET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
 
-        value = self._driver.execute_script(script)
-
-        return value
+        return self._driver.execute_script(script)
 
     def get_field_display_value(self, form_cq: str, name: str) -> Any:
         """Attempts to get the display value of a field by name from the specified form panel.
