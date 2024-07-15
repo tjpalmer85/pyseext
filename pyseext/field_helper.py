@@ -2,7 +2,9 @@
 Module that contains our FieldHelper class.
 """
 import logging
+
 from typing import Union, Any
+from datetime import datetime
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -211,7 +213,12 @@ class FieldHelper(HasReferencedJavaScript):
         script = self._GET_FIELD_VALUE_TEMPLATE.format(form_cq=form_cq, name=name)
         self.ensure_javascript_loaded()
 
-        return self._driver.execute_script(script)
+        value = self._driver.execute_script(script)
+
+        if self.is_field_a_date_field(form_cq, name):
+            value = datetime.strptime(value, '%d/%m/%Y')
+
+        return value
 
     def get_field_display_value(self, form_cq: str, name: str) -> Any:
         """Attempts to get the display value of a field by name from the specified form panel.
