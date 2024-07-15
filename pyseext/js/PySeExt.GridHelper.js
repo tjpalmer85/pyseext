@@ -72,7 +72,7 @@ globalThis.PySeExt.GridHelper = {
 
             row = me.__findRowIndex(rowData, store);
         }
-        if (row) {
+        if (row !== undefined && row !== null) {
             return grid.getView().getRow(row);
         } else {
             return null;
@@ -102,7 +102,7 @@ globalThis.PySeExt.GridHelper = {
 
                 row = me.__findRowIndex(rowData, store);
             }
-            if (row) {
+            if (row !== undefined && row !== null) {
                 return store.getAt(row).getData();
             } else {
                 return null;
