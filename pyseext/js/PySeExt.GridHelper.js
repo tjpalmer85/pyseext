@@ -64,19 +64,21 @@ globalThis.PySeExt.GridHelper = {
         var me = this,
             grids = globalThis.Ext.ComponentQuery.query(gridSelector),
             grid,
-            store;
+            store,
+            rowIndex;
 
         if (grids && grids.length) {
             grid = grids[0];
             store = grid.getStore();
 
-            row = me.__findRowIndex(rowData, store);
+            rowIndex = me.__findRowIndex(rowData, store);
+
+            if (rowIndex !== -1) {
+                return grid.getView().getRow(row);
+            }
         }
-        if (row !== undefined && row !== null) {
-            return grid.getView().getRow(row);
-        } else {
-            return null;
-        }
+        
+        return null;
     },
 
     /**
@@ -94,19 +96,21 @@ globalThis.PySeExt.GridHelper = {
             row,
             grids = globalThis.Ext.ComponentQuery.query(gridSelector),
             grid,
-            store;
+            store,
+            rowIndex;
 
-            if (grids && grids.length) {
-                grid = grids[0];
-                store = grid.getStore();
+        if (grids && grids.length) {
+            grid = grids[0];
+            store = grid.getStore();
 
-                row = me.__findRowIndex(rowData, store);
-            }
-            if (row !== undefined && row !== null) {
+            rowIndex = me.__findRowIndex(rowData, store);
+
+            if (rowIndex !== -1) {
                 return store.getAt(row).getData();
-            } else {
-                return null;
             }
+        }
+
+        return null;
     },
 
     /**
@@ -190,10 +194,10 @@ globalThis.PySeExt.GridHelper = {
      * The grid must be visible.
      *
      * @param  {Object|Number} rowData The index of or an object containing the row data for the record to be found.
-     * @return {Number} The index for the row record, or undefined if not found
+     * @return {Number} The index for the row record, or -1 if not found
      */
     __findRowIndex: function(rowData, store) {
-        var rowIndex,
+        var rowIndex = -1,
             foundIndex,
             prop;
 
@@ -225,9 +229,8 @@ globalThis.PySeExt.GridHelper = {
                 return hasRecordBeenFound;
             });
 
-            if (foundIndex !== -1) {
-                rowIndex = foundIndex;
-            }
+            // This could be -1, but that's fine since that's the expected "not found" result.
+            rowIndex = foundIndex;
         }
 
         return rowIndex;
