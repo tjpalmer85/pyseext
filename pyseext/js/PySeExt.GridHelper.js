@@ -74,7 +74,7 @@ globalThis.PySeExt.GridHelper = {
             rowIndex = me.__findRowIndex(rowData, store);
 
             if (rowIndex !== -1) {
-                return grid.getView().getRow(row);
+                return grid.getView().getRow(rowIndex);
             }
         }
         
@@ -93,7 +93,6 @@ globalThis.PySeExt.GridHelper = {
      */
     getRowData: function(gridSelector, rowData) {
         var me = this,
-            row,
             grids = globalThis.Ext.ComponentQuery.query(gridSelector),
             grid,
             store,
@@ -106,7 +105,7 @@ globalThis.PySeExt.GridHelper = {
             rowIndex = me.__findRowIndex(rowData, store);
 
             if (rowIndex !== -1) {
-                return store.getAt(row).getData();
+                return store.getAt(rowIndex).getData();
             }
         }
 
