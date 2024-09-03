@@ -216,7 +216,8 @@ class FieldHelper(HasReferencedJavaScript):
         value = self._driver.execute_script(script)
 
         if self.is_field_a_date_field(form_cq, name):
-            value = datetime.strptime(value, '%d/%m/%Y')
+            if value:
+                value = datetime.strptime(value, '%d/%m/%Y')
 
         return value
 
