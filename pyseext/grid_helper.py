@@ -9,6 +9,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.common.exceptions import StaleElementReferenceException
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 from pyseext.component_query import ComponentQuery
@@ -438,14 +439,24 @@ class GridHelper(HasReferencedJavaScript):
             grid_cq (str): The component query for the grid
             row_data (Union[int, dict]): The row data or index for the record to be found and clicked.
         """
-        # Check grid can be found and is visible
-        row = self.get_row(grid_cq, row_data)
+        try:
+            # Check grid can be found and is visible
+            row = self.get_row(grid_cq, row_data)
 
-        self._logger.info("Clicking clicking row '%s' on grid with CQ '%s'", row_data, grid_cq)
+            self._logger.info("Clicking clicking row '%s' on grid with CQ '%s'", row_data, grid_cq)
 
-        self._action_chains.move_to_element(row)
-        self._action_chains.click()
-        self._action_chains.perform()
+            self._action_chains.move_to_element(row)
+            self._action_chains.click()
+            self._action_chains.perform()
+
+        except StaleElementReferenceException:
+
+            row = self.get_row(grid_cq, row_data)
+
+            self._action_chains.move_to_element(row)
+            self._action_chains.click()
+            self._action_chains.perform()
+
 
     def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60) -> WebElement:
         """Waits for the specified row to appear in the grid, reloading the store until
