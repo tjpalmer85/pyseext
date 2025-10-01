@@ -16,6 +16,7 @@ from pyseext.component_query import ComponentQuery
 from pyseext.input_helper import InputHelper
 from pyseext.menu_helper import MenuHelper
 from pyseext.store_helper import StoreHelper
+from pyseext.core import Core
 
 class GridHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext grid panels"""
@@ -73,6 +74,8 @@ class GridHelper(HasReferencedJavaScript):
 
         self._action_chains = ActionChains(driver)
         """The ActionChains instance for this class instance"""
+
+        self._core = Core(driver)
 
         # Initialise our base class
         super().__init__(driver, self._logger)
@@ -473,7 +476,7 @@ class GridHelper(HasReferencedJavaScript):
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         return self.get_row(grid_cq, row_data)
 
-    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60):
+    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 120):
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
         Once we have found the row it is clicked.
@@ -484,7 +487,8 @@ class GridHelper(HasReferencedJavaScript):
             timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
         """
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
-        self.click_row(grid_cq, row_data)
+        self._core.wait_for_no_ajax_requests_in_progress()
+        self.click_row(grid_cq, row_data)  
 
     def toggle_columns(self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]):
         """Toggles a list of columns on the specified grid.

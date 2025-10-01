@@ -346,7 +346,7 @@ class FieldHelper(HasReferencedJavaScript):
                     if not is_value_a_dict:
                         # We can just type into the combobox
                         field = self.find_field_input_element(form_cq, name)
-                        self._input_helper.type_into_element(field, field_value)
+                        self._input_helper.type_into_element(field, field_value, delay=0.2)
 
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
