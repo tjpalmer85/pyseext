@@ -488,7 +488,7 @@ class GridHelper(HasReferencedJavaScript):
         """
         WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
         self._core.wait_for_no_ajax_requests_in_progress()
-        self.click_row(grid_cq, row_data)  
+        self.click_row(grid_cq, row_data)
 
     def toggle_columns(self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]):
         """Toggles a list of columns on the specified grid.
@@ -509,7 +509,6 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.perform()
 
         for column in columns_to_toggle:
-            # FIXME: If column is off the bottom of the list this'll blow up...
             column_to_click = self._cq.wait_for_single_query_visible(f'menucheckitem[text="{column}"]')
 
             self._action_chains.move_to_element(column_to_click)
