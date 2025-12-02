@@ -1,6 +1,7 @@
 """
 Module that contains our GridHelper class.
 """
+
 import logging
 import random
 from typing import Union
@@ -10,6 +11,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.common.by import By
 
 from pyseext.has_referenced_javascript import HasReferencedJavaScript
 from pyseext.component_query import ComponentQuery
@@ -17,6 +19,7 @@ from pyseext.input_helper import InputHelper
 from pyseext.menu_helper import MenuHelper
 from pyseext.store_helper import StoreHelper
 from pyseext.core import Core
+
 
 class GridHelper(HasReferencedJavaScript):
     """A class to help with interacting with Ext grid panels"""
@@ -26,23 +29,33 @@ class GridHelper(HasReferencedJavaScript):
     """The component query to use to find a grid panel"""
 
     # Private class variables
-    _GET_COLUMN_HEADER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_data_index}')"
+    _GET_COLUMN_HEADER_TEMPLATE: str = (
+        "return globalThis.PySeExt.GridHelper.getColumnHeader('{grid_cq}', '{column_text_or_data_index}')"
+    )
     """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeader
     Requires the inserts: {grid_cq}, {column_text_or_data_index}"""
 
-    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_data_index}')"
+    _GET_COLUMN_HEADER_TRIGGER_TEMPLATE: str = (
+        "return globalThis.PySeExt.GridHelper.getColumnHeaderTrigger('{grid_cq}', '{column_text_or_data_index}')"
+    )
     """The script template to use to call the JavaScript method PySeExt.GridHelper.getColumnHeaderTrigger
     Requires the inserts: {grid_cq}, {column_text_or_data_index}"""
 
-    _CLEAR_SELECTION_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
+    _CLEAR_SELECTION_TEMPLATE: str = (
+        "return globalThis.PySeExt.GridHelper.clearSelection('{grid_cq}')"
+    )
     """The script template to use to call the JavaScript method PySeExt.GridHelper.clearSelection
     Requires the inserts: {grid_cq}"""
 
-    _GET_ROW_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
+    _GET_ROW_TEMPLATE: str = (
+        "return globalThis.PySeExt.GridHelper.getRow('{grid_cq}', {row_data})"
+    )
     """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow
     Requires the inserts: {grid_cq}, {row_data}"""
 
-    _GET_ROW_DATA_TEMPLATE: str = "return globalThis.PySeExt.GridHelper.getRowData('{grid_cq}', {row_data})"
+    _GET_ROW_DATA_TEMPLATE: str = (
+        "return globalThis.PySeExt.GridHelper.getRowData('{grid_cq}', {row_data})"
+    )
     """The script template to use to call the JavaScript method PySeExt.GridHelper.getRow
     Requires the inserts: {grid_cq}, {row_data}"""
 
@@ -80,7 +93,9 @@ class GridHelper(HasReferencedJavaScript):
         # Initialise our base class
         super().__init__(driver, self._logger)
 
-    def get_column_header(self, grid_cq: str, column_text_or_data_index: str) -> WebElement:
+    def get_column_header(
+        self, grid_cq: str, column_text_or_data_index: str
+    ) -> WebElement:
         """Gets the element for the specified column header
 
         Args:
@@ -94,7 +109,9 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_COLUMN_HEADER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_data_index=column_text_or_data_index)
+        script = self._GET_COLUMN_HEADER_TEMPLATE.format(
+            grid_cq=grid_cq, column_text_or_data_index=column_text_or_data_index
+        )
         self.ensure_javascript_loaded()
         column_header = self._driver.execute_script(script)
 
@@ -127,9 +144,13 @@ class GridHelper(HasReferencedJavaScript):
         Returns:
             True if the column is hidden, False otherwise.
         """
-        return not self.get_column_header(grid_cq, column_text_or_data_index).is_displayed()
+        return not self.get_column_header(
+            grid_cq, column_text_or_data_index
+        ).is_displayed()
 
-    def check_columns_are_visible(self, grid_cq: str, column_text_or_data_indexes: list[str]) -> list[WebElement]:
+    def check_columns_are_visible(
+        self, grid_cq: str, column_text_or_data_indexes: list[str]
+    ) -> list[WebElement]:
         """Checks that the specified columns are all visible on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -149,7 +170,9 @@ class GridHelper(HasReferencedJavaScript):
 
         return columns_not_visible
 
-    def check_columns_are_hidden(self, grid_cq: str, column_texts_or_data_indexes: list[str]) -> list[WebElement]:
+    def check_columns_are_hidden(
+        self, grid_cq: str, column_texts_or_data_indexes: list[str]
+    ) -> list[WebElement]:
         """Checks that the specified columns are all hidden on the specified grid.
         Throws a ColumnNotFoundException if the column does not exist.
 
@@ -179,13 +202,19 @@ class GridHelper(HasReferencedJavaScript):
         """
         column_header = self.get_column_header(grid_cq, column_text_or_data_index)
 
-        self._logger.info("Clicking column header '%s' on grid with CQ '%s'", column_text_or_data_index, grid_cq)
+        self._logger.info(
+            "Clicking column header '%s' on grid with CQ '%s'",
+            column_text_or_data_index,
+            grid_cq,
+        )
 
         self._action_chains.move_to_element(column_header)
         self._action_chains.click()
         self._action_chains.perform()
 
-    def get_column_header_trigger(self, grid_cq: str, column_text_or_data_index: str) -> WebElement:
+    def get_column_header_trigger(
+        self, grid_cq: str, column_text_or_data_index: str
+    ) -> WebElement:
         """Gets the element for the specified column header's trigger
 
         Args:
@@ -199,7 +228,9 @@ class GridHelper(HasReferencedJavaScript):
         # Check grid can be found and is visible
         self._cq.wait_for_single_query_visible(grid_cq)
 
-        script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(grid_cq=grid_cq, column_text_or_data_index=column_text_or_data_index)
+        script = self._GET_COLUMN_HEADER_TRIGGER_TEMPLATE.format(
+            grid_cq=grid_cq, column_text_or_data_index=column_text_or_data_index
+        )
         self.ensure_javascript_loaded()
         column_header_trigger = self._driver.execute_script(script)
 
@@ -219,15 +250,28 @@ class GridHelper(HasReferencedJavaScript):
         column_header = self.get_column_header(grid_cq, column_text_or_data_index)
         self._action_chains.move_to_element(column_header).perform()
 
-        column_header_trigger = self.get_column_header_trigger(grid_cq, column_text_or_data_index)
+        column_header_trigger = self.get_column_header_trigger(
+            grid_cq, column_text_or_data_index
+        )
 
-        self._logger.info("Clicking column header trigger '%s' on grid with CQ '%s'", column_text_or_data_index, grid_cq)
+        self._logger.info(
+            "Clicking column header trigger '%s' on grid with CQ '%s'",
+            column_text_or_data_index,
+            grid_cq,
+        )
 
         self._action_chains.move_to_element(column_header_trigger)
         self._action_chains.click()
         self._action_chains.perform()
 
-    def filter_string_column(self, grid_cq: str, column_text_or_data_index: str, filter_value: str, wait_for_store_loaded: bool = True, clear_first: bool = False):
+    def filter_string_column(
+        self,
+        grid_cq: str,
+        column_text_or_data_index: str,
+        filter_value: str,
+        wait_for_store_loaded: bool = True,
+        clear_first: bool = False,
+    ):
         """Filters a string column on a grid for the specified value.
 
         Args:
@@ -238,14 +282,18 @@ class GridHelper(HasReferencedJavaScript):
             clear_first (bool, optional): Indicates whether to clear the filter element first. Defaults to False.
         """
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
-        self._menu_helper.move_to_menu_item_by_text('Filters')
+        self._menu_helper.move_to_menu_item_by_text("Filters")
 
-        filter_textbox = self._cq.wait_for_single_query_visible('textfield[emptyText="Enter Filter Text..."]')
+        filter_textbox = self._cq.wait_for_single_query_visible(
+            'textfield[emptyText="Enter Filter Text..."]'
+        )
 
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
 
-        self._input_helper.type_into_element(filter_textbox, filter_value, clear_first = clear_first)
+        self._input_helper.type_into_element(
+            filter_textbox, filter_value, clear_first=clear_first
+        )
 
         if wait_for_store_loaded:
             self._store_helper.wait_for_store_loaded(grid_cq)
@@ -253,8 +301,15 @@ class GridHelper(HasReferencedJavaScript):
         # Close filter and then column menu
         self._input_helper.type_escape()
         self._input_helper.type_escape()
+        self._core.wait_for_no_ajax_requests_in_progress()
 
-    def filter_list_column(self, grid_cq: str, column_text_or_data_index: str, filter_values_to_toggle: list[str], wait_for_store_loaded: bool = True):
+    def filter_list_column(
+        self,
+        grid_cq: str,
+        column_text_or_data_index: str,
+        filter_values_to_toggle: list[str],
+        wait_for_store_loaded: bool = True,
+    ):
         """Toggles the values on a list filtered column on a grid.
 
         Args:
@@ -264,7 +319,7 @@ class GridHelper(HasReferencedJavaScript):
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
         """
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
-        self._menu_helper.move_to_menu_item_by_text('Filters')
+        self._menu_helper.move_to_menu_item_by_text("Filters")
 
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
@@ -279,13 +334,15 @@ class GridHelper(HasReferencedJavaScript):
         self._input_helper.type_escape()
         self._input_helper.type_escape()
 
-    def filter_number_column(self,
-                             grid_cq: str,
-                             column_text_or_data_index: str,
-                             equal_to: Union[None, float] = None,
-                             less_than: Union[None, float] = None,
-                             greater_than: Union[None, float] = None,
-                             wait_for_store_loaded: bool = True):
+    def filter_number_column(
+        self,
+        grid_cq: str,
+        column_text_or_data_index: str,
+        equal_to: Union[None, float] = None,
+        less_than: Union[None, float] = None,
+        greater_than: Union[None, float] = None,
+        wait_for_store_loaded: bool = True,
+    ):
         """Filters a number column on a grid for the specified values.
 
         Args:
@@ -295,12 +352,14 @@ class GridHelper(HasReferencedJavaScript):
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
         """
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
-        self._menu_helper.move_to_menu_item_by_text('Filters')
+        self._menu_helper.move_to_menu_item_by_text("Filters")
 
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
 
-        filter_textboxes = self._cq.wait_for_query('textfield[emptyText="Enter Number..."]')
+        filter_textboxes = self._cq.wait_for_query(
+            'textfield[emptyText="Enter Number..."]'
+        )
 
         # clear_first does not work with these :/
         # Double-clicking then either typing or deleting should do it.
@@ -309,7 +368,9 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.perform()
 
         if less_than is not None:
-            self._input_helper.type_into_element(filter_textboxes[0], less_than, clear_first = False)
+            self._input_helper.type_into_element(
+                filter_textboxes[0], less_than, clear_first=False
+            )
         else:
             self._input_helper.type_delete()
 
@@ -318,7 +379,9 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.perform()
 
         if greater_than is not None:
-            self._input_helper.type_into_element(filter_textboxes[1], greater_than, clear_first = False)
+            self._input_helper.type_into_element(
+                filter_textboxes[1], greater_than, clear_first=False
+            )
         else:
             self._input_helper.type_delete()
 
@@ -327,7 +390,9 @@ class GridHelper(HasReferencedJavaScript):
         self._action_chains.perform()
 
         if equal_to is not None:
-            self._input_helper.type_into_element(filter_textboxes[2], equal_to, clear_first = False)
+            self._input_helper.type_into_element(
+                filter_textboxes[2], equal_to, clear_first=False
+            )
         else:
             self._input_helper.type_delete()
 
@@ -338,7 +403,12 @@ class GridHelper(HasReferencedJavaScript):
         self._input_helper.type_escape()
         self._input_helper.type_escape()
 
-    def toggle_column_filter(self, grid_cq: str, column_text_or_data_index: str, wait_for_store_loaded: bool = True):
+    def toggle_column_filter(
+        self,
+        grid_cq: str,
+        column_text_or_data_index: str,
+        wait_for_store_loaded: bool = True,
+    ):
         """Toggles the filter on a column by clicking on the filters element.
 
         Args:
@@ -347,7 +417,7 @@ class GridHelper(HasReferencedJavaScript):
             wait_for_store_loaded (bool, optional): Indicates whether to wait for the store to load. Defaults to True.
         """
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
-        filter_menu_item = self._menu_helper.try_get_menu_item_by_text('Filters')
+        filter_menu_item = self._menu_helper.try_get_menu_item_by_text("Filters")
 
         if wait_for_store_loaded:
             self._store_helper.reset_store_load_count(grid_cq)
@@ -364,7 +434,7 @@ class GridHelper(HasReferencedJavaScript):
         self._input_helper.type_escape()
 
     def clear_selection(self, grid_cq: str):
-        """ Clears the current selection.
+        """Clears the current selection.
 
         Useful if want to quickly refresh a grid without having to process all the events.
         This will only work if the grid supports deselection.
@@ -381,8 +451,13 @@ class GridHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         self._driver.execute_script(script)
 
-    def get_row(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -> WebElement:
-        """ Gets the element for the row with the specified data or index in the grid.
+    def get_row(
+        self,
+        grid_cq: str,
+        row_data: Union[int, dict],
+        should_throw_exception: bool = True,
+    ) -> WebElement:
+        """Gets the element for the row with the specified data or index in the grid.
 
         The grid must be visible.
 
@@ -407,8 +482,13 @@ class GridHelper(HasReferencedJavaScript):
 
         raise GridHelper.RowNotFoundException(grid_cq, row_data)
 
-    def get_row_data(self, grid_cq: str, row_data: Union[int, dict], should_throw_exception: bool = True) -> dict:
-        """ Gets the data for the row with the specified data or index in the grid.
+    def get_row_data(
+        self,
+        grid_cq: str,
+        row_data: Union[int, dict],
+        should_throw_exception: bool = True,
+    ) -> dict:
+        """Gets the data for the row with the specified data or index in the grid.
 
         The grid must be visible.
 
@@ -434,7 +514,7 @@ class GridHelper(HasReferencedJavaScript):
         raise GridHelper.RowNotFoundException(grid_cq, row_data)
 
     def click_row(self, grid_cq: str, row_data: Union[int, dict]):
-        """ Clicks the row with the specified data or index in the grid.
+        """Clicks the row with the specified data or index in the grid.
 
         The grid must be visible.
 
@@ -446,7 +526,9 @@ class GridHelper(HasReferencedJavaScript):
             # Check grid can be found and is visible
             row = self.get_row(grid_cq, row_data)
 
-            self._logger.info("Clicking clicking row '%s' on grid with CQ '%s'", row_data, grid_cq)
+            self._logger.info(
+                "Clicking clicking row '%s' on grid with CQ '%s'", row_data, grid_cq
+            )
 
             self._action_chains.move_to_element(row)
             self._action_chains.click()
@@ -460,8 +542,9 @@ class GridHelper(HasReferencedJavaScript):
             self._action_chains.click()
             self._action_chains.perform()
 
-
-    def wait_for_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60) -> WebElement:
+    def wait_for_row(
+        self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60
+    ) -> WebElement:
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
 
@@ -473,10 +556,14 @@ class GridHelper(HasReferencedJavaScript):
         Returns:
             WebElement: The DOM element for the row
         """
-        WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
+        WebDriverWait(self._driver, timeout).until(
+            GridHelper.RowFoundExpectation(grid_cq, row_data)
+        )
         return self.get_row(grid_cq, row_data)
 
-    def wait_to_click_row(self, grid_cq: str, row_data: Union[int, dict], timeout: float = 120):
+    def wait_to_click_row(
+        self, grid_cq: str, row_data: Union[int, dict], timeout: float = 120
+    ):
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
         Once we have found the row it is clicked.
@@ -486,11 +573,15 @@ class GridHelper(HasReferencedJavaScript):
             row_data (Union[int, dict]): The row data or index of the record we are waiting for.
             timeout (int, optional): The number of seconds to wait for the row before erroring. Defaults to 60.
         """
-        WebDriverWait(self._driver, timeout).until(GridHelper.RowFoundExpectation(grid_cq, row_data))
+        WebDriverWait(self._driver, timeout).until(
+            GridHelper.RowFoundExpectation(grid_cq, row_data)
+        )
         self._core.wait_for_no_ajax_requests_in_progress()
         self.click_row(grid_cq, row_data)
 
-    def toggle_columns(self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]):
+    def toggle_columns(
+        self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]
+    ):
         """Toggles a list of columns on the specified grid.
         Any that are visible will be hidden, and any that a currently hidden will be shown.
 
@@ -504,30 +595,59 @@ class GridHelper(HasReferencedJavaScript):
         self.click_column_header_trigger(grid_cq, column_text_or_data_index)
 
         # Get the 'Columns' menu itema and move to it, so that submenu shows.
-        filter_menu_item = self._menu_helper.try_get_menu_item_by_text('Columns')
+        filter_menu_item = self._menu_helper.try_get_menu_item_by_text("Columns")
         self._action_chains.move_to_element(filter_menu_item)
         self._action_chains.perform()
 
         for column in columns_to_toggle:
-            column_to_click = self._cq.wait_for_single_query_visible(f'menucheckitem[text="{column}"]')
+            column_to_click = self._cq.wait_for_single_query_visible(
+                f'menucheckitem[text="{column}"]'
+            )
 
             self._action_chains.move_to_element(column_to_click)
-            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.pause(
+                random.uniform(
+                    self._input_helper.INPUT_SLEEP_MINIMUM,
+                    self._input_helper.INPUT_SLEEP_MAXIMUM,
+                )
+            )
             self._action_chains.click()
-            self._action_chains.pause(random.uniform(self._input_helper.INPUT_SLEEP_MINIMUM, self._input_helper.INPUT_SLEEP_MAXIMUM))
+            self._action_chains.pause(
+                random.uniform(
+                    self._input_helper.INPUT_SLEEP_MINIMUM,
+                    self._input_helper.INPUT_SLEEP_MAXIMUM,
+                )
+            )
             self._action_chains.perform()
 
         # Close columns submenu, and grid menu.
         self._input_helper.type_escape()
         self._input_helper.type_escape()
 
+    def check_row_selected(self, grid_cq: str, row_data: Union[int, dict]):
+        check_row = self.get_row(
+            grid_cq,
+            row_data,
+        )
+
+        #Need to go up to table level from row
+        table = check_row.find_element(By.XPATH, "../..")
+        current_classes = "x-grid-item-selected" in table.get_attribute("class")
+        if current_classes:
+            return
+        else:
+            self.wait_to_click_row(grid_cq, row_data)
+
+
     class ColumnNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified column"""
 
-        def __init__(self,
-                     grid_cq: str,
-                     column_text_or_data_index: str,
-                     message: str = "Failed to find column with text (or dataIndex) '{column_text_or_data_index}' on grid with CQ '{grid_cq}'."):
+        def __init__(
+            self,
+            grid_cq: str,
+            column_text_or_data_index: str,
+            message: str = "Failed to find column with text (or dataIndex) '{column_text_or_data_index}' on grid with CQ '{grid_cq}'.",
+        ):
             """Initialises an instance of this exception
 
             Args:
@@ -543,15 +663,20 @@ class GridHelper(HasReferencedJavaScript):
 
         def __str__(self):
             """Returns a string representation of this exception"""
-            return self.message.format(column_text_or_data_index=self._column_text_or_data_index, grid_cq=self._grid_cq)
+            return self.message.format(
+                column_text_or_data_index=self._column_text_or_data_index,
+                grid_cq=self._grid_cq,
+            )
 
     class RowNotFoundException(Exception):
         """Exception class thrown when we failed to find the specified row"""
 
-        def __init__(self,
-                     grid_cq: str,
-                     row_data: Union[int, dict],
-                     message: str = "Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'."):
+        def __init__(
+            self,
+            grid_cq: str,
+            row_data: Union[int, dict],
+            message: str = "Failed to find row with data (or index) '{row_data}' on grid with CQ '{grid_cq}'.",
+        ):
             """Initialises an instance of this exception
 
             Args:
@@ -570,7 +695,7 @@ class GridHelper(HasReferencedJavaScript):
             return self.message.format(row_data=self._row_data, grid_cq=self._grid_cq)
 
     class RowFoundExpectation:
-        """ An expectation for checking that a row has been found"""
+        """An expectation for checking that a row has been found"""
 
         def __init__(self, grid_cq: str, row_data: Union[int, dict]):
             """Initialises an instance of this class.
