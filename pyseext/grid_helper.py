@@ -625,6 +625,12 @@ class GridHelper(HasReferencedJavaScript):
         self._input_helper.type_escape()
 
     def check_row_selected(self, grid_cq: str, row_data: Union[int, dict]):
+        """ Checks whether a row is currently selected. If false then the row is clicked.
+
+        Args:
+            grid_cq (str): CQ of grid
+            row_data (Union[int, dict]): Data of row to check.
+        """
         check_row = self.get_row(
             grid_cq,
             row_data,
