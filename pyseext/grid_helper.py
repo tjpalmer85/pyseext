@@ -533,6 +533,7 @@ class GridHelper(HasReferencedJavaScript):
             self._action_chains.move_to_element(row)
             self._action_chains.click()
             self._action_chains.perform()
+            self.check_row_selected(grid_cq, row_data)
 
         except StaleElementReferenceException:
 
@@ -541,6 +542,7 @@ class GridHelper(HasReferencedJavaScript):
             self._action_chains.move_to_element(row)
             self._action_chains.click()
             self._action_chains.perform()
+            self.check_row_selected(grid_cq, row_data)
 
     def wait_for_row(
         self, grid_cq: str, row_data: Union[int, dict], timeout: float = 60
@@ -578,6 +580,7 @@ class GridHelper(HasReferencedJavaScript):
         )
         self._core.wait_for_no_ajax_requests_in_progress()
         self.click_row(grid_cq, row_data)
+        self.check_row_selected(grid_cq, row_data)
 
     def toggle_columns(
         self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]
