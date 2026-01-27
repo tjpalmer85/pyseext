@@ -98,3 +98,26 @@ class ButtonHelper:
             text (str, optional): The text of the button to click. Defaults to 'OK'.
         """
         self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))
+
+    def click_button_arrow(self, button_text: str, root_id: Union[str, None] = None):
+        """Clicks the dropdown arrow of a split button to open its menu.
+        
+        Args:
+            button_text (str): The text on the main button
+            root_id (str, optional): The id of the container within which to perform the query.
+                If omitted, all components within the document are included in the search.
+        """
+        # Find the button element
+        button_cq = f'button[text="{button_text}"]'
+        button = self._cq.wait_for_single_query_visible(button_cq, root_id)
+
+        self._logger.info("Clicking dropdown arrow for button with text '%s'", button_text)
+
+        # Get the button's width and click on the right side where the arrow is
+        button_width = button.size['width']
+        arrow_offset = (button_width // 2) - 10
+
+        # Move to the button and click on the arrow area
+        self._action_chains.move_to_element_with_offset(button, arrow_offset, 0)
+        self._action_chains.click()
+        self._action_chains.perform()
