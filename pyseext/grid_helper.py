@@ -10,6 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
@@ -581,6 +582,27 @@ class GridHelper(HasReferencedJavaScript):
         self._core.wait_for_no_ajax_requests_in_progress()
         self.click_row(grid_cq, row_data)
         self.check_row_selected(grid_cq, row_data)
+
+    def wait_and_click_multiple_rows(
+            self, grid_cq: str, initial_row_data:Union[int, dict], other_rows_data:Union[int, dict]
+    ):
+        """Waits for the specified row to appear in the grid, reloading the store until
+        it is found, or until the timeout is hit.
+        Once we have found the row it is clicked and holds CONTROL and clicks on other given row. This mimics the action of selecting 
+        multiple rows
+
+        Args:
+            grid_cq (str): The component query for the grid.
+            initial_row_data (Union[int, dict]): The row data or index of the record we are waiting for to click first.
+            other_rows_data (Union[int, dict]): The row data or index of the record we are waiting for to be clicked after holding CONTROL.
+        """
+        self.wait_to_click_row(grid_cq, initial_row_data)
+        for row in other_rows_data:
+            row_data = self.get_row(
+                grid_cq, row
+            )
+            self._action_chains.key_down(Keys.CONTROL).click(row_data).perform()
+            self._action_chains.reset_actions()
 
     def toggle_columns(
         self, grid_cq: str, column_text_or_data_index: str, columns_to_toggle: list[str]
