@@ -310,9 +310,6 @@ class FieldHelper(HasReferencedJavaScript):
                         # if the store has loaded
                         self._core.wait_for_no_ajax_requests_in_progress(recheck_time_if_false=1)
 
-                        # FIXME: Does the store have a count of one?
-                        # .....: Do we really care? If multiple then the top one will be highlighted...
-
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
                     else:
@@ -346,7 +343,7 @@ class FieldHelper(HasReferencedJavaScript):
                     if not is_value_a_dict:
                         # We can just type into the combobox
                         field = self.find_field_input_element(form_cq, name)
-                        self._input_helper.type_into_element(field, field_value)
+                        self._input_helper.type_into_element(field, field_value, delay=0.2)
 
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()
@@ -368,12 +365,6 @@ class FieldHelper(HasReferencedJavaScript):
             elif (field_xtype.endswith('radiogroup') or
                 self.is_field_a_checkbox(form_cq, name) or
                 self.is_field_a_radio_field(form_cq, name)):
-
-                # FIXME: We could click on the elements here, after checking whether they
-                # .....: are already set to the value we want.
-                # .....: For a radio group, can get child controls using getBoxes(query),
-                # .....: so could click on children if wanted!
-
                 # Directly set the value on the field
                 self.set_field_value_directly(form_cq, name, field_value)
             else:

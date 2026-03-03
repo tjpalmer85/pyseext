@@ -34,7 +34,7 @@ class InputHelper:
         self._action_chains = ActionChains(driver)
         """The ActionChains instance for this class instance"""
 
-    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = False, clear_first: bool = True):
+    def type_into_element(self, element: WebElement, text: str, delay: Union[float, None] = None, tab_off: Union[bool, None] = False, disable_realistic_typing: bool = True, clear_first: bool = True):
         """Types into an input element in a realistic manner, unless web driver is remote.
 
         Args:
@@ -60,6 +60,7 @@ class InputHelper:
         self._action_chains.move_to_element(element)
         self._action_chains.click()
         self._action_chains.perform()
+        self._action_chains.pause(0.5)
 
         # Now type each character
         self.type(text, disable_realistic_typing)
@@ -71,7 +72,7 @@ class InputHelper:
         if tab_off:
             self.type_tab()
 
-    def type(self, text: str, disable_realistic_typing: bool = False):
+    def type(self, text: str, disable_realistic_typing: bool = True):
         """Types into the currently focused element in a realistic manner, unless our webdriver is remote, then just sends the complete string.
 
         Args:
