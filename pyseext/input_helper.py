@@ -75,6 +75,7 @@ class InputHelper:
             self.type_tab()
 
     def type(self, text: str, disable_realistic_typing: bool = True):
+    def type(self, text: str, disable_realistic_typing: bool = True):
         """Types into the currently focused element in a realistic manner, unless our webdriver is remote, then just sends the complete string.
 
         Args:
