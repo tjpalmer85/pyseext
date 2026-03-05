@@ -253,7 +253,7 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_field_value(self, form_cq: str, name: str, value: Union[dict, float, str]):
+    def set_field_value(self, form_cq: str, name: str, value: Union[dict, float, str], delay:float = 0.2):
         """Sets the value for a field.
 
         If the field can be typed into by a user, and the value is typeable, then that is the approach taken.
@@ -275,6 +275,7 @@ class FieldHelper(HasReferencedJavaScript):
 
                                              If the value is supplied as a dictionary and the field is not a store holder then
                                              an exception is thrown.
+            delay (float): The delay in seconds to use between keystrokes when typing into a field. Defaults to 0.2.
         """
         # Only used for radiogroup controls now, but xtype still useful to throw a better error if field not found.
         field_xtype = self.get_field_xtype(form_cq, name)
@@ -346,7 +347,7 @@ class FieldHelper(HasReferencedJavaScript):
                     if not is_value_a_dict:
                         # We can just type into the combobox
                         field = self.find_field_input_element(form_cq, name)
-                        self._input_helper.type_into_element(field, field_value)
+                        self._input_helper.type_into_element(field, field_value, delay)
 
                         # Seems we need to tab off or sometimes the value will not stick?!
                         self._input_helper.type_tab()

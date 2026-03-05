@@ -98,3 +98,15 @@ class ButtonHelper:
             text (str, optional): The text of the button to click. Defaults to 'OK'.
         """
         self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))
+
+    def click_button_arrow(self, cq: str):
+        """Clicks the dropdown arrow of a split button to open its menu.
+        
+        Args:
+            cq (str): The component query to find the button.
+        """
+        # get the element using CSS selector and clicks on it
+        arrow = self._cq.wait_for_single_query_visible(cq = cq, css_selector=".x-btn-arrow-el")
+        self._action_chains.move_to_element(arrow)
+        self._action_chains.click()
+        self._action_chains.perform()
