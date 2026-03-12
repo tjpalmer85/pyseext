@@ -99,7 +99,7 @@ class ButtonHelper:
         """
         self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))
 
-    def click_button_arrow(self, button_text: str, root_id: Union[str, None] = None, css_selector = ".x-btn-arrow-el"):
+    def click_button_arrow(self, button_text: str, root_id: Union[str, None] = None, css_selector: str = ".x-btn-arrow-el"):
         """Clicks the dropdown arrow of a split button to open its menu.
         
         Args:

@@ -584,7 +584,7 @@ class GridHelper(HasReferencedJavaScript):
         self.check_row_selected(grid_cq, row_data)
 
     def wait_and_click_multiple_rows(
-            self, grid_cq: str, row_data:List[Union[int, dict]]
+            self, grid_cq: str, row_data: List[Union[int, dict]]
     ):
         """Waits for the specified row to appear in the grid, reloading the store until
         it is found, or until the timeout is hit.
@@ -596,7 +596,7 @@ class GridHelper(HasReferencedJavaScript):
             row_data (List[Union[int, dict]]): The row data or index of the record we are waiting for to be clicked after holding CONTROL.
         """
         if not row_data:
-            raise ValueError("rows_data must contain at least one row")
+            raise ValueError("row_data must contain at least one row")
         self.wait_to_click_row(grid_cq, row_data[0])
         for row in row_data[1:]:
             row_data_found = self.get_row(grid_cq, row)

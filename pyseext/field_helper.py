@@ -253,7 +253,7 @@ class FieldHelper(HasReferencedJavaScript):
         self.ensure_javascript_loaded()
         return self._driver.execute_script(script)
 
-    def set_field_value(self, form_cq: str, name: str, value: Union[dict, float, str], delay:float = 0.1):
+    def set_field_value(self, form_cq: str, name: str, value: Union[dict, float, str], delay: float = 0.1):
         """Sets the value for a field.
 
         If the field can be typed into by a user, and the value is typeable, then that is the approach taken.
