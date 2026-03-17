@@ -99,25 +99,17 @@ class ButtonHelper:
         """
         self.click_button(self._MESSAGEBOX_BUTTON_TEMPLATE.format(text=text))
 
-    def click_button_arrow(self, button_text: str, root_id: Union[str, None] = None):
+    def click_button_arrow(self, button_text: str, root_id: Union[str, None] = None, css_selector: str = ".x-btn-arrow-el"):
         """Clicks the dropdown arrow of a split button to open its menu.
         
         Args:
-            button_text (str): The text on the main button
+            button_text (str): The text on the button
             root_id (str, optional): The id of the container within which to perform the query.
-                If omitted, all components within the document are included in the search.
+            css_selector (str, optional): The CSS selector to find the arrow element within the button. Defaults to ".x-btn-arrow-el".
         """
-        # Find the button element
-        button_cq = f'button[text="{button_text}"]'
-        button = self._cq.wait_for_single_query_visible(button_cq, root_id)
-
-        self._logger.info("Clicking dropdown arrow for button with text '%s'", button_text)
-
-        # Get the button's width and click on the right side where the arrow is
-        button_width = button.size['width']
-        arrow_offset = (button_width // 2) - 10
+        arrow = self._cq.wait_for_single_query_visible(cq = button_text, root_id = root_id, css_selector = css_selector)
 
         # Move to the button and click on the arrow area
-        self._action_chains.move_to_element_with_offset(button, arrow_offset, 0)
+        self._action_chains.move_to_element(arrow)
         self._action_chains.click()
         self._action_chains.perform()
